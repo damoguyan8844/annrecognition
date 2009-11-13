@@ -174,12 +174,14 @@ void CChildView::OnFileSaveBmp()
 	static char BASED_CODE szFilter[] = "256色位图文件(*.bmp)|";
 	CFileDialog dlg(FALSE,NULL,NULL,OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,szFilter,NULL);
     if(dlg.DoModal() == IDOK)
-	   strPathNameSave = dlg.GetPathName();
+	   strPathNameSave =dlg.GetPathName();
 	else return;
+
 	//在文件名后添加.bmp后缀
 	//strPathNameSave+=".bmp";
 	//以读写模式打开一个文件。如果文件不存在，则创建之
 // 	CFile file(strPathNameSave, CFile::modeReadWrite|CFile::modeCreate);
+	
 	::SaveDIB (m_hDIB,strPathNameSave.c_str());
 	//关闭文件
 //	file.Close ();	
@@ -299,67 +301,9 @@ void CChildView::OnImgprcShrinkAlign()
 //图像预处理第9步：将最终标准化后的字符图像分为单个单个的HDIB保存，并存为.bmp文件
 void CChildView::OnImgprcToDibAndSave() 
 {
-	CRectLink m_charRect;
-	CRectLink m_charRectCopy;
-	
-	int digicount=GetSegmentCount(m_charRectID);
+	string strFolder=strPathName.substr(0,strPathName.find_last_of("\\"));
 
-	unsigned char* lpSrc;
-	int w,h;
-	w=RECTWIDTH(&m_charRect.front ());
-	h=RECTWIDTH(&m_charRect.front ());
-	m_dibRect.clear ();
-	m_dibRectCopy.clear ();
-	int i_src,j_src;
-	int i,j;
-	int counts=0;
-	CRect rect,rectnew;
-	BYTE* lpDIB=(BYTE*)::GlobalLock ((HGLOBAL)m_hDIB);
-	BYTE* lpDIBBits=(BYTE*)::FindDIBBits ((char*)lpDIB);
-	BYTE* lpNewDIBBits;
-	BYTE* lpDst;
-	LONG lLineBytes=(digicount*w+3)/4*4;
-	LONG lLineBytesnew =(w+3)/4*4;
-	HDIB hDIB=NULL;
-	while(!m_charRect.empty ())
-	{
-		hDIB=::NewDIB (w,h,8);
-		lpDIB=(BYTE*) ::GlobalLock((HGLOBAL)hDIB);	
-		lpNewDIBBits = (BYTE*)::FindDIBBits((char*)lpDIB);
-		lpDst=(BYTE*)lpNewDIBBits;
-		memset(lpDst,(BYTE)255,lLineBytesnew * h);		
-		rect=m_charRect.front ();
-		m_charRect.pop_front ();
-		for(i=0;i<h;i++)
-			for(j=0;j<w;j++)
-			{
-				i_src=rect.top + i;
-				j_src=j+counts*w;
-				lpSrc=(BYTE *)lpDIBBits + lLineBytes *  i_src + j_src;
-				lpDst=(BYTE *)lpNewDIBBits + lLineBytesnew * i + j;
-				*lpDst=*lpSrc;
-			}
-		::GlobalUnlock (hDIB);
-		m_dibRect.push_back (hDIB);
-		counts++;
-	}
-	m_charRect=m_charRectCopy;
-	m_dibRectCopy=m_dibRect;
-	//输出为.bmp文件
-	CString str;
-	counts=1;
-	while(!m_dibRect.empty ())
-	{
-		str.Format ("part%d.bmp",counts);
-		//str=strPath+"\\"+str;
-   	//	CFile file(str, CFile::modeReadWrite|CFile::modeCreate);
-		hDIB=m_dibRect.front ();
-		::SaveDIB (hDIB,(const char *)str);
-		m_dibRect.pop_front ();
-	//	file.Close ();	
-		counts++;
-	}
-	m_dibRect=m_dibRectCopy;
+	SaveSegment(m_hDIB,m_charRectID,(char *)strFolder.c_str());
 }
 
 void CChildView::OnImgprcThinning() 
