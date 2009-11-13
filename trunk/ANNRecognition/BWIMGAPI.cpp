@@ -2348,7 +2348,7 @@ ANNRECOGNITION_API void	SaveSegment(HDIB hInputDIB,LONG charRectID,LPSTR destFol
 	unsigned char* lpSrc;
 	int w,h;
 	w=RECTWIDTH(&m_charRect.front ());
-	h=RECTWIDTH(&m_charRect.front ());
+	h=RECTHEIGHT(&m_charRect.front ());
 	
 	int i_src,j_src;
 	int i,j;
