@@ -189,14 +189,14 @@ SOURCE=.\res\Toolbar.bmp
 # 	2:10:HeaderFile:miselectableitem.h
 # 	2:8:ImplFile:miselectableitem.cpp
 # End Section
-# Section CCMD_OCR : {EF347A62-BA21-42E4-94A0-1C0A6D7FDFE7}
-# 	2:21:DefaultSinkHeaderFile:midocview.h
-# 	2:16:DefaultSinkClass:CMiDocView
-# End Section
 # Section CCMD_OCR : {7BF80981-BF32-101A-8BBB-00AA00300CAB}
 # 	2:5:Class:CPicture
 # 	2:10:HeaderFile:picture.h
 # 	2:8:ImplFile:picture.cpp
+# End Section
+# Section CCMD_OCR : {EF347A62-BA21-42E4-94A0-1C0A6D7FDFE7}
+# 	2:21:DefaultSinkHeaderFile:midocview.h
+# 	2:16:DefaultSinkClass:CMiDocView
 # End Section
 # Section CCMD_OCR : {F958524A-8422-4B07-B69E-199F2421ED89}
 # 	2:5:Class:CMiDocView
