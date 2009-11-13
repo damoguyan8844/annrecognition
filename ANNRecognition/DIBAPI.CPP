@@ -1,20 +1,20 @@
 // ************************************************************************
-//  ÎÄ¼şÃû£ºdibapi.cpp
+//  ???:dibapi.cpp
 //
-//  ¹«ÓÃ DIB(Independent Bitmap) APIº¯Êı¿â£º
+//  ?? DIB(Independent Bitmap) API???:
 //
-//  PaintDIB()          - »æÖÆDIB¶ÔÏó
-//  FindDIBBits()       - ·µ»ØDIBÍ¼ÏñÏóËØÆğÊ¼Î»ÖÃ
-//  DIBWidth()          - ·µ»ØDIB¿í¶È
-//  DIBHeight()         - ·µ»ØDIB¸ß¶È
-//  DIBNumColors()      - ¼ÆËãDIBµ÷É«°åÑÕÉ«ÊıÄ¿
-//  CopyHandle()        - ¿½±´ÄÚ´æ¿é
+//  PaintDIB()          - ??DIB??
+//  FindDIBBits()       - ??DIB????????
+//  DIBWidth()          - ??DIB??
+//  DIBHeight()         - ??DIB??
+//  DIBNumColors()      - ??DIB???????
+//  CopyHandle()        - ?????
 //
-//  SaveDIB()           - ½«DIB±£´æµ½Ö¸¶¨ÎÄ¼şÖĞ
-//  ReadDIBFile()       - ÖØÖ¸¶¨ÎÄ¼şÖĞ¶ÁÈ¡DIB¶ÔÏó
-//  NewDIB()            - ¸ù¾İÌá¹©µÄ¿í¡¢¸ß¡¢ÑÕÉ«Î»ÊıÀ´´´½¨Ò»¸öĞÂµÄDIB
+//  SaveDIB()           - ?DIB????????
+//  ReadDIBFile()       - ????????DIB??
+//  NewDIB()            - ????????????????????DIB
 //
-//  PaletteSize()       - ·µ»ØDIBµ÷É«°å´óĞ¡
+//  PaletteSize()       - ??DIB?????
 //
 // ************************************************************************
 
@@ -26,24 +26,24 @@
 
 /*************************************************************************
  *
- * º¯ÊıÃû³Æ£º
+ * ????:
  *   PaintDIB()
  *
- * ²ÎÊı:
- *   HDC hDC            - Êä³öÉè±¸DC
- *   LPRECT lpDCRect    - »æÖÆ¾ØĞÎÇøÓò
- *   HDIB hDIB          - Ö¸ÏòDIB¶ÔÏóµÄÖ¸Õë
- *   LPRECT lpDIBRect   - ÒªÊä³öµÄDIBÇøÓò
- *   CPalette* pPal     - Ö¸ÏòDIB¶ÔÏóµ÷É«°åµÄÖ¸Õë
+ * ??:
+ *   HDC hDC            - ????DC
+ *   LPRECT lpDCRect    - ??????
+ *   HDIB hDIB          - ??DIB?????
+ *   LPRECT lpDIBRect   - ????DIB??
+ *   CPalette* pPal     - ??DIB????????
  *
- * ·µ»ØÖµ:
- *   BOOL               - »æÖÆ³É¹¦·µ»ØTRUE£¬·ñÔò·µ»ØFALSE¡£
+ * ???:
+ *   BOOL               - ??????TRUE,????FALSE?
  *
- * ËµÃ÷:
- *   ¸Ãº¯ÊıÖ÷ÒªÓÃÀ´»æÖÆDIB¶ÔÏó¡£ÆäÖĞµ÷ÓÃÁËStretchDIBits()»òÕß
- * SetDIBitsToDevice()À´»æÖÆDIB¶ÔÏó¡£Êä³öµÄÉè±¸ÓÉÓÉ²ÎÊıhDCÖ¸
- * ¶¨£»»æÖÆµÄ¾ØĞÎÇøÓòÓÉ²ÎÊılpDCRectÖ¸¶¨£»Êä³öDIBµÄÇøÓòÓÉ²ÎÊı
- * lpDIBRectÖ¸¶¨¡£
+ * ??:
+ *   ?????????DIB????????StretchDIBits()??
+ * SetDIBitsToDevice()???DIB????????????hDC?
+ * ?;??????????lpDCRect??;??DIB??????
+ * lpDIBRect???
  *
  ************************************************************************/
 
@@ -53,42 +53,42 @@ ANNRECOGNITION_API BOOL  PaintDIB(HDC     hDC,
 					LPRECT  lpDIBRect,
 					CPalette* pPal)
 {
-	LPSTR    lpDIBHdr;            // BITMAPINFOHEADERÖ¸Õë
-	LPSTR    lpDIBBits;           // DIBÏóËØÖ¸Õë
-	BOOL     bSuccess=FALSE;      // ³É¹¦±êÖ¾
-	HPALETTE hPal=NULL;           // DIBµ÷É«°å
-	HPALETTE hOldPal=NULL;        // ÒÔÇ°µÄµ÷É«°å
+	LPSTR    lpDIBHdr;            // BITMAPINFOHEADER??
+	LPSTR    lpDIBBits;           // DIB????
+	BOOL     bSuccess=FALSE;      // ????
+	HPALETTE hPal=NULL;           // DIB???
+	HPALETTE hOldPal=NULL;        // ??????
 
-	// ÅĞ¶ÏDIB¶ÔÏóÊÇ·ñÎª¿Õ
+	// ??DIB??????
 	if (hDIB == NULL)
 	{
-		// ·µ»Ø
+		// ??
 		return FALSE;
 	}
 
-	// Ëø¶¨DIB
+	// ??DIB
 	lpDIBHdr  = (LPSTR) ::GlobalLock((HGLOBAL) hDIB);
 
-	// ÕÒµ½DIBÍ¼ÏñÏóËØÆğÊ¼Î»ÖÃ
+	// ??DIB????????
 	lpDIBBits = ::FindDIBBits(lpDIBHdr);
 
-	// »ñÈ¡DIBµ÷É«°å£¬²¢Ñ¡ÖĞËü
+	// ??DIB???,????
 	if (pPal != NULL)
 	{
 		hPal = (HPALETTE) pPal->m_hPalette;
 
-		// Ñ¡ÖĞµ÷É«°å
+		// ?????
 		hOldPal = ::SelectPalette(hDC, hPal, TRUE);
 	}
 
-	// ÉèÖÃÏÔÊ¾Ä£Ê½
+	// ??????
 	::SetStretchBltMode(hDC, COLORONCOLOR);
 
-	// ÅĞ¶ÏÊÇµ÷ÓÃStretchDIBits()»¹ÊÇSetDIBitsToDevice()À´»æÖÆDIB¶ÔÏó
+	// ?????StretchDIBits()??SetDIBitsToDevice()???DIB??
 	if ((RECTWIDTH(lpDCRect)  == RECTWIDTH(lpDIBRect)) &&
 	   (RECTHEIGHT(lpDCRect) == RECTHEIGHT(lpDIBRect)))
 	{
-		// Ô­Ê¼´óĞ¡£¬²»ÓÃÀ­Éì¡£
+		// ????,?????
 		bSuccess = ::SetDIBitsToDevice(hDC,                    // hDC
 								   lpDCRect->left,             // DestX
 								   lpDCRect->top,              // DestY
@@ -106,7 +106,7 @@ ANNRECOGNITION_API BOOL  PaintDIB(HDC     hDC,
 	}
     else
 	{
-		// ·ÇÔ­Ê¼´óĞ¡£¬À­Éì¡£
+		// ?????,???
 		bSuccess = ::StretchDIBits(hDC,                          // hDC
 							   lpDCRect->left,                 // DestX
 							   lpDCRect->top,                  // DestY
@@ -122,33 +122,33 @@ ANNRECOGNITION_API BOOL  PaintDIB(HDC     hDC,
 							   SRCCOPY);                       // dwROP
 	}
 	
-    // ½â³ıËø¶¨
+    // ????
 	::GlobalUnlock((HGLOBAL) hDIB);
 	
-	// »Ö¸´ÒÔÇ°µÄµ÷É«°å
+	// ????????
 	if (hOldPal != NULL)
 	{
 		::SelectPalette(hDC, hOldPal, TRUE);
 	}
 	
-	// ·µ»Ø
+	// ??
 	return bSuccess;
 }
 
 
 /*************************************************************************
  *
- * º¯ÊıÃû³Æ£º
+ * ????:
  *   FindDIBBits()
  *
- * ²ÎÊı:
- *   LPSTR lpbi         - Ö¸ÏòDIB¶ÔÏóµÄÖ¸Õë
+ * ??:
+ *   LPSTR lpbi         - ??DIB?????
  *
- * ·µ»ØÖµ:
- *   LPSTR              - Ö¸ÏòDIBÍ¼ÏñÏóËØÆğÊ¼Î»ÖÃ
+ * ???:
+ *   LPSTR              - ??DIB????????
  *
- * ËµÃ÷:
- *   ¸Ãº¯Êı¼ÆËãDIBÖĞÍ¼ÏñÏóËØµÄÆğÊ¼Î»ÖÃ£¬²¢·µ»ØÖ¸ÏòËüµÄÖ¸Õë¡£
+ * ??:
+ *   ?????DIB??????????,??????????
  *
  ************************************************************************/
 
@@ -161,43 +161,43 @@ ANNRECOGNITION_API LPSTR FindDIBBits(LPSTR lpbi)
 
 /*************************************************************************
  *
- * º¯ÊıÃû³Æ£º
+ * ????:
  *   DIBWidth()
  *
- * ²ÎÊı:
- *   LPSTR lpbi         - Ö¸ÏòDIB¶ÔÏóµÄÖ¸Õë
+ * ??:
+ *   LPSTR lpbi         - ??DIB?????
  *
- * ·µ»ØÖµ:
- *   DWORD              - DIBÖĞÍ¼ÏñµÄ¿í¶È
+ * ???:
+ *   DWORD              - DIB??????
  *
- * ËµÃ÷:
- *   ¸Ãº¯Êı·µ»ØDIBÖĞÍ¼ÏñµÄ¿í¶È¡£¶ÔÓÚWindows 3.0 DIB£¬·µ»ØBITMAPINFOHEADER
- * ÖĞµÄbiWidthÖµ£»¶ÔÓÚÆäËü·µ»ØBITMAPCOREHEADERÖĞµÄbcWidthÖµ¡£
+ * ??:
+ *   ?????DIB?????????Windows 3.0 DIB,??BITMAPINFOHEADER
+ * ??biWidth?;??????BITMAPCOREHEADER??bcWidth??
  *
  ************************************************************************/
 
 
 ANNRECOGNITION_API DWORD  DIBWidth(LPSTR lpDIB)
 {
-	// Ö¸ÏòBITMAPINFO½á¹¹µÄÖ¸Õë£¨Win3.0£©
+	// ??BITMAPINFO?????(Win3.0)
 	LPBITMAPINFOHEADER lpbmi;
 	
-	// Ö¸ÏòBITMAPCOREINFO½á¹¹µÄÖ¸Õë
+	// ??BITMAPCOREINFO?????
 	LPBITMAPCOREHEADER lpbmc;
 
-	// »ñÈ¡Ö¸Õë
+	// ????
 	lpbmi = (LPBITMAPINFOHEADER)lpDIB;
 	lpbmc = (LPBITMAPCOREHEADER)lpDIB;
 
-	// ·µ»ØDIBÖĞÍ¼ÏñµÄ¿í¶È
+	// ??DIB??????
 	if (IS_WIN30_DIB(lpDIB))
 	{
-		// ¶ÔÓÚWindows 3.0 DIB£¬·µ»Ølpbmi->biWidth
+		// ??Windows 3.0 DIB,??lpbmi->biWidth
 		return lpbmi->biWidth;
 	}
 	else
 	{
-		// ¶ÔÓÚÆäËü¸ñÊ½µÄDIB£¬·µ»Ølpbmc->bcWidth
+		// ???????DIB,??lpbmc->bcWidth
 		return (DWORD)lpbmc->bcWidth;
 	}
 }
@@ -205,43 +205,43 @@ ANNRECOGNITION_API DWORD  DIBWidth(LPSTR lpDIB)
 
 /*************************************************************************
  *
- * º¯ÊıÃû³Æ£º
+ * ????:
  *   DIBHeight()
  *
- * ²ÎÊı:
- *   LPSTR lpDIB        - Ö¸ÏòDIB¶ÔÏóµÄÖ¸Õë
+ * ??:
+ *   LPSTR lpDIB        - ??DIB?????
  *
- * ·µ»ØÖµ:
- *   DWORD              - DIBÖĞÍ¼ÏñµÄ¸ß¶È
+ * ???:
+ *   DWORD              - DIB??????
  *
- * ËµÃ÷:
- *   ¸Ãº¯Êı·µ»ØDIBÖĞÍ¼ÏñµÄ¸ß¶È¡£¶ÔÓÚWindows 3.0 DIB£¬·µ»ØBITMAPINFOHEADER
- * ÖĞµÄbiHeightÖµ£»¶ÔÓÚÆäËü·µ»ØBITMAPCOREHEADERÖĞµÄbcHeightÖµ¡£
+ * ??:
+ *   ?????DIB?????????Windows 3.0 DIB,??BITMAPINFOHEADER
+ * ??biHeight?;??????BITMAPCOREHEADER??bcHeight??
  *
  ************************************************************************/
 
 
 ANNRECOGNITION_API DWORD  DIBHeight(LPSTR lpDIB)
 {
-	// Ö¸ÏòBITMAPINFO½á¹¹µÄÖ¸Õë£¨Win3.0£©
+	// ??BITMAPINFO?????(Win3.0)
 	LPBITMAPINFOHEADER lpbmi;
 	
-	// Ö¸ÏòBITMAPCOREINFO½á¹¹µÄÖ¸Õë
+	// ??BITMAPCOREINFO?????
 	LPBITMAPCOREHEADER lpbmc;
 
-	// »ñÈ¡Ö¸Õë
+	// ????
 	lpbmi = (LPBITMAPINFOHEADER)lpDIB;
 	lpbmc = (LPBITMAPCOREHEADER)lpDIB;
 
-	// ·µ»ØDIBÖĞÍ¼ÏñµÄ¿í¶È
+	// ??DIB??????
 	if (IS_WIN30_DIB(lpDIB))
 	{
-		// ¶ÔÓÚWindows 3.0 DIB£¬·µ»Ølpbmi->biHeight
+		// ??Windows 3.0 DIB,??lpbmi->biHeight
 		return lpbmi->biHeight;
 	}
 	else
 	{
-		// ¶ÔÓÚÆäËü¸ñÊ½µÄDIB£¬·µ»Ølpbmc->bcHeight
+		// ???????DIB,??lpbmc->bcHeight
 		return (DWORD)lpbmc->bcHeight;
 	}
 }
@@ -251,56 +251,56 @@ ANNRECOGNITION_API DWORD  DIBHeight(LPSTR lpDIB)
 
 /*************************************************************************
  *
- * º¯ÊıÃû³Æ£º
+ * ????:
  *   DIBNumColors()
  *
- * ²ÎÊı:
- *   LPSTR lpbi         - Ö¸ÏòDIB¶ÔÏóµÄÖ¸Õë
+ * ??:
+ *   LPSTR lpbi         - ??DIB?????
  *
- * ·µ»ØÖµ:
- *   WORD               - ·µ»Øµ÷É«°åÖĞÑÕÉ«µÄÖÖÊı
+ * ???:
+ *   WORD               - ???????????
  *
- * ËµÃ÷:
- *   ¸Ãº¯Êı·µ»ØDIBÖĞµ÷É«°åµÄÑÕÉ«µÄÖÖÊı¡£¶ÔÓÚµ¥É«Î»Í¼£¬·µ»Ø2£¬
- * ¶ÔÓÚ16É«Î»Í¼£¬·µ»Ø16£¬¶ÔÓÚ256É«Î»Í¼£¬·µ»Ø256£»¶ÔÓÚÕæ²ÊÉ«
- * Î»Í¼£¨24Î»£©£¬Ã»ÓĞµ÷É«°å£¬·µ»Ø0¡£
+ * ??:
+ *   ?????DIB?????????????????,??2,
+ * ??16???,??16,??256???,??256;?????
+ * ??(24?),?????,??0?
  *
  ************************************************************************/
 ANNRECOGNITION_API WORD  DIBNumColors(LPSTR lpbi)
 {
 	WORD wBitCount;
 
-	// ¶ÔÓÚWindowsµÄDIB, Êµ¼ÊÑÕÉ«µÄÊıÄ¿¿ÉÒÔ±ÈÏóËØµÄÎ»ÊıÒªÉÙ¡£
-	// ¶ÔÓÚÕâÖÖÇé¿ö£¬Ôò·µ»ØÒ»¸ö½üËÆµÄÊıÖµ¡£
+	// ??Windows?DIB, ??????????????????
+	// ??????,???????????
 	
-	// ÅĞ¶ÏÊÇ·ñÊÇWIN3.0 DIB
+	// ?????WIN3.0 DIB
 	if (IS_WIN30_DIB(lpbi))
 	{
 		DWORD dwClrUsed;
 		
-		// ¶ÁÈ¡dwClrUsedÖµ
+		// ??dwClrUsed?
 		dwClrUsed = ((LPBITMAPINFOHEADER)lpbi)->biClrUsed;
 		
 		if (dwClrUsed != 0)
 		{
-			// Èç¹ûdwClrUsed£¨Êµ¼ÊÓÃµ½µÄÑÕÉ«Êı£©²»Îª0£¬Ö±½Ó·µ»Ø¸ÃÖµ
+			// ??dwClrUsed(????????)??0,??????
 			return (WORD)dwClrUsed;
 		}
 	}
 
-	// ¶ÁÈ¡ÏóËØµÄÎ»Êı
+	// ???????
 	if (IS_WIN30_DIB(lpbi))
 	{
-		// ¶ÁÈ¡biBitCountÖµ
+		// ??biBitCount?
 		wBitCount = ((LPBITMAPINFOHEADER)lpbi)->biBitCount;
 	}
 	else
 	{
-		// ¶ÁÈ¡biBitCountÖµ
+		// ??biBitCount?
 		wBitCount = ((LPBITMAPCOREHEADER)lpbi)->bcBitCount;
 	}
 	
-	// °´ÕÕÏóËØµÄÎ»Êı¼ÆËãÑÕÉ«ÊıÄ¿
+	// ?????????????
 	switch (wBitCount)
 	{
 		case 1:
@@ -320,52 +320,52 @@ ANNRECOGNITION_API WORD  DIBNumColors(LPSTR lpbi)
 
 /*************************************************************************
  *
- * º¯ÊıÃû³Æ£º
+ * ????:
  *   DIBBitCount()
  *
- * ²ÎÊı:
- *   LPSTR lpbi         - Ö¸ÏòDIB¶ÔÏóµÄÖ¸Õë
+ * ??:
+ *   LPSTR lpbi         - ??DIB?????
  *
- * ·µ»ØÖµ:
- *   WORD               - ·µ»Øµ÷É«°åÖĞÑÕÉ«µÄÖÖÊı
+ * ???:
+ *   WORD               - ???????????
  *
- * ËµÃ÷:
- *   ¸Ãº¯Êı·µ»ØDIBBitCount¡£
+ * ??:
+ *   ?????DIBBitCount?
  *
  ************************************************************************/
 ANNRECOGNITION_API WORD  DIBBitCount(LPSTR lpbi)
 {
 	WORD wBitCount;
 
-	// ¶ÁÈ¡ÏóËØµÄÎ»Êı
+	// ???????
 	if (IS_WIN30_DIB(lpbi))
 	{
-		// ¶ÁÈ¡biBitCountÖµ
+		// ??biBitCount?
 		wBitCount = ((LPBITMAPINFOHEADER)lpbi)->biBitCount;
 	}
 	else
 	{
-		// ¶ÁÈ¡biBitCountÖµ
+		// ??biBitCount?
 		wBitCount = ((LPBITMAPCOREHEADER)lpbi)->bcBitCount;
 	}
 	
-	// ·µ»ØwBitCount
+	// ??wBitCount
 	return wBitCount;
 }
 
 /*************************************************************************
  *
- * º¯ÊıÃû³Æ£º
+ * ????:
  *   CopyHandle()
  *
- * ²ÎÊı:
- *   HGLOBAL h          - Òª¸´ÖÆµÄÄÚ´æÇøÓò
+ * ??:
+ *   HGLOBAL h          - ????????
  *
- * ·µ»ØÖµ:
- *   HGLOBAL            - ¸´ÖÆºóµÄĞÂÄÚ´æÇøÓò
+ * ???:
+ *   HGLOBAL            - ?????????
  *
- * ËµÃ÷:
- *   ¸Ãº¯Êı¸´ÖÆÖ¸¶¨µÄÄÚ´æÇøÓò¡£·µ»Ø¸´ÖÆºóµÄĞÂÄÚ´æÇøÓò£¬³ö´íÊ±·µ»Ø0¡£
+ * ??:
+ *   ????????????????????????,?????0?
  *
  ************************************************************************/
 
@@ -374,23 +374,23 @@ ANNRECOGNITION_API HGLOBAL  CopyHandle (HGLOBAL h)
 	if (h == NULL)
 		return NULL;
 
-	// »ñÈ¡Ö¸¶¨ÄÚ´æÇøÓò´óĞ¡
+	// ??????????
 	DWORD dwLen = ::GlobalSize((HGLOBAL) h);
 	
-	// ·ÖÅäĞÂÄÚ´æ¿Õ¼ä
+	// ???????
 	HGLOBAL hCopy = ::GlobalAlloc(GHND, dwLen);
 	
-	// ÅĞ¶Ï·ÖÅäÊÇ·ñ³É¹¦
+	// ????????
 	if (hCopy != NULL)
 	{
-		// Ëø¶¨
+		// ??
 		void* lpCopy = ::GlobalLock((HGLOBAL) hCopy);
 		void* lp     = ::GlobalLock((HGLOBAL) h);
 		
-		// ¸´ÖÆ
+		// ??
 		memcpy(lpCopy, lp, dwLen);
 		
-		// ½â³ıËø¶¨
+		// ????
 		::GlobalUnlock(hCopy);
 		::GlobalUnlock(h);
 	}
@@ -402,149 +402,161 @@ ANNRECOGNITION_API HGLOBAL  CopyHandle (HGLOBAL h)
 
 /*************************************************************************
  *
- * º¯ÊıÃû³Æ£º
+ * ????:
  *   SaveDIB()
  *
- * ²ÎÊı:
- *   HDIB hDib          - Òª±£´æµÄDIB
- *   CFile& file        - ±£´æÎÄ¼şCFile
+ * ??:
+ *   HDIB hDib          - ????DIB
+ *   CFile& file        - ????CFile
  *
- * ·µ»ØÖµ:
- *   BOOL               - ³É¹¦·µ»ØTRUE£¬·ñÔò·µ»ØFALSE»òÕßCFileException
+ * ???:
+ *   BOOL               - ????TRUE,????FALSE??CFileException
  *
- * ËµÃ÷:
- *   ¸Ãº¯Êı½«Ö¸¶¨µÄDIB¶ÔÏó±£´æµ½Ö¸¶¨µÄCFileÖĞ¡£¸ÃCFileÓÉµ÷ÓÃ³ÌĞò´ò¿ªºÍ¹Ø±Õ¡£
+ * ??:
+ *   ???????DIB????????CFile???CFile???????????
  *
  *************************************************************************/
 
 
 ANNRECOGNITION_API BOOL  SaveDIB(HDIB hDib, LPCSTR fileName)
 {
-	// BitmapÎÄ¼şÍ·
+	// Bitmap???
 	BITMAPFILEHEADER bmfHdr;
 	
-	// Ö¸ÏòBITMAPINFOHEADERµÄÖ¸Õë
+	// ??BITMAPINFOHEADER???
 	LPBITMAPINFOHEADER lpBI;
 	
-	// DIB´óĞ¡
+	// DIB??
 	DWORD dwDIBSize;
 
 	if (hDib == NULL)
 	{
-		// Èç¹ûDIBÎª¿Õ£¬·µ»ØFALSE
+		// ??DIB??,??FALSE
 		return FALSE;
 	}
 
-	// ¶ÁÈ¡BITMAPINFO½á¹¹£¬²¢Ëø¶¨
+	// ??BITMAPINFO??,???
 	lpBI = (LPBITMAPINFOHEADER) ::GlobalLock((HGLOBAL) hDib);
 	
 	if (lpBI == NULL)
 	{
-		// Îª¿Õ£¬·µ»ØFALSE
+		// ??,??FALSE
 		return FALSE;
 	}
 	
-	// ÅĞ¶ÏÊÇ·ñÊÇWIN3.0 DIB
+	// ?????WIN3.0 DIB
 	if (!IS_WIN30_DIB(lpBI))
 	{
-		// ²»Ö§³ÖÆäËüÀàĞÍµÄDIB±£´æ
+		// ????????DIB??
 		
-		// ½â³ıËø¶¨
+		// ????
 		::GlobalUnlock((HGLOBAL) hDib);
 		
-		// ·µ»ØFALSE
+		// ??FALSE
 		return FALSE;
 	}
 
-	// Ìî³äÎÄ¼şÍ·
+	// ?????
 
-	// ÎÄ¼şÀàĞÍ"BM"
+	// ????"BM"
 	bmfHdr.bfType = DIB_HEADER_MARKER;
 
-	// ¼ÆËãDIB´óĞ¡Ê±£¬×î¼òµ¥µÄ·½·¨ÊÇµ÷ÓÃGlobalSize()º¯Êı¡£µ«ÊÇÈ«¾ÖÄÚ´æ´óĞ¡²¢
-	// ²»ÊÇDIBÕæÕıµÄ´óĞ¡£¬Ëü×ÜÊÇ¶à¼¸¸ö×Ö½Ú¡£ÕâÑù¾ÍĞèÒª¼ÆËãÒ»ÏÂDIBµÄÕæÊµ´óĞ¡¡£
+	// ??DIB???,?????????GlobalSize()????????????
+	// ??DIB?????,??????????????????DIB??????
 	
-	// ÎÄ¼şÍ·´óĞ¡£«ÑÕÉ«±í´óĞ¡
-	// £¨BITMAPINFOHEADERºÍBITMAPCOREHEADER½á¹¹µÄµÚÒ»¸öDWORD¶¼ÊÇ¸Ã½á¹¹µÄ´óĞ¡£©
+	// ?????+?????
+	// (BITMAPINFOHEADER?BITMAPCOREHEADER??????DWORD????????)
 	dwDIBSize = *(LPDWORD)lpBI + ::PaletteSize((LPSTR)lpBI);
 	
-	// ¼ÆËãÍ¼Ïñ´óĞ¡
+	// ??????
 	if ((lpBI->biCompression == BI_RLE8) || (lpBI->biCompression == BI_RLE4))
 	{
-		// ¶ÔÓÚRLEÎ»Í¼£¬Ã»·¨¼ÆËã´óĞ¡£¬Ö»ÄÜĞÅÈÎbiSizeImageÄÚµÄÖµ
+		// ??RLE??,??????,????biSizeImage???
 		dwDIBSize += lpBI->biSizeImage;
 	}
 	else
 	{
-		// ÏóËØµÄ´óĞ¡
+		// ?????
 		DWORD dwBmBitsSize;
 
-		// ´óĞ¡ÎªWidth * Height
+		// ???Width * Height
 		dwBmBitsSize = WIDTHBYTES((lpBI->biWidth)*((DWORD)lpBI->biBitCount)) * lpBI->biHeight;
 		
-		// ¼ÆËã³öDIBÕæÕıµÄ´óĞ¡
+		// ???DIB?????
 		dwDIBSize += dwBmBitsSize;
 
-		// ¸üĞÂbiSizeImage£¨ºÜ¶àBMPÎÄ¼şÍ·ÖĞbiSizeImageµÄÖµÊÇ´íÎóµÄ£©
+		// ??biSizeImage(??BMP????biSizeImage??????)
 		lpBI->biSizeImage = dwBmBitsSize;
 	}
 
 
-	// ¼ÆËãÎÄ¼ş´óĞ¡£ºDIB´óĞ¡£«BITMAPFILEHEADER½á¹¹´óĞ¡
+	// ??????:DIB??+BITMAPFILEHEADER????
 	bmfHdr.bfSize = dwDIBSize + sizeof(BITMAPFILEHEADER);
 	
-	// Á½¸ö±£Áô×Ö
+	// ?????
 	bmfHdr.bfReserved1 = 0;
 	bmfHdr.bfReserved2 = 0;
 
-	// ¼ÆËãÆ«ÒÆÁ¿bfOffBits£¬ËüµÄ´óĞ¡ÎªBitmapÎÄ¼şÍ·´óĞ¡£«DIBÍ·´óĞ¡£«ÑÕÉ«±í´óĞ¡
+	// ?????bfOffBits,?????Bitmap?????+DIB???+?????
 	bmfHdr.bfOffBits = (DWORD)sizeof(BITMAPFILEHEADER) + lpBI->biSize
 											  + PaletteSize((LPSTR)lpBI);
 	
-	ofstream file(fileName,ios::out| ios::binary);
+	
+	SECURITY_ATTRIBUTES sa;
+	sa.nLength = sizeof(sa);
+	sa.lpSecurityDescriptor = NULL;
+	sa.bInheritHandle = 1;
 
-	// ³¢ÊÔĞ´ÎÄ¼ş
+	HANDLE hFile = ::CreateFile(fileName, GENERIC_READ|GENERIC_WRITE, 0, &sa,
+		CREATE_ALWAYS , FILE_ATTRIBUTE_NORMAL, NULL);
+	
+	if(hFile==INVALID_HANDLE_VALUE)
+		return FALSE;
+
+	BOOL bRet=FALSE;
+
+	// ?????
 	try
-	{
-		// Ğ´ÎÄ¼şÍ·
-		file.write((LPSTR)&bmfHdr, sizeof(BITMAPFILEHEADER));
+	{	
+		do
+		{
+			DWORD nWritten;
+			if (!::WriteFile((HANDLE)hFile, &bmfHdr, sizeof(BITMAPFILEHEADER), &nWritten, NULL))
+				break;
+			if (!::WriteFile((HANDLE)hFile, lpBI, dwDIBSize, &nWritten, NULL))
+				break;
+			
+			bRet=TRUE;
 		
-		// Ğ´DIBÍ·ºÍÏóËØ
-		file.write((LPSTR)&lpBI, dwDIBSize);
-		file.close();
+		} while(false);
 	}
 	catch (exception e)
 	{
-		// ½â³ıËø¶¨
-		::GlobalUnlock((HGLOBAL) hDib);
-		
-		file.close();
-		// Å×³öÒì³£
-		throw e;
 	}
-
-	// ½â³ıËø¶¨
+	// ????
 	::GlobalUnlock((HGLOBAL) hDib);
 	
-	// ·µ»ØTRUE
-	return TRUE;
+	CloseHandle(hFile);
+	// ????
+	
+	return bRet;
 }
 
 
 /*************************************************************************
  *
- * º¯ÊıÃû³Æ£º
+ * ????:
  *   ReadDIBFile()
  *
- * ²ÎÊı:
- *   CFile& file        - Òª¶ÁÈ¡µÃÎÄ¼şÎÄ¼şCFile
+ * ??:
+ *   CFile& file        - ????????CFile
  *
- * ·µ»ØÖµ:
- *   HDIB               - ³É¹¦·µ»ØDIBµÄ¾ä±ú£¬·ñÔò·µ»ØNULL¡£
+ * ???:
+ *   HDIB               - ????DIB???,????NULL?
  *
- * ËµÃ÷:
- *   ¸Ãº¯Êı½«Ö¸¶¨µÄÎÄ¼şÖĞµÄDIB¶ÔÏó¶Áµ½Ö¸¶¨µÄÄÚ´æÇøÓòÖĞ¡£³ıBITMAPFILEHEADER
- * ÍâµÄÄÚÈİ¶¼½«±»¶ÁÈëÄÚ´æ¡£
+ * ??:
+ *   ???????????DIB??????????????BITMAPFILEHEADER
+ * ????????????
  *
  *************************************************************************/
 
@@ -555,7 +567,7 @@ ANNRECOGNITION_API HDIB  ReadDIBFile(LPCSTR fileName)
 	HDIB hDIB;
 	LPSTR pDIB;
 
-	// »ñÈ¡DIB£¨ÎÄ¼ş£©³¤¶È£¨×Ö½Ú£©
+	// ??DIB(??)??(??)
 	std::ifstream file;
 	file.open(fileName,ios::in | ios::binary);
 	
@@ -563,34 +575,34 @@ ANNRECOGNITION_API HDIB  ReadDIBFile(LPCSTR fileName)
 	dwBitsSize = file.tellg();
 	file.seekg (0, ios::beg);
 
-	// ³¢ÊÔ¶ÁÈ¡DIBÎÄ¼şÍ·
+	// ????DIB???
 	file.read((LPSTR)&bmfHeader, sizeof(bmfHeader));
 	if (file.flags()==ios::eofbit || file.flags()==ios::badbit || file.flags()==ios::failbit)
 	{
-		// ´óĞ¡²»¶Ô£¬·µ»ØNULL¡£
+		// ????,??NULL?
 		file.close();
 		return NULL;
 	}
 	
-	// ÅĞ¶ÏÊÇ·ñÊÇDIB¶ÔÏó£¬¼ì²éÍ·Á½¸ö×Ö½ÚÊÇ·ñÊÇ"BM"
+	// ?????DIB??,??????????"BM"
 	if (bmfHeader.bfType != DIB_HEADER_MARKER)
 	{
-		// ·ÇDIB¶ÔÏó£¬·µ»ØNULL¡£
+		// ?DIB??,??NULL?
 		return NULL;
 	}
 
-	// ÎªDIB·ÖÅäÄÚ´æ
+	// ?DIB????
 	hDIB = (HDIB) ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, dwBitsSize);
 	if (hDIB == 0)
 	{
-		// ÄÚ´æ·ÖÅäÊ§°Ü£¬·µ»ØNULL¡£
+		// ??????,??NULL?
 		return NULL;
 	}
 	
-	// Ëø¶¨
+	// ??
 	pDIB = (LPSTR) ::GlobalLock((HGLOBAL) hDIB);
 
-	// ¶ÁÏóËØ
+	// ???
 	DWORD dwBitsBegin = file.tellg();
 
 	file.read(pDIB, dwBitsSize - sizeof(BITMAPFILEHEADER));
@@ -599,138 +611,138 @@ ANNRECOGNITION_API HDIB  ReadDIBFile(LPCSTR fileName)
 
 	if ((dwBitsEnd-dwBitsBegin)!=(dwBitsSize - sizeof(BITMAPFILEHEADER)))
 	{
-		// ´óĞ¡²»¶Ô¡£
+		// ?????
 		
-		// ½â³ıËø¶¨
+		// ????
 		::GlobalUnlock((HGLOBAL) hDIB);
 		
-		// ÊÍ·ÅÄÚ´æ
+		// ????
 		::GlobalFree((HGLOBAL) hDIB);
 		
 		file.close();
-		// ·µ»ØNULL¡£
+		// ??NULL?
 		return NULL;
 	}
 	
 	file.close();
 
-	// ½â³ıËø¶¨
+	// ????
 	::GlobalUnlock((HGLOBAL) hDIB);
 	
-	// ·µ»ØDIB¾ä±ú
+	// ??DIB??
 	return hDIB;
 }
 /*******************************************************************
-*º¯ÊıÃû³Æ£º
+*????:
 * NewDIB()
 *
-* ²ÎÊı:
-* width			- ½«Òª´´½¨DIBµÄ¿í
-* height			- ½«Òª´´½¨DIBµÄ¸ß
-* biBitCount		- ½«Òª´´½¨DIBµÄÎ»Êı¡£±ÈÈç£¬Èç¹ûÒª´´½¨256É«DIB£¬Ôò´ËÖµÎª8
+* ??:
+* width			- ????DIB??
+* height			- ????DIB??
+* biBitCount		- ????DIB??????,?????256?DIB,????8
 *
-*·µ»ØÖµ:
-*  HDIB           - ³É¹¦·µ»ØDIBµÄ¾ä±ú£¬·ñÔò·µ»ØNULL¡£
+*???:
+*  HDIB           - ????DIB???,????NULL?
 *
-*ËµÃ÷:
-*  ¸Ãº¯ÊıÖ¸¶¨¿í¡¢¸ß¡¢ÑÕÉ«Î»ÊıÀ´´´½¨Ò»¸öĞÂµÄDIB£¬²¢·µ»ØÆä¾ä±ú
+*??:
+*  ????????????????????DIB,??????
 *
 ***************************************************************/
 ANNRECOGNITION_API HDIB  NewDIB(long width, long height,unsigned short biBitCount) 
 {
 	
-	//¼ÆËãĞÂ½¨µÄDIBÃ¿ĞĞËùÕ¼µÄ×Ö½ÚÊı
+	//?????DIB????????
 	long dwindth = (width*biBitCount/8+3)/4*4;
 
-	//ĞÂ½¨µÄDIBµ÷É«°åÖĞ±íÏîµÄÊıÄ¿ 
+	//???DIB????????? 
 	 WORD color_num;
    
-     //Í¨¹ıÊäÈëµÄbiBitCountÖµÀ´È·¶¨µ÷É«°åµÄ±íÏîÊıÄ¿ 
+     //?????biBitCount???????????? 
 	switch(biBitCount)
 	{   
 
-       //Èç¹ûÓÃ1 bitÀ´±íÊ¾Ò»¸öÏóËØÄÇÃ´µ÷É«°åÖĞÓĞÁ½¸ö±íÏî 
+       //???1 bit?????????????????? 
 		case 1:
          color_num=2;
 		break;
 
-       //Èç¹ûÓÃ4 bitÀ´±íÊ¾Ò»¸öÏóËØÄÇÃ´µ÷É«°åÖĞÓĞ16¸ö±íÏî
+       //???4 bit??????????????16???
 		case 4:
 		color_num=16;
 		break;
 
-       //Èç¹ûÓÃ8bitÀ´±íÊ¾Ò»¸öÏóËØ£¬ÄÇÃ´µ÷É«°åÖĞµÃ±íÏîÓĞ256ÖĞ£¨±¾³ÌĞò´ó¶à²ÉÓÃÕâÖÖĞÎÊ½£©
+       //???8bit???????,??????????256?(???????????)
 		case 8:
 		color_num=256;
 		break;
 
-       //ÆäËûµÄÇé¿öµ÷É«°âÖĞÃ»ÓĞ±íÏî£¬¼´Õæ²ÊÎ»Í¼
+       //?????????????,?????
 		default:
 		color_num=0;
 		break;
 	}
 
-	//¼ÆËãÎ»Í¼Êı¾İËùÕ¼µÄ¿Õ¼ä
-	//dwindth *heightÎªÏóËØÊı¾İËùÕ¼µÄ¿Õ¼ä
-	//40ÎªÎ»Í¼ĞÅÏ¢Í·Õ¼µÄ¿Õ¼ä
-	//color_num*4Îªµ÷É«°åµÄ±íÏîËùÕ¼µÄ¿Õ¼ä£¨µ÷É«°åÃ¿¸ö±íÏîÕ¼4¸÷¸ö×Ö½Ú£©
+	//???????????
+	//dwindth *height??????????
+	//40??????????
+	//color_num*4????????????(????????4????)
 
 	 long   dwBitsSize = dwindth *height + 40 + color_num*4;
 
-	//½¨Á¢Ö¸ÏòÎ»Í¼ÎÄ¼şµÄÖ¸Õë 
+	//??????????? 
 	LPSTR pDIB;
 
-	//ÉêÇë´æ´¢¿Õ¼ä£¬²¢½¨Á¢Ö¸ÏòÎ»Í¼µÄ¾ä±ú
+	//??????,??????????
 	HDIB hDIB=(HDIB) ::GlobalAlloc(GMEM_MOVEABLE|GMEM_ZEROINIT, dwBitsSize);
 
-	//Èç¹ûÉêÇë¿Õ¼ä²»³É¹¦·µ»Ø´íÎóĞÅÏ¢
+	//???????????????
 	if (hDIB == 0)
 	{
 		return NULL;
 	}
 
-   //Èç¹ûÉêÇë¿Õ¼ä³É¹¦Ëø¶¨ÄÚ´æ£¬²¢½«ÄÚ´æµÄÖ¸Õë´«¸øpDIB
+   //????????????,?????????pDIB
 	pDIB = (LPSTR) ::GlobalLock((HGLOBAL) hDIB);
 	
-   //½¨Á¢Ö¸ÏòÎ»Í¼ĞÅÏ¢Í·½á¹¹µÄÖ¸Õë
+   //??????????????
 	LPBITMAPINFO lpmf = (LPBITMAPINFO)pDIB;
 
-   //¸øÎ»Í¼ĞÅÏ¢Í·ÄÚµÄ¸÷¸ö²ÎÁ¿¸³Öµ
+   //??????????????
 
-   //Ö¸¶¨Î»Í¼ĞÅÏ¢Í·½á¹¹µÄ´óĞ¡Îª40×Ö½Ú
+   //?????????????40??
 	lpmf->bmiHeader.biSize = 40;
 
-   //Ö¸¶¨ĞÂ½¨Î»Í¼µÄ¿í¶È
+   //?????????
 	lpmf->bmiHeader.biWidth = width;
 
-   //Ö¸¶¨ĞÂ½¨Î»Í¼µÄ¸ß¶È
+   //?????????
 	lpmf->bmiHeader.biHeight = height;
 
-   //Î»Æ½ÃæÊı±ØĞëÎª1
+   //???????1
 	lpmf->bmiHeader.biPlanes = 1;
 
-	//È·¶¨ĞÂ½¨Î»Í¼±íÊ¾ÑÕÉ«ÊÇÒªÓÃµ½µÄbitÊı
+	//???????????????bit?
 	lpmf->bmiHeader.biBitCount = biBitCount;
 
-    //ÊÇ·ñ½øĞĞÑ¹Ëõ
+    //??????
 	lpmf->bmiHeader.biCompression = 0;
 
-    //ĞÂ½¨µÄÎ»Í¼ÖĞÊµ¼ÊµÄÎ»Í¼Êı¾İËùÕ¼µÄ×Ö½ÚÊı
+    //???????????????????
 	lpmf->bmiHeader.biSizeImage = dwindth *height;
 
-	//Ö¸¶¨Ä¿±êÉè±¸µÄË®Æ½·Ö±æÂÊ
+	//????????????
 	lpmf->bmiHeader.biXPelsPerMeter = 2925;
 
-    //Ö¸¶¨Ä¿±êÉè±¸µÄ´¹Ö±·Ö±æÂÊ
+    //????????????
 	lpmf->bmiHeader.biYPelsPerMeter = 2925;
 
-	//ĞÂ½¨Í¼ÏñÊµ¼ÊÓÃµ½µÄÑÕÉ«Êı Èç¹ûÎª0ÔòÓÃµ½µÄÑÕÉ«ÊıÎª2µÄbiBitCount´Î
+	//???????????? ???0????????2?biBitCount?
 	lpmf->bmiHeader.biClrUsed = 0;
  
-	//Ö¸¶¨ĞÂ½¨Í¼ÏñÖĞÖØÒªµÄÑÕÉ«Êı£¬Èç¹ûÎª0ÔòËùÓĞµÄÑÕÉ«¶¼ÖØÒª
+	//?????????????,???0?????????
 	lpmf->bmiHeader.biClrImportant= 0; 	
     
-    //Èç¹ûĞÂ½¨µÄÍ¼ÏñÖĞº¬ÓĞµ÷É«°å£¬Ôò½ÓÏÂÀ´¶Ôµ÷É«°åµÄ¸÷ÖÖÑÕÉ«·ÖÁ¿¸³³õÊ¼Öµ
+    //?????????????,???????????????????
 	if(color_num!=0)
 	{
 		for(int i=0;i<color_num;i++)
@@ -741,10 +753,10 @@ ANNRECOGNITION_API HDIB  NewDIB(long width, long height,unsigned short biBitCoun
 		}
 	}
 
-	//½â³ıËø¶¨
+	//????
 	::GlobalUnlock((HGLOBAL) hDIB);
 
-	//·µ»ØĞÂ½¨Î»Í¼µÄ¾ä±ú
+	//?????????
 	 return hDIB;
 
 }
@@ -752,31 +764,31 @@ ANNRECOGNITION_API HDIB  NewDIB(long width, long height,unsigned short biBitCoun
 
 /*************************************************************************
  *
- * º¯ÊıÃû³Æ£º
+ * ????:
  *   PaletteSize()
  *
- * ²ÎÊı:
- *   LPSTR lpbi         - Ö¸ÏòDIB¶ÔÏóµÄÖ¸Õë
+ * ??:
+ *   LPSTR lpbi         - ??DIB?????
  *
- * ·µ»ØÖµ:
- *   WORD               - DIBÖĞµ÷É«°åµÄ´óĞ¡
+ * ???:
+ *   WORD               - DIB???????
  *
- * ËµÃ÷:
- *   ¸Ãº¯Êı·µ»ØDIBÖĞµ÷É«°åµÄ´óĞ¡¡£¶ÔÓÚWindows 3.0 DIB£¬·µ»ØÑÕÉ«ÊıÄ¿¡Á
- * RGBQUADµÄ´óĞ¡£»¶ÔÓÚÆäËü·µ»ØÑÕÉ«ÊıÄ¿¡ÁRGBTRIPLEµÄ´óĞ¡¡£
+ * ??:
+ *   ?????DIB??????????Windows 3.0 DIB,??????×
+ * RGBQUAD???;??????????×RGBTRIPLE????
  *
  ************************************************************************/
 ANNRECOGNITION_API WORD  PaletteSize(LPSTR lpbi)
 {
-	// ¼ÆËãDIBÖĞµ÷É«°åµÄ´óĞ¡
+	// ??DIB???????
 	if (IS_WIN30_DIB (lpbi))
 	{
-		//·µ»ØÑÕÉ«ÊıÄ¿¡ÁRGBQUADµÄ´óĞ¡
+		//??????×RGBQUAD???
 		return (WORD)(::DIBNumColors(lpbi) * sizeof(RGBQUAD));
 	}
 	else
 	{
-		//·µ»ØÑÕÉ«ÊıÄ¿¡ÁRGBTRIPLEµÄ´óĞ¡
+		//??????×RGBTRIPLE???
 		return (WORD)(::DIBNumColors(lpbi) * sizeof(RGBTRIPLE));
 	}
 }
