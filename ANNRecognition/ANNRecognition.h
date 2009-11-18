@@ -114,6 +114,8 @@ ANNRECOGNITION_API void		 ClearAll(HDC pDC);
 ANNRECOGNITION_API void		 DisplayDIB(HDC pDC,HDIB hDIB);
 //对分割后的位图进行尺寸标准归一化
 ANNRECOGNITION_API void		 StdDIBbyRect(HDIB hDIB, LONG charRectID,int tarWidth, int tarHeight);
+//对整个图像进行归一化
+ANNRECOGNITION_API void		 StdDIB(HDIB hDIB,int tarWidth, int tarHeight);
 //整体斜率调整
 ANNRECOGNITION_API void		 SlopeAdjust(HDIB hDIB);
 //去除离散噪声点
@@ -208,13 +210,15 @@ ANNRECOGNITION_API BOOL		 LoadBPParameters(LPSTR settingFile);
 ANNRECOGNITION_API BOOL		 SaveBPParameters(LPSTR settingFile);
 ANNRECOGNITION_API BOOL		 PrintBPParameters(LPSTR textFile);
 
-ANNRECOGNITION_API BOOL      InitTrainBPLearnSpeed(double dblSpeed);
-ANNRECOGNITION_API BOOL      InitTrainBPRandSeed(double seed);
+ANNRECOGNITION_API BOOL      InitTrainBPRandSeed(long seed=-1);
+ANNRECOGNITION_API BOOL      InitTrainBPLearnSpeed(double dblSpeed=0.05);
+ANNRECOGNITION_API BOOL      InitTrainBPWeights(double* difWeights=0);
+
 ANNRECOGNITION_API BOOL		 InitBPParameters(int input,int implicit,int output,double ** w1=0,double *b1=0,double **w2=0,double *b2=0);
-ANNRECOGNITION_API BOOL      InitTrainBPAcceptMark(long lngRating ,double dblDiff,double* difWeights=0);
+
 
 ANNRECOGNITION_API double    GetLearningSpeed();
-ANNRECOGNITION_API BOOL      Training(double *input,double * dest);
-ANNRECOGNITION_API BOOL		 CheakDiffs(double *output,double * dest);
+ANNRECOGNITION_API double    Training(double *input,double * dest);
+ANNRECOGNITION_API double	 CheakDiffs(double *output,double * dest);
 ANNRECOGNITION_API BOOL		 Recognition(double *intput,double * result);
 ANNRECOGNITION_API BOOL	     BPEncode(HDIB hInputDIB,double * outCode,LONG top=0, LONG left=0,LONG right=0, LONG bottom=0);

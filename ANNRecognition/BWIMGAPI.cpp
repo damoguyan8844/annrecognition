@@ -1891,6 +1891,110 @@ ANNRECOGNITION_API void StdDIBbyRect(HDIB hDIB,LONG charRectID,int tarWidth, int
 	::GlobalUnlock ((HGLOBAL)hDIB);
 }
 
+ANNRECOGNITION_API void StdDIB(HDIB hDIB,int tarWidth, int tarHeight)
+{	
+
+	//指向图像的指针
+	BYTE* lpDIB=(BYTE*)::GlobalLock ((HGLOBAL)hDIB);
+
+	//指向象素起始位置的指针
+	BYTE* lpDIBBits=(BYTE*)::FindDIBBits ((char*)lpDIB);
+	
+	//指向象素的指针
+	BYTE* lpSrc;
+
+	//获取图像的的宽度
+	LONG lWidth=::DIBWidth ((char*)lpDIB);
+
+	//获取图像的高度
+	LONG lHeight=::DIBHeight ((char*)lpDIB);
+
+	// 循环变量
+	int	i;
+	int	j;
+	
+	// 图像每行的字节数
+	LONG	lLineBytes = WIDTHBYTES(lWidth * 8);
+
+	//宽度、高度方向上的缩放因子
+	double wscale,hscale;
+
+	//开辟一块临时缓存区,来存放变化后的图像信息
+	LPSTR lpNewDIBBits;
+	LPSTR lpDst;
+ 
+    //缓存区的大小和原图像的数据区大小一样
+	HLOCAL nNewDIBBits=LocalAlloc(LHND,lLineBytes*lHeight);
+
+	//指向缓存区开始位置的指针
+	lpNewDIBBits=(char*)LocalLock(nNewDIBBits);
+
+	//指向缓存内信息的指针
+	lpDst=(char*)lpNewDIBBits;
+
+	//将缓存区的内容赋初始值
+	memset(lpDst,(BYTE)255,lLineBytes*lHeight);
+
+	//进行映射操作的坐标变量
+	int i_src,j_src;
+
+	//存放字符位置信息的结构体
+	RECT rect;
+	RECT rectnew;
+
+	//从表头上得到一个矩形
+	rect.top=0;
+	rect.left=0;
+	rect.right=lWidth;
+	rect.bottom=lHeight;
+
+		
+	//计算缩放因子
+
+	//横坐标方向的缩放因子
+	wscale=(double)tarWidth/RECTWIDTH(&rect);
+
+	//纵坐标方向的缩放因子
+	hscale=(double)tarHeight/RECTHEIGHT(&rect);
+
+	//计算标准化矩形
+
+	//上边界
+	rectnew.top =rect.top ;
+
+	//下边界
+	rectnew.bottom =rect.top +tarHeight;
+
+	//左边界
+	rectnew.left =rect.left ;
+
+	//右边界
+	rectnew.right =rectnew.left +tarWidth;
+
+	//将原矩形框内的象素映射到新的矩形框内
+	for(i=rectnew.top ;i<rectnew.bottom ;i++)
+	{
+		for(j=rectnew.left ;j<rectnew.right ;j++)
+		{   
+
+			//计算映射坐标
+			i_src=rectnew.top +int((i-rectnew.top )/hscale);
+			j_src=rectnew.left +int((j-rectnew.left )/wscale);
+
+			//将相对应的象素点进行映射操作
+			lpSrc=(unsigned char *)lpDIBBits + lLineBytes *  i_src + j_src;
+			lpDst = (char *)lpNewDIBBits + lLineBytes * i + j;
+			*lpDst=*lpSrc;
+		}
+	}
+
+	//将缓存区的内容拷贝到图像的数据区内
+	memcpy(lpDIBBits,lpNewDIBBits,lLineBytes*lHeight);
+
+	//解除锁定
+	::GlobalUnlock ((HGLOBAL)hDIB);
+}
+
 
 ANNRECOGNITION_API  void Thinning(HDIB hDIB)
 {
