@@ -151,7 +151,7 @@ ANNRECOGNITION_API BOOL	PrintBPParameters(LPSTR textFile)
 	{
 		fprintf(fp,"{");
 		for(int i=0;i<G_INPUTDEM;i++)
-			fprintf(fp,"%f,",W_IMPLICITDEM_INPUTDEM[k][i]);
+			fprintf(fp,"%5.10f,",W_IMPLICITDEM_INPUTDEM[k][i]);
 		fprintf(fp,"}\n");
 	}
 	fprintf(fp,"\n}\n");
@@ -159,7 +159,7 @@ ANNRECOGNITION_API BOOL	PrintBPParameters(LPSTR textFile)
 	fprintf(fp,"\nB_IMPLICITDEM:\n{\n");
 	for(k=0;k<G_IMPLICITDEM;k++)
 	{
-		fprintf(fp,"%f,",B_IMPLICITDEM[k]);
+		fprintf(fp,"%5.10f,",B_IMPLICITDEM[k]);
 	}
 	fprintf(fp,"\n}\n");
 	
@@ -168,7 +168,7 @@ ANNRECOGNITION_API BOOL	PrintBPParameters(LPSTR textFile)
 	{
 		fprintf(fp,"{");
 		for(int i=0;i<G_IMPLICITDEM;i++)
-			fprintf(fp,"%f,",W_OUTPUTDEM_IMPLICITDEM[k][i]);
+			fprintf(fp,"%5.10f,",W_OUTPUTDEM_IMPLICITDEM[k][i]);
 		fprintf(fp,"}\n");
 	}
 	fprintf(fp,"\n}\n");
@@ -176,7 +176,7 @@ ANNRECOGNITION_API BOOL	PrintBPParameters(LPSTR textFile)
 	fprintf(fp,"\nB_OUTPUTDEM:\n{\n");
 	for(k=0;k<G_OUTPUTDEM;k++)
 	{
-		fprintf(fp,"%f,",B_OUTPUTDEM[k]);
+		fprintf(fp,"%5.10f,",B_OUTPUTDEM[k]);
 	}
 	fprintf(fp,"\n}\n");
 	
@@ -480,6 +480,8 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 	
 	BOOL bRet=FALSE;
 
+	ofstream fout("C:\\Range.txt",ios::app);
+
 	if(G_INPUTDEM==64)
 	{
 		//八行八列取值，截图范围整数倍化，按边缘补齐，行优先
@@ -490,12 +492,18 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 		enlargedRange.left=range.left-widthBlank/2;
 		if(enlargedRange.left<0)
 			enlargedRange.left=0;
+		if(widthBlank<=0)
+			widthBlank=8;
+
 		enlargedRange.right=enlargedRange.left + RECTWIDTH(&range)-widthBlank+8;
 
 		int heightBlank=RECTHEIGHT(&range)%8;
 		enlargedRange.top=range.top-heightBlank/2;
 		if(enlargedRange.top<0)
 			enlargedRange.top=0;
+		if(heightBlank<=0)
+			heightBlank=8;
+
 		enlargedRange.bottom=enlargedRange.top+RECTHEIGHT(&range)-heightBlank+8;
 
 		int gridWidth=RECTWIDTH(&enlargedRange)/8;
@@ -524,16 +532,25 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 				// 指向DIB第i行，第j个象素的指针
 				lpSrc = (unsigned char*)lpDIBBits + lLineBytes * line + col;
 
-				//大于150，作为有效点
-				if(*lpSrc>150)
+			
+				//小于150，作为有效点
+				if(*lpSrc<150)
 				{
+					fout<<1<<",";
 					*(outCode+(i/gridWidth)*8+j/gridHeight)+=factor;
 				}
+				else
+				{
+					fout<<0<<",";
+				}
 			}
+			fout<<endl;
 		}
 		
 		bRet = TRUE;
 	}
+	fout.close();
+
 	//解除锁定
 	::GlobalUnlock((HGLOBAL)hInputDIB);
 
