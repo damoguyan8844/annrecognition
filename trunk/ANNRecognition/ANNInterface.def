@@ -41,3 +41,5 @@ EXPORTS
 		SaveBPParameters
 		PrintBPParameters
 		BPEncode
+		StdDIB
+		CheakDiffs
