@@ -40,3 +40,4 @@ EXPORTS
 		InitBPParameters
 		SaveBPParameters
 		PrintBPParameters
+		BPEncode
