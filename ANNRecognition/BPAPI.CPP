@@ -414,7 +414,128 @@ ANNRECOGNITION_API BOOL	Recognition(double *input,double * result)
 	}
 	catch(...)
 	{
-		ANNRecognitionLog("",LOG_ERROR);
+		ANNRecognitionLog("Recognition Error",LOG_ERROR);
 	}
 	return FALSE;
+}
+
+
+ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG left,LONG right, LONG bottom)
+{
+	if(hInputDIB==0 || outCode==0) return FALSE;
+	
+	try
+	{
+		for(int i=0; i<G_INPUTDEM ; i++)
+			outCode[i]=0.0;
+	}
+	catch(...)
+	{
+		return FALSE;
+	}
+
+	// 指向DIB的指针
+	LPSTR	lpDIB;
+	
+	// 由DIB句柄得到DIB指针并锁定DIB
+	lpDIB = (LPSTR) ::GlobalLock((HGLOBAL)hInputDIB);
+	
+	// 指向DIB象素数据区的指针
+	LPSTR   lpDIBBits;
+	
+	// 指向DIB象素的指针
+	BYTE *	lpSrc;	
+	
+	// 图像宽度
+	LONG	lWidth;	
+	
+	// 图像高度
+	LONG	lHeight;	
+	// 图像每行的字节数
+	LONG	lLineBytes;	
+	
+	// 找到DIB图像象素起始位置
+	lpDIBBits = ::FindDIBBits(lpDIB);	
+	
+	// 获取图像宽度
+	lWidth = ::DIBWidth(lpDIB);	
+	
+	// 获取图像高度
+	lHeight = ::DIBHeight(lpDIB);	
+	
+	// 计算图像每行的字节数
+	lLineBytes = WIDTHBYTES(lWidth * 8);	
+	
+	RECT range;
+	range.left=left;
+	range.top=top;	
+	range.right=right;
+	range.bottom=bottom;
+
+	if(range.right<=0 || range.right>=lWidth)
+		range.right=lWidth;
+
+	if(range.bottom<=0 || range.bottom>=lHeight)
+		range.bottom=lHeight;
+	
+	BOOL bRet=FALSE;
+
+	if(G_INPUTDEM==64)
+	{
+		//八行八列取值，截图范围整数倍化，按边缘补齐，行优先
+
+		RECT enlargedRange=range;
+		
+		int widthBlank=RECTWIDTH(&range)%8;
+		enlargedRange.left=range.left-widthBlank/2;
+		if(enlargedRange.left<0)
+			enlargedRange.left=0;
+		enlargedRange.right=enlargedRange.left + RECTWIDTH(&range)-widthBlank+8;
+
+		int heightBlank=RECTHEIGHT(&range)%8;
+		enlargedRange.top=range.top-heightBlank/2;
+		if(enlargedRange.top<0)
+			enlargedRange.top=0;
+		enlargedRange.bottom=enlargedRange.top+RECTHEIGHT(&range)-heightBlank+8;
+
+		int gridWidth=RECTWIDTH(&enlargedRange)/8;
+		int gridHeight=RECTHEIGHT(&enlargedRange)/8;
+		
+		double factor=1.0/(gridWidth*gridHeight);
+		//逐行扫描
+		for(int i = enlargedRange.left; i < enlargedRange.right; i++)
+		{		
+			int line=i;
+			if(line<range.left)
+				line=range.left;
+			else if (line>range.right)
+				line=range.right;
+
+			//逐列扫描
+			for(int j = enlargedRange.top; j < enlargedRange.bottom; j++)
+			{	
+				int col=j;
+				
+				if(col<range.top)
+					col=range.top;
+				else if (line>range.bottom)
+					col=range.bottom;
+
+				// 指向DIB第i行，第j个象素的指针
+				lpSrc = (unsigned char*)lpDIBBits + lLineBytes * line + col;
+
+				//大于150，作为有效点
+				if(*lpSrc>150)
+				{
+					*(outCode+(i/gridWidth)*8+j/gridHeight)+=factor;
+				}
+			}
+		}
+		
+		bRet = TRUE;
+	}
+	//解除锁定
+	::GlobalUnlock((HGLOBAL)hInputDIB);
+
+	return bRet;
 }
