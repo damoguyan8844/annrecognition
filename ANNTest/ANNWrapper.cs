@@ -34,7 +34,9 @@ namespace ANNTest
         [DllImport("ANNRecognition.dll", EntryPoint = "ReadDIBFile")]
         public static extern IntPtr ReadDIBFile( string fileName);
 
-        //
+        [DllImport("ANNRecognition.dll", EntryPoint = "SaveDIB")]
+        public static extern bool SaveDIB(IntPtr hdibHandle,string fileName);
+
         [DllImport("ANNRecognition.dll", EntryPoint = "BPEncode")]
         public static extern bool BPEncode(IntPtr hInputDIB, double[] outCode, long top, long left, long right, long bottom);
 
@@ -58,5 +60,36 @@ namespace ANNTest
 
         [DllImport("ANNRecognition.dll", EntryPoint = "ReleaseDIBFile")]
         public static extern bool ReleaseDIBFile(IntPtr hInputDIB);
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "Convert256toGray")]
+        public static extern void Convert256toGray(IntPtr hInputDIB);
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "ConvertGrayToWhiteBlack")]
+        public static extern void ConvertGrayToWhiteBlack(IntPtr hInputDIB);
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "GradientSharp")]
+        public static extern void GradientSharp(IntPtr hInputDIB);
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "RemoveScatterNoise")]
+        public static extern void RemoveScatterNoise(IntPtr hInputDIB);
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "SlopeAdjust")]
+        public static extern void SlopeAdjust(IntPtr hInputDIB);
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "CharSegment")]
+        public static extern Int32 CharSegment(IntPtr hInputDIB);
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "StdDIBbyRect")]
+        public static extern void StdDIBbyRect(IntPtr hInputDIB, Int32 charRectID, int tarWidth, int tarHeight);
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "StdDIB")]
+        public static extern void StdDIB(IntPtr hInputDIB, int tarWidth, int tarHeight);
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "AutoAlign")]
+        public static extern IntPtr AutoAlign(IntPtr hInputDIB, Int32 charRectID);
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "SaveSegment")]
+        public static extern void SaveSegment(IntPtr hInputDIB, Int32 charRectID, string toFolder);
+                
     }
 }

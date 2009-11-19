@@ -66,6 +66,7 @@ namespace ANNTest
             this.btnStop = new System.Windows.Forms.Button();
             this.textParaFactor = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.button9 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -150,7 +151,7 @@ namespace ANNTest
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(716, 113);
+            this.button5.Location = new System.Drawing.Point(715, 106);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(134, 21);
             this.button5.TabIndex = 9;
@@ -270,7 +271,7 @@ namespace ANNTest
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(716, 140);
+            this.button8.Location = new System.Drawing.Point(715, 126);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(134, 22);
             this.button8.TabIndex = 23;
@@ -302,7 +303,7 @@ namespace ANNTest
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(47, 12);
             this.label3.TabIndex = 26;
-            this.label3.Text = "To Path";
+            this.label3.Text = "To File";
             // 
             // label4
             // 
@@ -403,11 +404,22 @@ namespace ANNTest
             this.label8.TabIndex = 37;
             this.label8.Text = "Divide Factor";
             // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(715, 151);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(134, 22);
+            this.button9.TabIndex = 38;
+            this.button9.Text = "SplitToFiles";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(862, 580);
+            this.Controls.Add(this.button9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.textParaFactor);
             this.Controls.Add(this.btnStop);
@@ -493,6 +505,7 @@ namespace ANNTest
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.TextBox textParaFactor;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button button9;
     }
 }
 

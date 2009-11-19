@@ -39,12 +39,12 @@ namespace ANNTest
 
         private void button5_Click(object sender, EventArgs e)
         {
-            ANNWrapper.SaveBlockToBMP(textSubsystemBMP.Text,
+            ANNWrapper.SaveBlockToBMP(Application.StartupPath + "\\"+textSubsystemBMP.Text,
                 Double.Parse(textLeft.Text),
                 Double.Parse(textTop.Text),
                 Double.Parse(textRight.Text),
                 Double.Parse(textBottom.Text), 
-                textOutPutBMP.Text);
+                Application.StartupPath + "\\"+textToPath.Text);
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -131,12 +131,12 @@ namespace ANNTest
 
         private void button8_Click(object sender, EventArgs e)
         {
-            ANNWrapper.SaveBlockToBMP2(textSubsystemBMP.Text,
+            ANNWrapper.SaveBlockToBMP2(Application.StartupPath + "\\"+textSubsystemBMP.Text,
              Int32.Parse(textLeft.Text),
              Int32.Parse(textTop.Text),
              Int32.Parse(textRight.Text),
              Int32.Parse(textBottom.Text),
-             textOutPutBMP.Text);
+             Application.StartupPath + "\\"+textToPath.Text);
         }
 
         private bool m_stop = false;
@@ -217,6 +217,45 @@ namespace ANNTest
         private void btnStop_Click(object sender, EventArgs e)
         {
             m_stop = true;
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                IntPtr hdibHandle = ANNWrapper.ReadDIBFile(Application.StartupPath + "\\" + textToPath.Text);
+
+                ANNWrapper.Convert256toGray(hdibHandle);
+
+                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Temp.bmp");
+
+                ANNWrapper.ConvertGrayToWhiteBlack(hdibHandle);
+
+                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Temp.bmp");
+
+                //ANNWrapper.GradientSharp(hdibHandle);
+                ANNWrapper.RemoveScatterNoise(hdibHandle);
+
+                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Temp.bmp");
+
+                //ANNWrapper.SlopeAdjust(hdibHandle);
+
+                Int32 charRectID = ANNWrapper.CharSegment(hdibHandle);
+
+                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Temp.bmp");
+
+                //ANNWrapper.StdDIBbyRect(hdibHandle, charRectID, 16, 16);
+                IntPtr newHdibHandle=ANNWrapper.AutoAlign(hdibHandle,charRectID);
+
+                ANNWrapper.SaveDIB(newHdibHandle, Application.StartupPath + "\\Temp.bmp");
+
+
+                ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
+            }
+            catch(Exception exp)
+            {
+                MessageBox.Show(exp.Message);
+            }
         }
     }
 }
