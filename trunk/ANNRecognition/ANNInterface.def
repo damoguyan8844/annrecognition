@@ -48,3 +48,4 @@ EXPORTS
 		CheakDiffs
 		SaveBlockToBMP2
 		Training
+		SaveSegment

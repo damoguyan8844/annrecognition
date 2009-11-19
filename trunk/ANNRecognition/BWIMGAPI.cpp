@@ -591,7 +591,7 @@ ANNRECOGNITION_API void ThinnerRosenfeld(void *image, unsigned long lx, unsigned
 *********************************************************/
 
 
-ANNRECOGNITION_API LONG CharSegment(HANDLE hDIB)
+ANNRECOGNITION_API LONG CharSegment(HDIB hDIB)
 {
 	
 	//清空用来保存每个字符区域的链表
@@ -882,7 +882,8 @@ ANNRECOGNITION_API LONG CharSegment(HANDLE hDIB)
 	
 	g_CharSegmentRet.push_back(charRect1);
 	//将链表1返回
-	return g_CharSegmentRet.size()-1;
+	LONG lngRet=g_CharSegmentRet.size()-1;
+	return lngRet;
 }
 
 /****************************************************************
