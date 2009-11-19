@@ -6,9 +6,9 @@
 // ANNRECOGNITION_API functions as being imported from a DLL, wheras this DLL sees symbols
 // defined with this macro as being exported.
 #ifdef ANNRECOGNITION_EXPORTS
-#define ANNRECOGNITION_API __declspec(dllexport)
+#define ANNRECOGNITION_API extern "C" __declspec(dllexport)
 #else
-#define ANNRECOGNITION_API __declspec(dllimport)
+#define ANNRECOGNITION_API extern "C" __declspec(dllimport)
 #endif
 
 #include <iostream>
@@ -98,11 +98,13 @@ ANNRECOGNITION_API HGLOBAL   CopyHandle (HGLOBAL h);
 //  NewDIB()            - 根据提供的宽、高、颜色位数来创建一个新的DIB
 ANNRECOGNITION_API HDIB	     NewDIB(long width, long height,unsigned short biBitCount);
 //  SaveDIB()           - 将DIB保存到指定文件中
-ANNRECOGNITION_API BOOL      SaveDIB (HDIB hDib, LPCSTR file);
+ANNRECOGNITION_API BOOL      SaveDIB (HDIB hDib, LPSTR file);
 //  ReadDIBFile()       - 重指定文件中读取DIB对象
 ANNRECOGNITION_API HDIB      ReadDIBFile(LPCSTR file);
 //  PaletteSize()       - 返回DIB调色板大小
 ANNRECOGNITION_API WORD		 PaletteSize(LPSTR lpbi);
+//  Release DIB File	- 释放DIB空间
+ANNRECOGNITION_API BOOL		 ReleaseDIBFile(HDIB hDib);
 
 /************************************************************************/
 /*图像处理                                                              */
@@ -114,6 +116,8 @@ ANNRECOGNITION_API void		 ClearAll(HDC pDC);
 ANNRECOGNITION_API void		 DisplayDIB(HDC pDC,HDIB hDIB);
 //对分割后的位图进行尺寸标准归一化
 ANNRECOGNITION_API void		 StdDIBbyRect(HDIB hDIB, LONG charRectID,int tarWidth, int tarHeight);
+//对整个图像进行归一化
+ANNRECOGNITION_API void		 StdDIB(HDIB hDIB,int tarWidth, int tarHeight);
 //整体斜率调整
 ANNRECOGNITION_API void		 SlopeAdjust(HDIB hDIB);
 //去除离散噪声点
@@ -129,7 +133,7 @@ ANNRECOGNITION_API void		 Convert256toGray(HDIB hDIB);
 //细化
 ANNRECOGNITION_API void		 Thinning(HDIB hDIB);
 //对位图进行分割.返回一个存储着每块分割区域的链表
-ANNRECOGNITION_API LONG		 CharSegment(HANDLE hDIB);
+ANNRECOGNITION_API LONG		 CharSegment(HDIB hDIB);
 //紧缩、重排调整
 ANNRECOGNITION_API HDIB		 AutoAlign(HDIB hDIB,LONG charRectID);
 //判断是否是离散噪声点
@@ -193,6 +197,7 @@ ANNRECOGNITION_API BOOL      ConvertBMP2TIF(LPSTR bmpFile , LPSTR tifFile);
 ANNRECOGNITION_API BOOL      BlackWhiteBMP(LPSTR bmpFile,int threshold);
 ANNRECOGNITION_API BOOL      RevertBlackWhiteBMP(LPSTR bmpFile);
 ANNRECOGNITION_API BOOL      SaveBlockToBMP(LPSTR bmpFile,double leftRate,double topRate, double rightRate, double bottomRate,LPSTR bmpBlock);
+ANNRECOGNITION_API BOOL      SaveBlockToBMP2(LPSTR bmpFile,long left,long top, long right, long bottom,LPSTR bmpBlock);
 ANNRECOGNITION_API BOOL		 IsOCRAvailable();
 ANNRECOGNITION_API LONG		 GetOCRLanguage();
 ANNRECOGNITION_API void		 SetOCRLanguage(LONG language);
@@ -208,12 +213,15 @@ ANNRECOGNITION_API BOOL		 LoadBPParameters(LPSTR settingFile);
 ANNRECOGNITION_API BOOL		 SaveBPParameters(LPSTR settingFile);
 ANNRECOGNITION_API BOOL		 PrintBPParameters(LPSTR textFile);
 
-ANNRECOGNITION_API BOOL      InitTrainBPLearnSpeed(double dblSpeed);
-ANNRECOGNITION_API BOOL      InitTrainBPRandSeed(double seed);
+ANNRECOGNITION_API BOOL      InitTrainBPRandSeed(long seed=-1);
+ANNRECOGNITION_API BOOL      InitTrainBPLearnSpeed(double dblSpeed=0.05);
+ANNRECOGNITION_API BOOL      InitTrainBPWeights(double* difWeights=0);
+
 ANNRECOGNITION_API BOOL		 InitBPParameters(int input,int implicit,int output,double ** w1=0,double *b1=0,double **w2=0,double *b2=0);
-ANNRECOGNITION_API BOOL      InitTrainBPAcceptMark(long lngRating ,double dblDiff,double* difWeights=0);
+
 
 ANNRECOGNITION_API double    GetLearningSpeed();
-ANNRECOGNITION_API BOOL      Training(double *input,double * dest);
-ANNRECOGNITION_API BOOL		 CheakDiffs(double *output,double * dest);
+ANNRECOGNITION_API double    Training(double *input,double * dest);
+ANNRECOGNITION_API double	 CheakDiffs(double *output,double * dest);
 ANNRECOGNITION_API BOOL		 Recognition(double *intput,double * result);
+ANNRECOGNITION_API BOOL	     BPEncode(HDIB hInputDIB,double * outCode,LONG top=0, LONG left=0,LONG right=0, LONG bottom=0);
