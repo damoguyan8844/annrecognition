@@ -13,6 +13,7 @@ EXPORTS
 		NewDIB
 		SaveDIB
 		ReadDIBFile
+		ReleaseDIBFile
 		PaletteSize
 		ClearAll
 		DisplayDIB
@@ -37,9 +38,13 @@ EXPORTS
 		RevertBlackWhiteBMP
 		SaveBlockToBMP
 		OCRFile
+		LoadBPParameters
 		InitBPParameters
 		SaveBPParameters
 		PrintBPParameters
+		InitTrainBPLearnSpeed
 		BPEncode
 		StdDIB
 		CheakDiffs
+		SaveBlockToBMP2
+		Training
