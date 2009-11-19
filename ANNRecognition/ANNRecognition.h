@@ -98,7 +98,7 @@ ANNRECOGNITION_API HGLOBAL   CopyHandle (HGLOBAL h);
 //  NewDIB()            - 根据提供的宽、高、颜色位数来创建一个新的DIB
 ANNRECOGNITION_API HDIB	     NewDIB(long width, long height,unsigned short biBitCount);
 //  SaveDIB()           - 将DIB保存到指定文件中
-ANNRECOGNITION_API BOOL      SaveDIB (HDIB hDib, LPCSTR file);
+ANNRECOGNITION_API BOOL      SaveDIB (HDIB hDib, LPSTR file);
 //  ReadDIBFile()       - 重指定文件中读取DIB对象
 ANNRECOGNITION_API HDIB      ReadDIBFile(LPCSTR file);
 //  PaletteSize()       - 返回DIB调色板大小
@@ -133,7 +133,7 @@ ANNRECOGNITION_API void		 Convert256toGray(HDIB hDIB);
 //细化
 ANNRECOGNITION_API void		 Thinning(HDIB hDIB);
 //对位图进行分割.返回一个存储着每块分割区域的链表
-ANNRECOGNITION_API LONG		 CharSegment(HANDLE hDIB);
+ANNRECOGNITION_API LONG		 CharSegment(HDIB hDIB);
 //紧缩、重排调整
 ANNRECOGNITION_API HDIB		 AutoAlign(HDIB hDIB,LONG charRectID);
 //判断是否是离散噪声点

@@ -418,7 +418,7 @@ ANNRECOGNITION_API HGLOBAL  CopyHandle (HGLOBAL h)
  *************************************************************************/
 
 
-ANNRECOGNITION_API BOOL  SaveDIB(HDIB hDib, LPCSTR fileName)
+ANNRECOGNITION_API BOOL  SaveDIB(HDIB hDib, LPSTR fileName)
 {
 	// BitmapÎÄ¼þÍ·
 	BITMAPFILEHEADER bmfHdr;
