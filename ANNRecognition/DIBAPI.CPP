@@ -792,3 +792,10 @@ ANNRECOGNITION_API WORD  PaletteSize(LPSTR lpbi)
 		return (WORD)(::DIBNumColors(lpbi) * sizeof(RGBTRIPLE));
 	}
 }
+
+ANNRECOGNITION_API BOOL  ReleaseDIBFile(HDIB hDib)
+{
+	if(hDib>0)
+		GlobalFree(hDib);
+	return TRUE;
+}

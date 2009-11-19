@@ -6,9 +6,9 @@
 // ANNRECOGNITION_API functions as being imported from a DLL, wheras this DLL sees symbols
 // defined with this macro as being exported.
 #ifdef ANNRECOGNITION_EXPORTS
-#define ANNRECOGNITION_API __declspec(dllexport)
+#define ANNRECOGNITION_API extern "C" __declspec(dllexport)
 #else
-#define ANNRECOGNITION_API __declspec(dllimport)
+#define ANNRECOGNITION_API extern "C" __declspec(dllimport)
 #endif
 
 #include <iostream>
@@ -103,6 +103,8 @@ ANNRECOGNITION_API BOOL      SaveDIB (HDIB hDib, LPCSTR file);
 ANNRECOGNITION_API HDIB      ReadDIBFile(LPCSTR file);
 //  PaletteSize()       - 返回DIB调色板大小
 ANNRECOGNITION_API WORD		 PaletteSize(LPSTR lpbi);
+//  Release DIB File	- 释放DIB空间
+ANNRECOGNITION_API BOOL		 ReleaseDIBFile(HDIB hDib);
 
 /************************************************************************/
 /*图像处理                                                              */
@@ -195,6 +197,7 @@ ANNRECOGNITION_API BOOL      ConvertBMP2TIF(LPSTR bmpFile , LPSTR tifFile);
 ANNRECOGNITION_API BOOL      BlackWhiteBMP(LPSTR bmpFile,int threshold);
 ANNRECOGNITION_API BOOL      RevertBlackWhiteBMP(LPSTR bmpFile);
 ANNRECOGNITION_API BOOL      SaveBlockToBMP(LPSTR bmpFile,double leftRate,double topRate, double rightRate, double bottomRate,LPSTR bmpBlock);
+ANNRECOGNITION_API BOOL      SaveBlockToBMP2(LPSTR bmpFile,long left,long top, long right, long bottom,LPSTR bmpBlock);
 ANNRECOGNITION_API BOOL		 IsOCRAvailable();
 ANNRECOGNITION_API LONG		 GetOCRLanguage();
 ANNRECOGNITION_API void		 SetOCRLanguage(LONG language);
