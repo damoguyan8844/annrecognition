@@ -123,7 +123,7 @@ namespace ANNTest
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(583, 13);
+            this.button3.Location = new System.Drawing.Point(337, 43);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(114, 30);
             this.button3.TabIndex = 6;
@@ -141,7 +141,7 @@ namespace ANNTest
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(337, 46);
+            this.button4.Location = new System.Drawing.Point(464, 45);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(113, 28);
             this.button4.TabIndex = 8;
