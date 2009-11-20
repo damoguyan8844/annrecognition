@@ -35,7 +35,7 @@ namespace ANNTest
         public static extern IntPtr ReadDIBFile( string fileName);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "SaveDIB")]
-        public static extern bool SaveDIB(IntPtr hdibHandle,string fileName);
+        public static extern bool SaveDIB(IntPtr hInputDIB, string fileName);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "BPEncode")]
         public static extern bool BPEncode(IntPtr hInputDIB, double[] outCode, long top, long left, long right, long bottom);
