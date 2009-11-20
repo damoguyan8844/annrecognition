@@ -50,13 +50,18 @@ ANNRECOGNITION_API BOOL BlackWhiteBMP( LPSTR bmpFile ,int threshold)
 	cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP);
 	
 	BOOL bRet=TRUE;
+
 	cxImage.IncreaseBpp(8);
+//	cxImage.DecreaseBpp(8,false);
+
 //	bRet=bRet&&cxImage.Negative();
 	bRet=bRet&&cxImage.GrayScale();
 	if(bRet)
 	{
 		bRet=bRet&&cxImage.Threshold(threshold);
 	}
+
+	cxImage.IncreaseBpp(8);
 	cxImage.Save(bmpFile,CXIMAGE_FORMAT_BMP);
 	return bRet;
 }
