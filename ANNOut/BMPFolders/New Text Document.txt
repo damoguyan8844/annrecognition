@@ -1,0 +1,9 @@
+34capture.bmp  Threshold: 120
+37,38,39capture.bmp  Threshold: 180
+
+Others: Threshold:200
+
+28capture.bmp:
+1. Negative
+2. Gray Scale
+3. Threshold:200
