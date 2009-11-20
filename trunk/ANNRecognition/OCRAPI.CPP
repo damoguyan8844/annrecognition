@@ -52,7 +52,7 @@ ANNRECOGNITION_API BOOL BlackWhiteBMP( LPSTR bmpFile ,int threshold)
 	BOOL bRet=TRUE;
 
 	cxImage.IncreaseBpp(8);
-//	cxImage.DecreaseBpp(8,false);
+
 
 //	bRet=bRet&&cxImage.Negative();
 	bRet=bRet&&cxImage.GrayScale();
@@ -62,6 +62,8 @@ ANNRECOGNITION_API BOOL BlackWhiteBMP( LPSTR bmpFile ,int threshold)
 	}
 
 	cxImage.IncreaseBpp(8);
+	cxImage.DecreaseBpp(8,false);
+
 	cxImage.Save(bmpFile,CXIMAGE_FORMAT_BMP);
 	return bRet;
 }
