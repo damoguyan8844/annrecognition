@@ -127,7 +127,7 @@ void CChildView::OnFileOpenBmp()
 	WORD wNumColors;	
 	wNumColors = ::DIBNumColors((char*)lpDIB);	
 	// 判断是否是256色位图
-	if (wNumColors != 256)
+	if (wNumColors != 256 && wNumColors !=2)
 	{
 		// 提示用户
 		MessageBox("非256色位图！", "系统提示" , MB_ICONINFORMATION | MB_OK);
@@ -143,6 +143,9 @@ void CChildView::OnFileOpenBmp()
 	fileloaded=true;
     //gyhinfoinput=false;          //2004.4.26修改
 	gyhfinished=false;
+
+	::GlobalUnlock ((HGLOBAL)m_hDIB);
+
 }
 
 //取消一切更改，重新加载位图文件
@@ -182,7 +185,7 @@ void CChildView::OnFileSaveBmp()
 	//以读写模式打开一个文件。如果文件不存在，则创建之
 // 	CFile file(strPathNameSave, CFile::modeReadWrite|CFile::modeCreate);
 	
-	::SaveDIB (m_hDIB,strPathNameSave.c_str());
+	::SaveDIB (m_hDIB,(char *)strPathNameSave.c_str());
 	//关闭文件
 //	file.Close ();	
 }

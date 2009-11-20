@@ -226,17 +226,35 @@ namespace ANNTest
                 IntPtr hdibHandle = ANNWrapper.ReadDIBFile(Application.StartupPath + "\\" + textToPath.Text);
 
                 ANNWrapper.Convert256toGray(hdibHandle);
+
+                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Convert256toGray.bmp");
+
                 ANNWrapper.ConvertGrayToWhiteBlack(hdibHandle);
+
+                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\ConvertGrayToWhiteBlack.bmp");
+
                 //ANNWrapper.GradientSharp(hdibHandle);
                 ANNWrapper.RemoveScatterNoise(hdibHandle);
+
+                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\RemoveScatterNoise.bmp");
+
                 //ANNWrapper.SlopeAdjust(hdibHandle);
 
                 Int32 charRectID = ANNWrapper.CharSegment(hdibHandle);
-                //ANNWrapper.StdDIBbyRect(hdibHandle, charRectID, 16, 16);
-                IntPtr newHdibHandle=ANNWrapper.AutoAlign(hdibHandle,charRectID);               
-                ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
+
+                if (charRectID >= 0)
+                {
+                    //ANNWrapper.StdDIBbyRect(hdibHandle, charRectID, 16, 16);
+                    IntPtr newHdibHandle = ANNWrapper.AutoAlign(hdibHandle, charRectID);
+                    ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
+                    ANNWrapper.ReleaseDIBFile(newHdibHandle);
+                }
+                else
+                {
+                    MessageBox.Show("CharSegment Step False");
+                }
+
                 ANNWrapper.ReleaseDIBFile(hdibHandle);
-                ANNWrapper.ReleaseDIBFile(newHdibHandle);
             }
             catch(Exception exp)
             {
