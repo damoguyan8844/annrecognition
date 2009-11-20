@@ -84,8 +84,10 @@ ANNRECOGNITION_API HDIB AutoAlign(HDIB hDIB,LONG charRectID)
 {   
 	if(charRectID>=g_CharSegmentRet.size()) return 0;
 	CRectLink & m_charRect=g_CharSegmentRet[charRectID];
-	int digicount = m_charRect.size();
+	if(m_charRect.empty()) return 0;
 
+	int digicount = m_charRect.size();
+	
 	//指向图像的指针
  	BYTE* lpDIB=(BYTE*)::GlobalLock ((HGLOBAL)hDIB);
 
@@ -906,7 +908,7 @@ ANNRECOGNITION_API void Convert256toGray(HDIB hDIB)
 	LPSTR	lpDIB;
 	
 	// 由DIB句柄得到DIB指针并锁定DIB
-lpDIB = (LPSTR) ::GlobalLock((HGLOBAL)hDIB);
+	lpDIB = (LPSTR) ::GlobalLock((HGLOBAL)hDIB);
 	
 	// 指向DIB象素数据区的指针
 	LPSTR   lpDIBBits;	
@@ -917,7 +919,7 @@ lpDIB = (LPSTR) ::GlobalLock((HGLOBAL)hDIB);
 	// 图像宽度
 	LONG	lWidth;	
 	// 图像高度
-LONG  	lHeight;	
+	LONG  	lHeight;	
 
 	// 图像每行的字节数
 	LONG	lLineBytes;	
@@ -972,25 +974,24 @@ LONG  	lHeight;
 	// 计算图像每行的字节数
 	lLineBytes = WIDTHBYTES(lWidth * 8);	
 
-// 更换每个象素的颜色索引（即按照灰度映射表换成灰度值）
+	// 更换每个象素的颜色索引（即按照灰度映射表换成灰度值）
 
-//逐行扫描
-for(i = 0; i < lHeight; i++)
-{
+	//逐行扫描
+	for(i = 0; i < lHeight; i++)
+	{
+		  //逐列扫描
+		for(j = 0; j < lWidth; j++)
+		{
+			// 指向DIB第i行，第j个象素的指针
+			lpSrc = (unsigned char*)lpDIBBits + lLineBytes * (lHeight - 1 - i) + j;
+					
+			// 变换
+			*lpSrc = bMap[*lpSrc];
+		}
+	}
 
-  //逐列扫描
-for(j = 0; j < lWidth; j++)
-{
-	// 指向DIB第i行，第j个象素的指针
-	lpSrc = (unsigned char*)lpDIBBits + lLineBytes * (lHeight - 1 - i) + j;
-			
-	// 变换
-	*lpSrc = bMap[*lpSrc];
-}
-}
-
-//解除锁定
-::GlobalUnlock ((HGLOBAL)hDIB);
+	//解除锁定
+	::GlobalUnlock ((HGLOBAL)hDIB);
 }
 
 /******************************************************************
@@ -1046,29 +1047,29 @@ ANNRECOGNITION_API void ConvertGrayToWhiteBlack(HDIB hDIB)
 
     //逐行扫描
 	for(i = 0; i < lHeight; i++)
- {
-
-   //逐列扫描
-	for(j = 0; j < lWidth; j++)
 	{
 
-	// 指向DIB第i行，第j个象素的指针
-	lpSrc = (unsigned char*)lpDIBBits + lLineBytes * i + j;
+	   //逐列扫描
+		for(j = 0; j < lWidth; j++)
+		{
 
-	// 二值化处理
+			// 指向DIB第i行，第j个象素的指针
+			lpSrc = (unsigned char*)lpDIBBits + lLineBytes * i + j;
 
-   //大于220，设置为255，即白点
-	if(*lpSrc>220) *lpSrc=255;
+			// 二值化处理
 
-  //否则设置为0，即黑点
-	else *lpSrc=0;
+		    //大于220，设置为255，即白点
+			if(*lpSrc>220) *lpSrc=255;
+
+		    //否则设置为0，即黑点
+			else *lpSrc=0;
+
+		}
 
 	}
-
-}
 	
- //解除锁定
-::GlobalUnlock((HGLOBAL)hDIB);
+	 //解除锁定
+	::GlobalUnlock((HGLOBAL)hDIB);
 }
 
 /*****************************************************************
@@ -1503,8 +1504,8 @@ ANNRECOGNITION_API void RemoveScatterNoise(HDIB hDIB)
 	for (i=0;i<lHeight*lWidth;i++)
     {
 
-    //将所有的标志位设置为非
-	lplab[i] = false;
+		//将所有的标志位设置为非
+		lplab[i] = false;
 
 	}
 
