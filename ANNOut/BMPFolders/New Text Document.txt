@@ -7,3 +7,10 @@ Others: Threshold:200
 1. Negative
 2. Gray Scale
 3. Threshold:200
+
+
+
+Capture34_(4).bmp  可以再去一次离散噪音。
+
+
+Capture30 需要特殊处理
