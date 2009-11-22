@@ -190,8 +190,9 @@ ANNRECOGNITION_API BOOL	PrintBPParameters(LPSTR textFile)
 
 ANNRECOGNITION_API BOOL	InitBPParameters(LONG input,LONG implicit,LONG output)
 {
-	InitTrainBPWeights(0);
-	return InitBPParameters_EX(input,implicit,output);
+	BOOL bRet=InitBPParameters_EX(input,implicit,output);
+	bRet = bRet && 	InitTrainBPWeights(0);
+	return bRet;
 }
 
 ANNRECOGNITION_API BOOL	InitBPParameters_EX(LONG input,LONG implicit,LONG output,double ** w1,double *b1,double **w2,double *b2)
