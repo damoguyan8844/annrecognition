@@ -217,11 +217,11 @@ ANNRECOGNITION_API BOOL      InitTrainBPRandSeed(long seed=-1);
 ANNRECOGNITION_API BOOL      InitTrainBPLearnSpeed(double dblSpeed=0.05);
 ANNRECOGNITION_API BOOL      InitTrainBPWeights(double* difWeights=0);
 
-ANNRECOGNITION_API BOOL		 InitBPParameters(int input,int implicit,int output,double ** w1=0,double *b1=0,double **w2=0,double *b2=0);
-
+ANNRECOGNITION_API BOOL		 InitBPParameters_EX(LONG input,LONG implicit,LONG output,double ** w1=0,double *b1=0,double **w2=0,double *b2=0);
+ANNRECOGNITION_API BOOL		 InitBPParameters(LONG input,LONG implicit,LONG output);
 
 ANNRECOGNITION_API double    GetLearningSpeed();
 ANNRECOGNITION_API double    Training(double *input,double * dest);
 ANNRECOGNITION_API double	 CheakDiffs(double *output,double * dest);
 ANNRECOGNITION_API BOOL		 Recognition(double *intput,double * result);
-ANNRECOGNITION_API BOOL	     BPEncode(HDIB hInputDIB,double * outCode,LONG top=0, LONG left=0,LONG right=0, LONG bottom=0);
+ANNRECOGNITION_API BOOL	     BPEncode(HDIB hInputDIB,double * outCode,LONG top=0, LONG left=0,LONG right=0, LONG bottom=0,LPSTR gridFile=0);

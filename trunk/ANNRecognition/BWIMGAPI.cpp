@@ -882,7 +882,11 @@ ANNRECOGNITION_API LONG CharSegment(HDIB hDIB)
 	//????
 	::GlobalUnlock(hDIB);
 	
+	if(g_CharSegmentRet.size()>1000)
+		g_CharSegmentRet.clear();
+
 	g_CharSegmentRet.push_back(charRect1);
+
 	//???1??
 	LONG lngRet=g_CharSegmentRet.size()-1;
 	return lngRet;
@@ -2506,6 +2510,8 @@ ANNRECOGNITION_API void	SaveSegment(HDIB hInputDIB,LONG charRectID,LPSTR destFol
 				*lpDst=*lpSrc;
 			}
 			::GlobalUnlock (hDIB);
+
+			RemoveScatterNoise(hDIB);
 			m_dibRect.push_back (hDIB);
 			counts++;
 	}
@@ -2516,7 +2522,7 @@ ANNRECOGNITION_API void	SaveSegment(HDIB hInputDIB,LONG charRectID,LPSTR destFol
 	while(!m_dibRect.empty ())
 	{
 		char  str[256];
-		sprintf(str,"%s\\part%d.bmp",destFolder,counts);
+		sprintf(str,"%s\\%d_part%d.bmp",destFolder,charRectID,counts);
 		::SaveDIB (m_dibRect.front (),str);
 		m_dibRect.pop_front ();
 		counts++;
