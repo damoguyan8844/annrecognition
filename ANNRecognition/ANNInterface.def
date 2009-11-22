@@ -49,3 +49,4 @@ EXPORTS
 		SaveBlockToBMP2
 		Training
 		SaveSegment
+		Recognition

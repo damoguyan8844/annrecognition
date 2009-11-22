@@ -35,7 +35,7 @@ ANNRECOGNITION_API BOOL LoadBPParameters( LPSTR settingFile )
 		return FALSE;
 	}
 	
-	//读取输入节点，隐层节点，输出节点维度
+	//??????,????,??????
 	long *bufferLong;
 	bufferLong=(long *)malloc(3*sizeof(long));
 	fread((char*)bufferLong,sizeof(long),3,fp);
@@ -56,7 +56,7 @@ ANNRECOGNITION_API BOOL LoadBPParameters( LPSTR settingFile )
 	if(feof(fp)) return FALSE;
 	
 	double dblTemp=0.0;
-	//读取输入层隐层节点权值以及偏移
+	//???????????????
 	for(int i=0;i<G_IMPLICITDEM;i++)
 	{
 		for(int j=0;j<G_INPUTDEM;j++)
@@ -97,6 +97,8 @@ ANNRECOGNITION_API BOOL LoadBPParameters( LPSTR settingFile )
 	fclose(fp);
 
 	G_SettingFile=settingFile;
+	
+	InitTrainBPWeights(0);
 
 	return TRUE;	
 }
@@ -143,7 +145,7 @@ ANNRECOGNITION_API BOOL	PrintBPParameters(LPSTR textFile)
 	char  date[10];
     _strtime(time);  
 	_strdate(date);
-	fprintf(fp,"BPParameters:Version:%d \t Date: %s \t Time:%s \n",ANNRecognitionVersion(),date,time);    //获取当前时间信息	
+	fprintf(fp,"BPParameters:Version:%d \t Date: %s \t Time:%s \n",ANNRecognitionVersion(),date,time);    //????????	
 	fprintf(fp,"InputLayerDem:%d\tImplicitLayerDem:%d\tOutputLayerDem:%d\n",G_INPUTDEM,G_IMPLICITDEM,G_OUTPUTDEM);
 
 	fprintf(fp,"\nW_IMPLICITDEM_INPUTDEM:\n{\n");
@@ -185,7 +187,14 @@ ANNRECOGNITION_API BOOL	PrintBPParameters(LPSTR textFile)
 	return TRUE;
 }
 
-ANNRECOGNITION_API BOOL	InitBPParameters(int input,int implicit,int output,double ** w1,double *b1,double **w2,double *b2)
+
+ANNRECOGNITION_API BOOL	InitBPParameters(LONG input,LONG implicit,LONG output)
+{
+	InitTrainBPWeights(0);
+	return InitBPParameters_EX(input,implicit,output);
+}
+
+ANNRECOGNITION_API BOOL	InitBPParameters_EX(LONG input,LONG implicit,LONG output,double ** w1,double *b1,double **w2,double *b2)
 {
 	BOOL bRet=FALSE;
 	try
@@ -209,7 +218,7 @@ ANNRECOGNITION_API BOOL	InitBPParameters(int input,int implicit,int output,doubl
 			srand(G_RANDSEED);
 
 		double temp=pow(G_INPUTDEM,0.5);
-		for(int i=0;i<G_IMPLICITDEM;i++)        //初始化W1,B1
+		for(int i=0;i<G_IMPLICITDEM;i++)        //???W1,B1
 		{  
 			int num=G_INPUTDEM;
 			while(num>0)   
@@ -228,7 +237,7 @@ ANNRECOGNITION_API BOOL	InitBPParameters(int input,int implicit,int output,doubl
 				B_IMPLICITDEM[i]=0.0;
 		}    
 		temp=pow(G_IMPLICITDEM,0.5);	
-		for(   i=0;i<G_OUTPUTDEM;i++)     //初始化W2,B2
+		for(   i=0;i<G_OUTPUTDEM;i++)     //???W2,B2
 		{
 			int num=G_IMPLICITDEM;
 			while(num>0)  
@@ -245,6 +254,7 @@ ANNRECOGNITION_API BOOL	InitBPParameters(int input,int implicit,int output,doubl
 //				B_OUTPUTDEM[i]=rand()*1.0/temp/RAND_MAX;
 				B_OUTPUTDEM[i]=0.0;
 		}
+		
 		bRet=TRUE;
 	}
 	catch(...)
@@ -304,17 +314,17 @@ ANNRECOGNITION_API double   Training(double *input,double * dest)
 		if(!Recognition(input,A_OUTPUTDEM))
 			return avrg_diff;
 		
-		//计算误差  data[INDESENSION] 中 存储有t（目标值）
-		avrg_diff=CheakDiffs(A_OUTPUTDEM,input);
+		//????  data[INDESENSION] ? ???t(???)
+		avrg_diff=CheakDiffs(A_OUTPUTDEM,dest);
 		
-		//反向传播敏感性值
+		//????????
 		//S2
 		double S2_OUTPUTDEM[MAXDEM];
 		for(int	i=0;i<G_OUTPUTDEM;i++)
 			S2_OUTPUTDEM[i]=(-2)*(1-A_OUTPUTDEM[i])*A_OUTPUTDEM[i]*DEF_OUTPUTDEM[i];
 		//S1
 		double S1_IMPLICITDEM[MAXDEM];
-		//矩阵的转置
+		//?????
 		double temp_IMPLICITDEM_OUTPUTDEM[MAXDEM][MAXDEM];
 		for(    i=0;i<G_IMPLICITDEM;i++)
 			for(int j=0;j<G_OUTPUTDEM;j++)
@@ -331,20 +341,20 @@ ANNRECOGNITION_API double   Training(double *input,double * dest)
 			S1_IMPLICITDEM[i]*=(1-A_IMPLICITDEM[i])*A_IMPLICITDEM[i];			  
 		}
 		
-		//确定学习速度
+		//??????
 		double a=GetLearningSpeed();
-		//W2更新
+		//W2??
 		for(   i=0;i<G_OUTPUTDEM;i++)
 			for( int j=0;j<G_IMPLICITDEM;j++)
 				W_OUTPUTDEM_IMPLICITDEM[i][j]-=a*S2_OUTPUTDEM[i]*A_IMPLICITDEM[j];
-		//B2更新
+		//B2??
 		for(   i=0;i<G_OUTPUTDEM;i++)
 			B_OUTPUTDEM[i]-=a*S2_OUTPUTDEM[i];
-		//W1更新
+		//W1??
 		for(   i=0;i<G_IMPLICITDEM;i++)
 			for( int j=0;j<G_INPUTDEM;j++)
 				W_IMPLICITDEM_INPUTDEM[i][j]-=a*S1_IMPLICITDEM[i]*input[j];	 
-		//B1更新
+		//B1??
 		for(   i=0;i<G_IMPLICITDEM;i++)
 			B_IMPLICITDEM[i]-=a*S1_IMPLICITDEM[i];
 	}
@@ -360,7 +370,7 @@ ANNRECOGNITION_API BOOL	Recognition(double *input,double * result)
 {
 	if(result==0 || input==0) return FALSE;
 
-	//第一层的输出a1=logsign(W1*a0+B1) 
+	//??????a1=logsign(W1*a0+B1) 
 	for(int i=0;i<G_IMPLICITDEM;i++)
 	{    
 		int num=0;
@@ -373,7 +383,7 @@ ANNRECOGNITION_API BOOL	Recognition(double *input,double * result)
 		A_IMPLICITDEM[i]+=B_IMPLICITDEM[i];
 		A_IMPLICITDEM[i]=1/(1+exp(-A_IMPLICITDEM[i]));
 	}
-	//第二层的输出a2=logsign(W2*a1+B2)
+	//??????a2=logsign(W2*a1+B2)
 	for(   i=0;i<G_OUTPUTDEM;i++)
 	{    
 		int num=0;
@@ -403,7 +413,7 @@ ANNRECOGNITION_API BOOL	Recognition(double *input,double * result)
 }
 
 
-ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG left,LONG right, LONG bottom)
+ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG left,LONG right, LONG bottom,LPSTR gridFile)
 {
 	if(hInputDIB==0 || outCode==0) return FALSE;
 	
@@ -417,36 +427,37 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 		return FALSE;
 	}
 
-	// 指向DIB的指针
+	// ??DIB???
 	LPSTR	lpDIB;
 	
-	// 由DIB句柄得到DIB指针并锁定DIB
+	// ?DIB????DIB?????DIB
 	lpDIB = (LPSTR) ::GlobalLock((HGLOBAL)hInputDIB);
 	
-	// 指向DIB象素数据区的指针
+	// ??DIB????????
 	LPSTR   lpDIBBits;
 	
-	// 指向DIB象素的指针
+	// ??DIB?????
 	BYTE *	lpSrc;	
-	
-	// 图像宽度
+	BYTE byte255=255;
+
+	// ????
 	LONG	lWidth;	
 	
-	// 图像高度
+	// ????
 	LONG	lHeight;	
-	// 图像每行的字节数
+	// ????????
 	LONG	lLineBytes;	
 	
-	// 找到DIB图像象素起始位置
+	// ??DIB????????
 	lpDIBBits = ::FindDIBBits(lpDIB);	
 	
-	// 获取图像宽度
+	// ??????
 	lWidth = ::DIBWidth(lpDIB);	
 	
-	// 获取图像高度
+	// ??????
 	lHeight = ::DIBHeight(lpDIB);	
 	
-	// 计算图像每行的字节数
+	// ??????????
 	lLineBytes = WIDTHBYTES(lWidth * 8);	
 	
 	RECT range;
@@ -462,19 +473,24 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 		range.bottom=lHeight;
 	
 	BOOL bRet=FALSE;
+	
+	ofstream * pfout=0;
 
-//	ofstream fout("C:\\Range.txt",ios::app);
+	string filename(gridFile==0?"":gridFile);
+
+	if(!filename.empty())
+		pfout=new ofstream(filename.c_str(),ios::app);
 
 	if(G_INPUTDEM==64)
 	{
-		//八行八列取值，截图范围整数倍化，按边缘补齐，行优先
+		//??????,????????,?????,???
 
 		RECT enlargedRange=range;
 		
 		int widthBlank=RECTWIDTH(&range)%8;
 		enlargedRange.left=range.left-widthBlank/2;
-		if(enlargedRange.left<0)
-			enlargedRange.left=0;
+// 		if(enlargedRange.left<0)
+// 			enlargedRange.left=0;
 		if(widthBlank<=0)
 			widthBlank=8;
 
@@ -482,8 +498,8 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 
 		int heightBlank=RECTHEIGHT(&range)%8;
 		enlargedRange.top=range.top-heightBlank/2;
-		if(enlargedRange.top<0)
-			enlargedRange.top=0;
+// 		if(enlargedRange.top<0)
+// 			enlargedRange.top=0;
 		if(heightBlank<=0)
 			heightBlank=8;
 
@@ -493,54 +509,55 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 		int gridHeight=RECTHEIGHT(&enlargedRange)/8;
 		
 		double factor=1.0/(gridWidth*gridHeight);
-		//逐行扫描
+		//????
 		for(int i = enlargedRange.top; i < enlargedRange.bottom; i++)
 		{		
 			int line=enlargedRange.bottom-i;
-			if(line<range.top)
-				line=range.top;
-			else if (line>=range.bottom)
-				line=range.bottom-1;
-			//逐列扫描
+
+			//????
 			for(int j = enlargedRange.left; j < enlargedRange.right; j++)
 			{	
 				int col=j;
 		
-				if(col<range.left)
-					col=range.left;
-				else if (col>=range.right)
-					col=range.right-1;
+				if(line<range.top || line>=range.bottom ||col<range.left || col>=range.right)
+					lpSrc = & byte255; 					
+				else
+					// ??DIB?i?,?j??????
+					lpSrc = (unsigned char*)lpDIBBits + lLineBytes * line + col;
 			
-				// 指向DIB第i行，第j个象素的指针
-				lpSrc = (unsigned char*)lpDIBBits + lLineBytes * line + col;
-			
-				//小于150，作为有效点
+				//??150,?????
 				if(*lpSrc<150)
 				{
-//					fout<<1<<",";
+					if(pfout) (*pfout)<<1<<",";
 					*(outCode+((i-enlargedRange.top)/gridHeight)*8+(j-enlargedRange.left)/gridWidth)+=factor;
 				}
 				else
 				{
-//					fout<<"0"<<",";
+					if(pfout) (*pfout)<<"0"<<",";
 				}
 			}
-//			fout<<endl;
+			if(pfout) (*pfout)<<endl;
 		}
-		
-// 		for( i=0;i<8;i++)
-// 		{
-// 			for(int j=0;j<8;j++)
-// 				fout<<(*(outCode+i*8+j))*gridWidth*gridHeight<<",";
-// 			fout<<endl;
-// 		}
+		if(pfout)
+		{
+			for( i=0;i<8;i++)
+			{
+				for(int j=0;j<8;j++)
+					(*pfout)<<(*(outCode+i*8+j))*gridWidth*gridHeight<<",";
+				(*pfout)<<endl;
+			}
 
+		}
 		bRet = TRUE;
 	}
 
-//	fout.close();
+	if(pfout)
+	{
+		(*pfout).close();
+		delete pfout;
+	}
 
-	//解除锁定
+	//????
 	::GlobalUnlock((HGLOBAL)hInputDIB);
 
 	return bRet;
