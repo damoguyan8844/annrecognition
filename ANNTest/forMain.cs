@@ -29,12 +29,22 @@ namespace ANNTest
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ANNWrapper.BlackWhiteBMP(Application.StartupPath + "\\" + textInputBMP.Text, Int32.Parse(textInputInt.Text));
+            DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\");
+            foreach (FileInfo f in Dir.GetFiles("*Capture.bmp"))
+            {
+                textInputBMP.Text = f.Name;
+                ANNWrapper.BlackWhiteBMP(Application.StartupPath + "\\" + textInputBMP.Text, Int32.Parse(textInputInt.Text));
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            ANNWrapper.RevertBlackWhiteBMP(Application.StartupPath + "\\" + textInputBMP.Text);
+             DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\");
+             foreach (FileInfo f in Dir.GetFiles("*Capture.bmp"))
+             {
+                 textInputBMP.Text = f.Name;
+                 ANNWrapper.RevertBlackWhiteBMP(Application.StartupPath + "\\" + textInputBMP.Text);
+             }
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -61,10 +71,15 @@ namespace ANNTest
 
             try
             {
+                string gridFile=Dir.FullName+"\\Grid.text";
+
+                FileInfo fGrid = new FileInfo(gridFile);
+                fGrid.Delete(); fGrid = null;
+
                 foreach (FileInfo f in Dir.GetFiles("*.bmp"))
                 {
                     IntPtr hdibHandle = ANNWrapper.ReadDIBFile(f.FullName);
-                    if (ANNWrapper.BPEncode(hdibHandle, dblEncode, 0, 0, 0, 0))
+                    if (ANNWrapper.BPEncode(hdibHandle, dblEncode, 0, 0, 0, 0, gridFile))
                     {
                         string strCodes = "";
                         foreach (double dblValue in dblEncode)
@@ -77,6 +92,7 @@ namespace ANNTest
                             textTraingInputs.AppendText(strCodes);
                         else
                             textTraingInputs.AppendText("\r\n" + strCodes);
+
                     }
                     ANNWrapper.ReleaseDIBFile(hdibHandle);
                 }
@@ -89,13 +105,12 @@ namespace ANNTest
         }
         private void button7_Click(object sender, EventArgs e)
         {
-
             if (textParas.Text.Length > 0)
                 ANNWrapper.LoadBPParameters(Application.StartupPath + "\\" + textParas.Text);
             else
-                ANNWrapper.InitBPParameters(64, 8, 4, null, null, null, null);
+                ANNWrapper.InitBPParameters(64, 8, 4);
 
-
+            
             DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\"+textBMPFolders.Text);
             try
             {
@@ -148,12 +163,13 @@ namespace ANNTest
             if (textParas.Text.Length > 0)
                 ANNWrapper.LoadBPParameters(Application.StartupPath + "\\" + textParas.Text);
             else
-                ANNWrapper.InitBPParameters(64,8,4,null,null,null,null);
+                ANNWrapper.InitBPParameters(64,8,4);
 
             if (textTraingInputs.Lines.Length<1)
                 return ;
             
             int divideFactor = Int32.Parse(textParaFactor.Text);
+            int count = 0;
 
             ANNWrapper.InitTrainBPLearnSpeed(Double.Parse(textSpeed.Text));
             double accpt_diff = Double.Parse(textAvrgDiff.Text.ToString());
@@ -165,6 +181,8 @@ namespace ANNTest
                 double this_dif=0.0;
                 foreach(string line in textTraingInputs.Lines)
                 {
+                    count++;
+
                     string[] strs = line.Split(',');
                     if(strs.Length!=65) continue; 
                     
@@ -202,8 +220,12 @@ namespace ANNTest
                 this_dif /= textTraingInputs.Lines.Length;
 
                 if (chkAutoSave.Checked)
-                    ANNWrapper.SaveBPParameters(Application.StartupPath + "\\" + textParas.Text);
+                {
+                    if (textParas.Text.Length < 1)
+                        textParas.Text = "Training.dat";
 
+                    ANNWrapper.SaveBPParameters(Application.StartupPath + "\\" + textParas.Text);
+                }
                 btTraining.Text=this_dif.ToString();
                 if(this_dif<=accpt_diff || m_stop==true)
                 {
@@ -212,54 +234,134 @@ namespace ANNTest
                 }
             }
             btTraining.Enabled =true;
+            btTraining.Text = "Train(" + count.ToString()+")";
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            m_stop = true;
+            if (textParas.Text.Length < 1)
+            {
+                MessageBox.Show("Para Setting Is Empty");
+                return;
+            }
+            if (textTraingInputs.Lines.Length < 1)
+            {
+                MessageBox.Show("Test Input Is Empty");
+                return;
+            }
+
+            ANNWrapper.LoadBPParameters(Application.StartupPath + "\\" + textParas.Text);
+            //ANNWrapper.PrintBPParameters("C:\\TypePara.text");
+
+            double[] inputs = new double[64];
+            double[] dests = new double[4];
+            
+            int divideFactor = Int32.Parse(textParaFactor.Text);
+
+            
+            int matchCount=0;
+            foreach (string line in textTraingInputs.Lines)
+            {
+                string[] strs = line.Split(',');
+                if (strs.Length != 65) continue;
+
+                for (int i = 0; i < 64; i++)
+                {
+                    inputs[i] = Double.Parse(strs[i]) / divideFactor;
+                }
+
+               /* string dest = Convert.ToString(Int32.Parse(strs[64]), 2);*/
+
+                for (int i = 0; i < 4; i++)
+                {
+                    dests[i] = 0.0;
+                }
+
+                if (!ANNWrapper.Recognition(inputs, dests))
+                {
+                    MessageBox.Show("Recognition Error:" + line);
+                    continue;
+                }
+                Int32 dest = 0;
+                if (dests[0] >0.5)
+                    dest+=1;
+                if (dests[1] > 0.5)
+                    dest += 2;
+                if (dests[2] > 0.5)
+                    dest += 4;
+                if (dests[3] > 0.5)
+                    dest += 8;
+
+                if (dest == Int32.Parse(strs[64]))
+                    matchCount += 1;
+                else
+                {
+                    textUnMatch.AppendText(line + "|" + dests[0].ToString() + "," + dests[1].ToString() + "," + dests[2].ToString() + "," + dests[3].ToString() + ""+"\r\n");
+                }
+            }
+            double dblRate=matchCount * 100.0 / textTraingInputs.Lines.Length;
+            MessageBox.Show("%"+dblRate.ToString() + "(" + matchCount.ToString() + "/" + textTraingInputs.Lines.Length + ")");
         }
 
         private void button9_Click(object sender, EventArgs e)
         {
+           DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\");
+           foreach (FileInfo f in Dir.GetFiles("*Capture.bmp"))
+           {
+
             try
-            {
-                IntPtr hdibHandle = ANNWrapper.ReadDIBFile(Application.StartupPath + "\\" + textToPath.Text);
+            {   
+                    textToPath.Text = f.Name;
 
-                ANNWrapper.Convert256toGray(hdibHandle);
+                    IntPtr hdibHandle = ANNWrapper.ReadDIBFile(Application.StartupPath + "\\" + textToPath.Text);
 
-                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Convert256toGray.bmp");
+                    ANNWrapper.Convert256toGray(hdibHandle);
 
-                ANNWrapper.ConvertGrayToWhiteBlack(hdibHandle);
+                    ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Convert256toGray.bmp");
 
-                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\ConvertGrayToWhiteBlack.bmp");
+                    ANNWrapper.ConvertGrayToWhiteBlack(hdibHandle);
 
-                //ANNWrapper.GradientSharp(hdibHandle);
-                ANNWrapper.RemoveScatterNoise(hdibHandle);
+                    ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\ConvertGrayToWhiteBlack.bmp");
 
-                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\RemoveScatterNoise.bmp");
+                    //ANNWrapper.GradientSharp(hdibHandle);
+                    ANNWrapper.RemoveScatterNoise(hdibHandle);
 
-                //ANNWrapper.SlopeAdjust(hdibHandle);
+                    ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\RemoveScatterNoise.bmp");
 
-                Int32 charRectID = ANNWrapper.CharSegment(hdibHandle);
+                    //ANNWrapper.SlopeAdjust(hdibHandle);
 
-                if (charRectID >= 0)
-                {
-                    //ANNWrapper.StdDIBbyRect(hdibHandle, charRectID, 16, 16);
-                    IntPtr newHdibHandle = ANNWrapper.AutoAlign(hdibHandle, charRectID);
-                    ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
-                    ANNWrapper.ReleaseDIBFile(newHdibHandle);
+                    Int32 charRectID = ANNWrapper.CharSegment(hdibHandle);
+
+                    if (charRectID >= 0)
+                    {
+                        //ANNWrapper.StdDIBbyRect(hdibHandle, charRectID, 16, 16);
+                        IntPtr newHdibHandle = ANNWrapper.AutoAlign(hdibHandle, charRectID);
+                        ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
+                        ANNWrapper.ReleaseDIBFile(newHdibHandle);
+                    }
+                    else
+                    {
+                        MessageBox.Show("CharSegment Step False");
+                    }
+
+                    ANNWrapper.ReleaseDIBFile(hdibHandle);
                 }
-                else
+                catch (Exception exp)
                 {
-                    MessageBox.Show("CharSegment Step False");
+                    MessageBox.Show(textToPath.Text);
                 }
+            }
+            
+        }
 
-                ANNWrapper.ReleaseDIBFile(hdibHandle);
-            }
-            catch(Exception exp)
-            {
-                MessageBox.Show(exp.Message);
-            }
+        private void textParaFactor_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

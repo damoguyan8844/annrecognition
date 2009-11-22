@@ -38,7 +38,7 @@ namespace ANNTest
         public static extern bool SaveDIB(IntPtr hInputDIB, string fileName);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "BPEncode")]
-        public static extern bool BPEncode(IntPtr hInputDIB, double[] outCode, long top, long left, long right, long bottom);
+        public static extern bool BPEncode(IntPtr hInputDIB, double[] outCode, Int32 top, Int32 left, Int32 right, Int32 bottom, string gridFile);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "LoadBPParameters")]
         public static extern bool LoadBPParameters(string paraFile);
@@ -53,10 +53,13 @@ namespace ANNTest
         public static extern bool InitTrainBPLearnSpeed(double learningSpeed);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "InitBPParameters")]
-        public static extern bool InitBPParameters(int inputDim,int implicitDim,int outputDim,double[][] w1,double[] b1,double[][] w2,double[] b2);
+        public static extern bool InitBPParameters(Int32 inputDim, Int32 implicitDim, Int32 outputDim);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "Training")]
         public static extern double Training(double[] input, double[] dest);
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "Recognition")]
+        public static extern bool Recognition(double[] input, [MarshalAs(UnmanagedType.LPArray, SizeConst = 4)]  double[] result);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "ReleaseDIBFile")]
         public static extern bool ReleaseDIBFile(IntPtr hInputDIB);
