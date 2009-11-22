@@ -67,6 +67,7 @@ namespace ANNTest
             this.textParaFactor = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.button9 = new System.Windows.Forms.Button();
+            this.textUnMatch = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
@@ -242,7 +243,7 @@ namespace ANNTest
             this.textTraingInputs.MaxLength = 3276700;
             this.textTraingInputs.Multiline = true;
             this.textTraingInputs.Name = "textTraingInputs";
-            this.textTraingInputs.Size = new System.Drawing.Size(822, 315);
+            this.textTraingInputs.Size = new System.Drawing.Size(822, 174);
             this.textTraingInputs.TabIndex = 19;
             // 
             // textBMPFolders
@@ -285,7 +286,7 @@ namespace ANNTest
             this.btTraining.Name = "btTraining";
             this.btTraining.Size = new System.Drawing.Size(109, 25);
             this.btTraining.TabIndex = 24;
-            this.btTraining.Text = "Training";
+            this.btTraining.Text = "Train";
             this.btTraining.UseVisualStyleBackColor = true;
             this.btTraining.Click += new System.EventHandler(this.btTraining_Click);
             // 
@@ -383,7 +384,7 @@ namespace ANNTest
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(87, 23);
             this.btnStop.TabIndex = 35;
-            this.btnStop.Text = "Stop";
+            this.btnStop.Text = "Test";
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
@@ -393,7 +394,8 @@ namespace ANNTest
             this.textParaFactor.Name = "textParaFactor";
             this.textParaFactor.Size = new System.Drawing.Size(141, 21);
             this.textParaFactor.TabIndex = 36;
-            this.textParaFactor.Text = "16";
+            this.textParaFactor.Text = "1";
+            this.textParaFactor.TextChanged += new System.EventHandler(this.textParaFactor_TextChanged);
             // 
             // label8
             // 
@@ -414,11 +416,21 @@ namespace ANNTest
             this.button9.UseVisualStyleBackColor = true;
             this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
+            // textUnMatch
+            // 
+            this.textUnMatch.Location = new System.Drawing.Point(28, 380);
+            this.textUnMatch.Multiline = true;
+            this.textUnMatch.Name = "textUnMatch";
+            this.textUnMatch.Size = new System.Drawing.Size(821, 121);
+            this.textUnMatch.TabIndex = 39;
+            this.textUnMatch.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(862, 580);
+            this.Controls.Add(this.textUnMatch);
             this.Controls.Add(this.button9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.textParaFactor);
@@ -506,6 +518,7 @@ namespace ANNTest
         private System.Windows.Forms.TextBox textParaFactor;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.TextBox textUnMatch;
     }
 }
 
