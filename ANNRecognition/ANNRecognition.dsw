@@ -15,30 +15,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "BPmy"=E:\LiveMesh\Study\Biyesheji\BPmy\BPmy.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "BPtest"=E:\LiveMesh\Study\Biyesheji\BPtest\BPtest.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "BmpToTif"=..\BMP2TIF\BmpToTif.dsp - Package Owner=<4>
 
 Package=<5>

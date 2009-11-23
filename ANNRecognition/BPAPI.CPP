@@ -2,6 +2,15 @@
 #include "ANNRecognition.h"
 #include <fstream>
 #include <ctime> 
+#include <iostream>
+#include <vector>
+#include <math.h>
+#include <ximacfg.h>
+#include <ximage.h>
+#include <ximatif.h>
+
+using namespace std;
+
 #define MAXDEM 150
 
 long  G_IMPLICITDEM=0;
@@ -562,4 +571,104 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 	::GlobalUnlock((HGLOBAL)hInputDIB);
 
 	return bRet;
+}
+
+
+typedef deque<RECT>  CRectLink;
+typedef deque<HDIB>  HDIBLink;
+extern int m_lianXuShu;
+extern std::vector<CRectLink> g_CharSegmentRet;
+
+ANNRECOGNITION_API BOOL	Recognition_EX(HDIB hInputDIB,LONG charRectID,int * outValues)
+{
+	if(charRectID>=g_CharSegmentRet.size()) return FALSE;
+	
+	CRectLink m_charRect = g_CharSegmentRet[charRectID];
+	CRectLink m_charRectCopy=m_charRect;
+	
+	int digicount=GetSegmentCount(charRectID);
+	
+	HDIBLink m_dibRect;
+	HDIBLink m_dibRectCopy;
+	
+	unsigned char* lpSrc;
+	int w,h;
+	w=RECTWIDTH(&m_charRect.front ());
+	h=RECTHEIGHT(&m_charRect.front ());
+	
+	int i_src,j_src;
+	int i,j;
+	int counts=0;
+	RECT rect;
+	BYTE* lpDIB=(BYTE*)::GlobalLock ((HGLOBAL)hInputDIB);
+	BYTE* lpDIBBits=(BYTE*)::FindDIBBits ((char*)lpDIB);
+	BYTE* lpNewDIBBits;
+	BYTE* lpDst;
+	LONG lLineBytes=(digicount*w+3)/4*4;
+	LONG lLineBytesnew =(w+3)/4*4;
+	HDIB hDIB=NULL;
+	while(!m_charRect.empty ())
+	{
+		hDIB=::NewDIB (w,h,8);
+		lpDIB=(BYTE*) ::GlobalLock((HGLOBAL)hDIB);	
+		lpNewDIBBits = (BYTE*)::FindDIBBits((char*)lpDIB);
+		lpDst=(BYTE*)lpNewDIBBits;
+		memset(lpDst,(BYTE)255,lLineBytesnew * h);		
+		rect=m_charRect.front ();
+		m_charRect.pop_front ();
+		for(i=0;i<h;i++)
+			for(j=0;j<w;j++)
+			{
+				i_src=rect.top + i;
+				j_src=j+counts*w;
+				lpSrc=(BYTE *)lpDIBBits + lLineBytes *  i_src + j_src;
+				lpDst=(BYTE *)lpNewDIBBits + lLineBytesnew * i + j;
+				*lpDst=*lpSrc;
+			}
+			::GlobalUnlock (hDIB);
+			
+			RemoveScatterNoise(hDIB);
+			m_dibRect.push_back (hDIB);
+			counts++;
+	}
+	m_charRect=m_charRectCopy;
+	m_dibRectCopy=m_dibRect;
+
+	counts=0;
+
+	std::vector<double> input(G_INPUTDEM,0.0);
+	std::vector<double> result(G_OUTPUTDEM,0.0);
+
+	while(!m_dibRect.empty ())
+	{
+		for(int i=0;i<G_INPUTDEM;i++)  input[i]=0.0;
+		for(int j=0;i<G_OUTPUTDEM;j++)  result[j]=0.0;
+		
+		if(BPEncode(m_dibRect.front (),&input[0],0,0,0,0,0))
+		{
+			Recognition(&input[0],&result[0]);
+			
+			int intRes=0;
+
+			if(result[0]>0.5)
+				intRes+=1;
+			if(result[1]>0.5)
+				intRes+=2;
+			if(result[2]>0.5)
+				intRes+=4;
+			if(result[3]>0.5)
+				intRes+=8;
+			
+			outValues[counts]=intRes;
+
+			counts++;
+
+		}
+		ReleaseDIBFile(m_dibRect.front ());
+		m_dibRect.pop_front ();
+	}
+	m_dibRect=m_dibRectCopy;
+
+	outValues[counts]=-1;
+	return TRUE;
 }
