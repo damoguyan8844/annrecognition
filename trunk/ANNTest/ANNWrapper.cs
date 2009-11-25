@@ -61,6 +61,9 @@ namespace ANNTest
         [DllImport("ANNRecognition.dll", EntryPoint = "Recognition")]
         public static extern bool Recognition(double[] input, [MarshalAs(UnmanagedType.LPArray, SizeConst = 4)]  double[] result);
 
+        [DllImport("ANNRecognition.dll", EntryPoint = "Recognition_EX")]
+        public static extern bool Recognition_EX(IntPtr hInputDIB, Int32 charRectID, [MarshalAs(UnmanagedType.LPArray, SizeConst = 50)]  int[] result);
+
         [DllImport("ANNRecognition.dll", EntryPoint = "ReleaseDIBFile")]
         public static extern bool ReleaseDIBFile(IntPtr hInputDIB);
 

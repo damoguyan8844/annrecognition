@@ -68,6 +68,7 @@ namespace ANNTest
             this.label8 = new System.Windows.Forms.Label();
             this.button9 = new System.Windows.Forms.Button();
             this.textUnMatch = new System.Windows.Forms.TextBox();
+            this.button10 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -425,11 +426,22 @@ namespace ANNTest
             this.textUnMatch.TabIndex = 39;
             this.textUnMatch.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(715, 173);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(134, 21);
+            this.button10.TabIndex = 40;
+            this.button10.Text = "Recognition";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(862, 580);
+            this.Controls.Add(this.button10);
             this.Controls.Add(this.textUnMatch);
             this.Controls.Add(this.button9);
             this.Controls.Add(this.label8);
@@ -519,6 +531,7 @@ namespace ANNTest
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.TextBox textUnMatch;
+        private System.Windows.Forms.Button button10;
     }
 }
 
