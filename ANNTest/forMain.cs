@@ -363,5 +363,67 @@ namespace ANNTest
         {
 
         }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int[] intRes = new int[64];
+
+                ANNWrapper.BlackWhiteBMP(Application.StartupPath + "\\" + textToPath.Text, Int32.Parse(textInputInt.Text));
+
+                IntPtr hdibHandle = ANNWrapper.ReadDIBFile(Application.StartupPath + "\\" + textToPath.Text);
+
+                ANNWrapper.Convert256toGray(hdibHandle);
+
+                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Convert256toGray.bmp");
+
+                ANNWrapper.ConvertGrayToWhiteBlack(hdibHandle);
+
+                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\ConvertGrayToWhiteBlack.bmp");
+
+                //ANNWrapper.GradientSharp(hdibHandle);
+                ANNWrapper.RemoveScatterNoise(hdibHandle);
+
+                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\RemoveScatterNoise.bmp");
+
+                //ANNWrapper.SlopeAdjust(hdibHandle);
+
+                Int32 charRectID = ANNWrapper.CharSegment(hdibHandle);
+
+                if (charRectID >= 0)
+                {
+                    ANNWrapper.LoadBPParameters(Application.StartupPath + "\\" + textParas.Text);
+           
+                    //ANNWrapper.StdDIBbyRect(hdibHandle, charRectID, 16, 16);
+                    IntPtr newHdibHandle = ANNWrapper.AutoAlign(hdibHandle, charRectID);
+                    ANNWrapper.SaveDIB(newHdibHandle, Application.StartupPath + "\\AutoAlign.bmp");
+                    //ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
+                    ANNWrapper.Recognition_EX(newHdibHandle,charRectID,intRes);
+
+                    string res="";
+                    foreach(int value in intRes)
+                    {
+                        if (value == -1)
+                            break;
+                        res += value.ToString();
+                    }
+
+                    MessageBox.Show(res);
+
+                    ANNWrapper.ReleaseDIBFile(newHdibHandle);
+                }
+                else
+                {
+                    MessageBox.Show("CharSegment Step False");
+                }
+
+                ANNWrapper.ReleaseDIBFile(hdibHandle);
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show(textToPath.Text);
+            }
+        }
     }
 }
