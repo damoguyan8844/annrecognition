@@ -45,7 +45,6 @@ namespace ANNTest
             this.label1 = new System.Windows.Forms.Label();
             this.button6 = new System.Windows.Forms.Button();
             this.textOCRContent = new System.Windows.Forms.TextBox();
-            this.labelPath = new System.Windows.Forms.Label();
             this.button7 = new System.Windows.Forms.Button();
             this.textTraingInputs = new System.Windows.Forms.TextBox();
             this.textBMPFolders = new System.Windows.Forms.TextBox();
@@ -214,19 +213,10 @@ namespace ANNTest
             // 
             // textOCRContent
             // 
-            this.textOCRContent.Location = new System.Drawing.Point(466, 76);
+            this.textOCRContent.Location = new System.Drawing.Point(464, 76);
             this.textOCRContent.Name = "textOCRContent";
             this.textOCRContent.Size = new System.Drawing.Size(317, 21);
             this.textOCRContent.TabIndex = 16;
-            // 
-            // labelPath
-            // 
-            this.labelPath.AutoSize = true;
-            this.labelPath.Location = new System.Drawing.Point(335, 79);
-            this.labelPath.Name = "labelPath";
-            this.labelPath.Size = new System.Drawing.Size(119, 12);
-            this.labelPath.TabIndex = 17;
-            this.labelPath.Text = "OCRFile Full  Path ";
             // 
             // button7
             // 
@@ -464,7 +454,6 @@ namespace ANNTest
             this.Controls.Add(this.textBMPFolders);
             this.Controls.Add(this.textTraingInputs);
             this.Controls.Add(this.button7);
-            this.Controls.Add(this.labelPath);
             this.Controls.Add(this.textOCRContent);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.label1);
@@ -508,7 +497,6 @@ namespace ANNTest
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.TextBox textOCRContent;
-        private System.Windows.Forms.Label labelPath;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.TextBox textTraingInputs;
         private System.Windows.Forms.TextBox textBMPFolders;
