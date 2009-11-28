@@ -97,7 +97,7 @@ ANNRECOGNITION_API BOOL SaveBlockToBMP(LPSTR bmpFile,double leftRate,double topR
 	return FALSE;
 }
 
-ANNRECOGNITION_API BOOL      SaveBlockToBMP2(LPSTR bmpFile,long left,long top, long right, long bottom,LPSTR bmpBlock)
+ANNRECOGNITION_API BOOL SaveBlockToBMP2(LPSTR bmpFile,long left,long top, long right, long bottom,LPSTR bmpBlock)
 {
 	CxImage cxImage; 
 	cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP);
@@ -145,7 +145,7 @@ ANNRECOGNITION_API void	SetWithStraightenImage(BOOL isUse)
 {
 	G_WithStraighten=isUse;
 }
-ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR * content)
+ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 {
 	string strFileName=fullFileName;
 	
@@ -186,8 +186,8 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR * content)
 	
 	if(!strOut.empty())
 	{
-		*content= new char[strOut.size()+1];
-		strncpy(*content,strOut.c_str(),strOut.size()-1);
+		//*content= new char[strOut.size()];
+		strncpy(content,strOut.c_str(),strOut.size());
 	}
 
 	return (num > 0) ? TRUE : FALSE;
