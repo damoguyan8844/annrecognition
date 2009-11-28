@@ -115,6 +115,26 @@ ANNRECOGNITION_API BOOL SaveBlockToBMP2(LPSTR bmpFile,long left,long top, long r
 	
 	return FALSE;
 }
+
+ANNRECOGNITION_API BOOL SaveBlockToBMP3(HBITMAP hDib,long left,long top, long right, long bottom,LPSTR bmpBlock)
+{
+	CxImage cxImage; 
+	cxImage.CreateFromHBITMAP(hDib);
+
+	RECT rect;
+	rect.left=left;
+	rect.top=top;
+	rect.right = right;
+	rect.bottom = bottom;
+	
+	CxImage imgBlock;
+	
+	if(cxImage.Crop(rect,&imgBlock))
+		return imgBlock.Save(bmpBlock,CXIMAGE_FORMAT_BMP);
+	
+	return FALSE;
+}
+
 ANNRECOGNITION_API BOOL	IsOCRAvailable()
 {
 	try	
