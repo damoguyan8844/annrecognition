@@ -51,3 +51,4 @@ EXPORTS
 		SaveSegment
 		Recognition
 		Recognition_EX
+		SaveBlockToBMP3

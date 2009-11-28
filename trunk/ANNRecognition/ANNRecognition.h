@@ -198,6 +198,7 @@ ANNRECOGNITION_API BOOL      BlackWhiteBMP(LPSTR bmpFile,int threshold);
 ANNRECOGNITION_API BOOL      RevertBlackWhiteBMP(LPSTR bmpFile);
 ANNRECOGNITION_API BOOL      SaveBlockToBMP(LPSTR bmpFile,double leftRate,double topRate, double rightRate, double bottomRate,LPSTR bmpBlock);
 ANNRECOGNITION_API BOOL      SaveBlockToBMP2(LPSTR bmpFile,long left,long top, long right, long bottom,LPSTR bmpBlock);
+ANNRECOGNITION_API BOOL      SaveBlockToBMP3(HBITMAP hDib,long left,long top, long right, long bottom,LPSTR bmpBlock);
 ANNRECOGNITION_API BOOL		 IsOCRAvailable();
 ANNRECOGNITION_API LONG		 GetOCRLanguage();
 ANNRECOGNITION_API void		 SetOCRLanguage(LONG language);
