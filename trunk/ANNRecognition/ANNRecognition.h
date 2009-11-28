@@ -203,7 +203,7 @@ ANNRECOGNITION_API LONG		 GetOCRLanguage();
 ANNRECOGNITION_API void		 SetOCRLanguage(LONG language);
 ANNRECOGNITION_API void		 SetWithAutoRotation(BOOL isUse);
 ANNRECOGNITION_API void		 SetWithStraightenImage(BOOL isUse);
-ANNRECOGNITION_API BOOL		 OCRFile(LPSTR fileName,LPSTR * content);
+ANNRECOGNITION_API BOOL		 OCRFile(LPSTR fileName,LPSTR content);
 
 /************************************************************************/
 /* BP 神经网络接口                                                      */
