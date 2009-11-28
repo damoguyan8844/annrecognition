@@ -29,22 +29,22 @@ namespace ANNTest
 
         private void button3_Click(object sender, EventArgs e)
         {
-            DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\");
-            foreach (FileInfo f in Dir.GetFiles("*Capture.bmp"))
-            {
-                textInputBMP.Text = f.Name;
+            //DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\");
+            //foreach (FileInfo f in Dir.GetFiles("*Capture.bmp"))
+            //{
+            //   textInputBMP.Text = f.Name;
                 ANNWrapper.BlackWhiteBMP(Application.StartupPath + "\\" + textInputBMP.Text, Int32.Parse(textInputInt.Text));
-            }
+            //}
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-             DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\");
-             foreach (FileInfo f in Dir.GetFiles("*Capture.bmp"))
-             {
-                 textInputBMP.Text = f.Name;
+             //DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\");
+             //foreach (FileInfo f in Dir.GetFiles("*Capture.bmp"))
+             //{
+             //    textInputBMP.Text = f.Name;
                  ANNWrapper.RevertBlackWhiteBMP(Application.StartupPath + "\\" + textInputBMP.Text);
-             }
+             //}
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -60,8 +60,10 @@ namespace ANNTest
         private void button6_Click(object sender, EventArgs e)
         {
             string strContent;
-            labelPath.Text = Application.StartupPath + "\\" + textInputTIF.Text;
-            ANNWrapper.OCRFile(Application.StartupPath +"\\"+ textInputTIF.Text, out strContent);
+            byte[] tempParas = new byte[1024];
+            ANNWrapper.OCRFile(Application.StartupPath + "\\" + textInputTIF.Text, tempParas);
+
+            strContent  = System.Text.Encoding.GetEncoding("GB2312").GetString(tempParas, 0, tempParas.Length);
             textOCRContent.Text = strContent;
         }
 
