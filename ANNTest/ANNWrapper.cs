@@ -28,6 +28,11 @@ namespace ANNTest
                 Int32 leftRate, Int32 topRate, Int32 rightRate, Int32 bottomRate,
                 string blockBMPFile);
 
+        [DllImport("ANNRecognition.dll", EntryPoint = "SaveBlockToBMP3")]
+        public static extern bool SaveBlockToBMP3(IntPtr hInputDIB,
+                Int32 leftRate, Int32 topRate, Int32 rightRate, Int32 bottomRate,
+                string blockBMPFile);
+
         [DllImport("ANNRecognition.dll", EntryPoint = "OCRFile")]
         public static extern bool OCRFile(string bmpFile, byte[] content);
 

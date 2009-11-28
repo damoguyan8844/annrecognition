@@ -148,12 +148,31 @@ namespace ANNTest
 
         private void button8_Click(object sender, EventArgs e)
         {
-            ANNWrapper.SaveBlockToBMP2(Application.StartupPath + "\\"+textSubsystemBMP.Text,
-             Int32.Parse(textLeft.Text),
-             Int32.Parse(textTop.Text),
-             Int32.Parse(textRight.Text),
-             Int32.Parse(textBottom.Text),
-             Application.StartupPath + "\\"+textToPath.Text);
+            System.Drawing.Bitmap tempBit= new System.Drawing.Bitmap(Application.StartupPath + "\\" + textSubsystemBMP.Text);
+            System.Drawing.Rectangle rect = new System.Drawing.Rectangle(
+                Int32.Parse(textLeft.Text),
+                Int32.Parse(textTop.Text),
+                Int32.Parse(textRight.Text) - Int32.Parse(textLeft.Text),
+                Int32.Parse(textBottom.Text) - Int32.Parse(textTop.Text)
+                );
+
+            System.Drawing.Bitmap block = tempBit.Clone(rect,tempBit.PixelFormat);
+            ANNWrapper.SaveBlockToBMP3(block.GetHbitmap(), 0, 0, rect.Width, rect.Height, Application.StartupPath + "\\" + textToPath.Text);
+
+
+            //ANNWrapper.SaveBlockToBMP3(block.GetHbitmap(),
+            // Int32.Parse(textLeft.Text),
+            // Int32.Parse(textTop.Text),
+            // Int32.Parse(textRight.Text),
+            // Int32.Parse(textBottom.Text),
+            // Application.StartupPath + "\\" + textToPath.Text);
+
+            //ANNWrapper.SaveBlockToBMP2(Application.StartupPath + "\\" + textSubsystemBMP.Text,
+            // Int32.Parse(textLeft.Text),
+            // Int32.Parse(textTop.Text),
+            // Int32.Parse(textRight.Text),
+            // Int32.Parse(textBottom.Text),
+            // Application.StartupPath + "\\" + textToPath.Text);
         }
 
         private bool m_stop = false;
