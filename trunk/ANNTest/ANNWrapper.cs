@@ -4,7 +4,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 namespace ANNTest
 {
-    class ANNWrapper
+    public class ANNWrapper
     {
         [DllImport("ANNRecognition.dll", EntryPoint = "ConvertJPEG2BMP")]
         public static extern bool ConvertJPEG2BMP(string jpegFile,string bmpFile);
