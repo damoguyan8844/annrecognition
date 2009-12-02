@@ -306,8 +306,8 @@ ANNRECOGNITION_API double	 CheakDiffs(double *output,double * dest)
 	double aver_def=0;
 	while(k<G_OUTPUTDEM) 
 	{
-		DEF_OUTPUTDEM[k]=(dest[k]-output[k])*DEF_WEIGHTS[k];		 		
-		aver_def+=DEF_OUTPUTDEM[k]*DEF_OUTPUTDEM[k]*0.5;         
+		DEF_OUTPUTDEM[G_OUTPUTDEM-1-k]=(dest[k]-output[k])*DEF_WEIGHTS[k];		 		
+		aver_def+=DEF_OUTPUTDEM[G_OUTPUTDEM-1-k]*DEF_OUTPUTDEM[G_OUTPUTDEM-1-k]*0.5;         
 		k++; 
 	}
 	aver_def/=G_OUTPUTDEM;
@@ -495,51 +495,114 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 	{
 		//??????,????????,?????,???
 
+		RECT smallRange;
+		smallRange.left=range.right;
+		smallRange.right = range.left;
+		smallRange.top=range.bottom;
+		smallRange.bottom=range.top;
+
+		for(int ii = range.top; ii < range.bottom; ii++)
+		{	
+			for(int jj = range.left; jj < range.right; jj++)
+			{
+				lpSrc = (unsigned char*)lpDIBBits + lLineBytes * ii + jj;					
+				if(*lpSrc<200) //Black Point
+				{
+					if(ii<smallRange.top)
+						smallRange.top=ii;
+					if(ii>smallRange.bottom)
+						smallRange.bottom=ii;
+					if(jj<smallRange.left)
+						smallRange.left=jj;
+					if(jj>smallRange.right)
+						smallRange.right=jj;
+				}
+			}
+		}
+		range=smallRange;
+		if(pfout) 
+		{
+			(*pfout)<<"\nWidth:"<<lWidth<<",Height:"<<lHeight<<endl;
+			(*pfout)<<"\nLeft:"<<range.left<<",Right:"<<range.right<<",Top:"<<lHeight-range.bottom<<",Bottom:"<<lHeight-range.top<<"\n";
+		}
+
 		RECT enlargedRange=range;
 		
-		int widthBlank=RECTWIDTH(&range)%8;
-		enlargedRange.left=range.left-widthBlank/2;
-// 		if(enlargedRange.left<0)
-// 			enlargedRange.left=0;
-		if(widthBlank<=0)
-			widthBlank=8;
+		int widthBlank=8-RECTWIDTH(&range)%8;
+		
+		if(widthBlank!=8)
+		{
+			if(widthBlank<4) //Enlarge
+			{
+				enlargedRange.left=range.left-widthBlank/2;
+				enlargedRange.right=range.right + widthBlank -widthBlank/2;
+			}
+			else //Smaller
+			{
+				widthBlank=8-widthBlank;
 
-		enlargedRange.right=enlargedRange.left + RECTWIDTH(&range)-widthBlank+8;
+				int move=widthBlank/2;
+				if(range.left<(lWidth-range.right))
+					move+=1;
 
-		int heightBlank=RECTHEIGHT(&range)%8;
-		enlargedRange.top=range.top-heightBlank/2;
-// 		if(enlargedRange.top<0)
-// 			enlargedRange.top=0;
-		if(heightBlank<=0)
-			heightBlank=8;
+				enlargedRange.left=range.left+move;
+				enlargedRange.right=range.right - (widthBlank -move);
+			}
+		}
 
-		enlargedRange.bottom=enlargedRange.top+RECTHEIGHT(&range)-heightBlank+8;
+		int heightBlank=8-RECTHEIGHT(&range)%8;
+		
+		if(heightBlank!=8)
+		{
+			if(heightBlank<4) //Enlarge
+			{
+				enlargedRange.top=range.top-heightBlank/2;
+				enlargedRange.bottom=range.bottom+heightBlank-heightBlank/2;
+			}
+			else //Smaller
+			{
+				heightBlank=8-heightBlank;
+
+				int move=heightBlank/2;
+				if(range.top<(lHeight-range.bottom))
+					move+=1;
+
+				enlargedRange.top=range.top+move;
+				enlargedRange.bottom=range.bottom-(heightBlank-move);
+			}
+		}
 
 		int gridWidth=RECTWIDTH(&enlargedRange)/8;
 		int gridHeight=RECTHEIGHT(&enlargedRange)/8;
 		
+		if(pfout) 
+		{
+			(*pfout)<<"\nLeft:"<<enlargedRange.left<<",Right:"<<enlargedRange.right<<",Top:"<<lHeight-enlargedRange.bottom<<",Bottom:"<<lHeight-enlargedRange.top<<"\n";
+		}
+
 		double factor=1.0/(gridWidth*gridHeight);
 		//????
-		for(int i = enlargedRange.top; i < enlargedRange.bottom; i++)
+		for(int i = enlargedRange.bottom; i > enlargedRange.top; i --)
 		{		
-			int line=enlargedRange.bottom-i;
+		//	int line=lHeight-(i-enlargedRange.top);
+			int line=i;
 
 			//????
 			for(int j = enlargedRange.left; j < enlargedRange.right; j++)
 			{	
 				int col=j;
 		
-				if(line<range.top || line>=range.bottom ||col<range.left || col>=range.right)
+				if(line<=range.top || line>range.bottom ||col<range.left || col>=range.right)
 					lpSrc = & byte255; 					
 				else
 					// ??DIB?i?,?j??????
 					lpSrc = (unsigned char*)lpDIBBits + lLineBytes * line + col;
 			
 				//??150,?????
-				if(*lpSrc<150)
+				if(*lpSrc<200)
 				{
 					if(pfout) (*pfout)<<1<<",";
-					*(outCode+((i-enlargedRange.top)/gridHeight)*8+(j-enlargedRange.left)/gridWidth)+=factor;
+					*(outCode+((enlargedRange.bottom -i)/gridHeight)*8+(j-enlargedRange.left)/gridWidth)+=factor;
 				}
 				else
 				{

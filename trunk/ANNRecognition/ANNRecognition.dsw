@@ -15,6 +15,30 @@ Package=<4>
 
 ###############################################################################
 
+Project: "BPmy"=..\BPmy\BPmy.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "BPtest"=..\BPtest\BPtest.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "BmpToTif"=..\BMP2TIF\BmpToTif.dsp - Package Owner=<4>
 
 Package=<5>
@@ -28,6 +52,18 @@ Package=<4>
 ###############################################################################
 
 Project: "DigitRec"=..\DigitRec\DigitRec.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "test"=..\..\CCB\CCB2010\ShiJiaSDK\test\test.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
