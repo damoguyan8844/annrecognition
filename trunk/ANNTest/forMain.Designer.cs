@@ -68,6 +68,9 @@ namespace ANNTest
             this.button9 = new System.Windows.Forms.Button();
             this.textUnMatch = new System.Windows.Forms.TextBox();
             this.button10 = new System.Windows.Forms.Button();
+            this.button11 = new System.Windows.Forms.Button();
+            this.button12 = new System.Windows.Forms.Button();
+            this.button13 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -220,9 +223,9 @@ namespace ANNTest
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(221, 171);
+            this.button7.Location = new System.Drawing.Point(395, 173);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(100, 23);
+            this.button7.Size = new System.Drawing.Size(86, 23);
             this.button7.TabIndex = 18;
             this.button7.Text = "BPEncode";
             this.button7.UseVisualStyleBackColor = true;
@@ -381,9 +384,9 @@ namespace ANNTest
             // 
             // textParaFactor
             // 
-            this.textParaFactor.Location = new System.Drawing.Point(456, 173);
+            this.textParaFactor.Location = new System.Drawing.Point(576, 171);
             this.textParaFactor.Name = "textParaFactor";
-            this.textParaFactor.Size = new System.Drawing.Size(141, 21);
+            this.textParaFactor.Size = new System.Drawing.Size(133, 21);
             this.textParaFactor.TabIndex = 36;
             this.textParaFactor.Text = "1";
             this.textParaFactor.TextChanged += new System.EventHandler(this.textParaFactor_TextChanged);
@@ -391,7 +394,7 @@ namespace ANNTest
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(371, 177);
+            this.label8.Location = new System.Drawing.Point(493, 177);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(83, 12);
             this.label8.TabIndex = 37;
@@ -426,11 +429,44 @@ namespace ANNTest
             this.button10.UseVisualStyleBackColor = true;
             this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(201, 173);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(65, 22);
+            this.button11.TabIndex = 41;
+            this.button11.Text = "Revert";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
+            // button12
+            // 
+            this.button12.Location = new System.Drawing.Point(272, 173);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(64, 22);
+            this.button12.TabIndex = 42;
+            this.button12.Text = "Split";
+            this.button12.UseVisualStyleBackColor = true;
+            this.button12.Click += new System.EventHandler(this.button12_Click);
+            // 
+            // button13
+            // 
+            this.button13.Location = new System.Drawing.Point(343, 173);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(51, 22);
+            this.button13.TabIndex = 43;
+            this.button13.Text = "SplitD";
+            this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.button13_Click);
+            // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(862, 580);
+            this.Controls.Add(this.button13);
+            this.Controls.Add(this.button12);
+            this.Controls.Add(this.button11);
             this.Controls.Add(this.button10);
             this.Controls.Add(this.textUnMatch);
             this.Controls.Add(this.button9);
@@ -520,6 +556,9 @@ namespace ANNTest
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.TextBox textUnMatch;
         private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.Button button13;
     }
 }
 

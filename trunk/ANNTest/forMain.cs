@@ -179,7 +179,7 @@ namespace ANNTest
         private void btTraining_Click(object sender, EventArgs e)
         {
             m_stop = false;
-            btTraining.Enabled = false;
+           // btTraining.Enabled = false;
 
             if (textParas.Text.Length > 0)
                 ANNWrapper.LoadBPParameters(Application.StartupPath + "\\" + textParas.Text);
@@ -440,6 +440,138 @@ namespace ANNTest
                 }
 
                 ANNWrapper.ReleaseDIBFile(hdibHandle);
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show(textToPath.Text);
+            }
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\" + textBMPFolders.Text);
+           
+                foreach (FileInfo f in Dir.GetFiles("*.bmp"))
+                {
+                    textInputBMP.Text = textBMPFolders.Text+"\\"+f.Name;
+                    button4_Click(sender, e);
+                }
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show(textToPath.Text);
+            }
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                DirectoryInfo DirNew = new DirectoryInfo(Application.StartupPath + "\\" + textBMPFolders.Text + "\\BMPFolders");
+                if (!DirNew.Exists)
+                    DirNew.Create();
+
+                DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\" + textBMPFolders.Text);
+
+                foreach (FileInfo f in Dir.GetFiles("*.bmp"))
+                {
+                    textToPath.Text = textBMPFolders.Text + "\\" + f.Name;
+
+                    ANNWrapper.BlackWhiteBMP(Application.StartupPath + "\\" + textToPath.Text, Int32.Parse(textInputInt.Text));
+
+                    IntPtr hdibHandle = ANNWrapper.ReadDIBFile(Application.StartupPath + "\\" + textToPath.Text);
+
+                    ANNWrapper.Convert256toGray(hdibHandle);
+
+                    ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Convert256toGray.bmp");
+
+                    ANNWrapper.ConvertGrayToWhiteBlack(hdibHandle);
+
+                    ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\ConvertGrayToWhiteBlack.bmp");
+
+                    //ANNWrapper.GradientSharp(hdibHandle);
+                    ANNWrapper.RemoveScatterNoise(hdibHandle);
+
+                    ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\RemoveScatterNoise.bmp");
+
+                    //ANNWrapper.SlopeAdjust(hdibHandle);
+
+                    Int32 charRectID = ANNWrapper.CharSegment(hdibHandle);
+
+                    if (charRectID >= 0)
+                    {
+                        IntPtr newHdibHandle = ANNWrapper.AutoAlign(hdibHandle, charRectID);
+                        ANNWrapper.SaveDIB(newHdibHandle, Application.StartupPath + "\\AutoAlign.bmp");
+                        ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\" + textBMPFolders.Text+"\\BMPFolders");
+                        ANNWrapper.ReleaseDIBFile(newHdibHandle);
+                    }
+                    else
+                    {
+                        MessageBox.Show("CharSegment Step Failure !");
+                    }
+
+                    ANNWrapper.ReleaseDIBFile(hdibHandle);
+                }
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show(textToPath.Text);
+            }
+        }
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DirectoryInfo DirNew = new DirectoryInfo(Application.StartupPath + "\\" + textBMPFolders.Text + "\\BMPFolders");
+                if (!DirNew.Exists)
+                    DirNew.Create();
+
+                DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\" + textBMPFolders.Text);
+
+                foreach (FileInfo f in Dir.GetFiles("*.bmp"))
+                {
+                    textToPath.Text = textBMPFolders.Text + "\\" + f.Name;
+
+                    //ANNWrapper.BlackWhiteBMP(Application.StartupPath + "\\" + textToPath.Text, Int32.Parse(textInputInt.Text));
+
+                    IntPtr hdibHandle = ANNWrapper.ReadDIBFile(Application.StartupPath + "\\" + textToPath.Text);
+
+                    ANNWrapper.Convert256toGray(hdibHandle);
+
+                    //ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Convert256toGray.bmp");
+
+                    ANNWrapper.ConvertGrayToWhiteBlack(hdibHandle);
+
+                    //ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\ConvertGrayToWhiteBlack.bmp");
+
+                    ////ANNWrapper.GradientSharp(hdibHandle);
+                    ANNWrapper.RemoveScatterNoise(hdibHandle);
+
+                    //ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\RemoveScatterNoise.bmp");
+
+                    //ANNWrapper.SlopeAdjust(hdibHandle);
+
+                    Int32 charRectID = ANNWrapper.CharSegment(hdibHandle);
+
+                    if (charRectID >= 0)
+                    {
+                        IntPtr newHdibHandle = ANNWrapper.AutoAlign(hdibHandle, charRectID);
+                        ANNWrapper.SaveDIB(newHdibHandle, Application.StartupPath + "\\AutoAlign.bmp");
+                        ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\" + textBMPFolders.Text + "\\BMPFolders");
+                        ANNWrapper.ReleaseDIBFile(newHdibHandle);
+                    }
+                    else
+                    {
+                        MessageBox.Show("CharSegment Step Failure !");
+                    }
+
+                    ANNWrapper.ReleaseDIBFile(hdibHandle);
+                }
             }
             catch (Exception exp)
             {
