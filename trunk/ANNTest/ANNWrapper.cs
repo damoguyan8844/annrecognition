@@ -4,8 +4,17 @@ using System.Text;
 using System.Runtime.InteropServices;
 namespace ANNTest
 {
+    //#define  LOG_ERROR 0x0000
+    //#define  LOG_INFO 0x0010
+    //#define  LOG_DEBUG 0x0100
+
+    public delegate void LogCallbackDelegate(Int32 logType,string newCapture);
+
     public class ANNWrapper
     {
+        [DllImport("ANNRecognition.dll", EntryPoint = "SetLogHandler")]
+        public static extern void SetLogHandler( LogCallbackDelegate logger);
+
         [DllImport("ANNRecognition.dll", EntryPoint = "ConvertJPEG2BMP")]
         public static extern bool ConvertJPEG2BMP(string jpegFile,string bmpFile);
 

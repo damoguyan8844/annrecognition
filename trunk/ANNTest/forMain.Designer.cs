@@ -71,6 +71,7 @@ namespace ANNTest
             this.button11 = new System.Windows.Forms.Button();
             this.button12 = new System.Windows.Forms.Button();
             this.button13 = new System.Windows.Forms.Button();
+            this.button14 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -276,9 +277,9 @@ namespace ANNTest
             // 
             // btTraining
             // 
-            this.btTraining.Location = new System.Drawing.Point(636, 535);
+            this.btTraining.Location = new System.Drawing.Point(650, 538);
             this.btTraining.Name = "btTraining";
-            this.btTraining.Size = new System.Drawing.Size(109, 25);
+            this.btTraining.Size = new System.Drawing.Size(131, 25);
             this.btTraining.TabIndex = 24;
             this.btTraining.Text = "Train";
             this.btTraining.UseVisualStyleBackColor = true;
@@ -348,7 +349,7 @@ namespace ANNTest
             this.chkAutoSave.AutoSize = true;
             this.chkAutoSave.Checked = true;
             this.chkAutoSave.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkAutoSave.Location = new System.Drawing.Point(495, 540);
+            this.chkAutoSave.Location = new System.Drawing.Point(475, 540);
             this.chkAutoSave.Name = "chkAutoSave";
             this.chkAutoSave.Size = new System.Drawing.Size(102, 16);
             this.chkAutoSave.TabIndex = 32;
@@ -374,9 +375,9 @@ namespace ANNTest
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(762, 536);
+            this.btnStop.Location = new System.Drawing.Point(789, 536);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(87, 23);
+            this.btnStop.Size = new System.Drawing.Size(61, 27);
             this.btnStop.TabIndex = 35;
             this.btnStop.Text = "Test";
             this.btnStop.UseVisualStyleBackColor = true;
@@ -459,11 +460,22 @@ namespace ANNTest
             this.button13.UseVisualStyleBackColor = true;
             this.button13.Click += new System.EventHandler(this.button13_Click);
             // 
+            // button14
+            // 
+            this.button14.Location = new System.Drawing.Point(579, 538);
+            this.button14.Name = "button14";
+            this.button14.Size = new System.Drawing.Size(65, 25);
+            this.button14.TabIndex = 44;
+            this.button14.Text = "PrintPara";
+            this.button14.UseVisualStyleBackColor = true;
+            this.button14.Click += new System.EventHandler(this.button14_Click);
+            // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(862, 580);
+            this.Controls.Add(this.button14);
             this.Controls.Add(this.button13);
             this.Controls.Add(this.button12);
             this.Controls.Add(this.button11);
@@ -559,6 +571,7 @@ namespace ANNTest
         private System.Windows.Forms.Button button11;
         private System.Windows.Forms.Button button12;
         private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Button button14;
     }
 }
 
