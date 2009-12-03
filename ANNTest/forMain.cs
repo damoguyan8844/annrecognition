@@ -15,6 +15,12 @@ namespace ANNTest
         public formMain()
         {
             InitializeComponent();
+            ANNWrapper.SetLogHandler(new LogCallbackDelegate(LoggerFunction));
+        }
+
+        private static void LoggerFunction(Int32 logType,string message)
+        {
+            MessageBox.Show(message);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -188,7 +194,9 @@ namespace ANNTest
 
             if (textTraingInputs.Lines.Length<1)
                 return ;
-            
+
+            MessageBox.Show(textTraingInputs.Lines.Length.ToString() + " Lines!");
+
             int divideFactor = Int32.Parse(textParaFactor.Text);
             int count = 0;
 
@@ -214,22 +222,22 @@ namespace ANNTest
 
                     string dest=Convert.ToString(Int32.Parse(strs[64]), 2);
 
-                    if (dest.Length > 0 && dest[0] == '1')
+                    if (dest.Length > 0 && dest[dest.Length-1-0] == '1')
                         dests[0] = 1.0;
                     else
                         dests[0] = 0.0;
 
-                    if (dest.Length > 1 && dest[1] == '1')
+                    if (dest.Length > 1 && dest[dest.Length-1-1] == '1')
                         dests[1] = 1.0;
                     else
                         dests[1] = 0.0;
 
-                    if (dest.Length > 2 && dest[2] == '1')
+                    if (dest.Length > 2 && dest[dest.Length-1-2] == '1')
                         dests[2] = 1.0;
                     else
                         dests[2] = 0.0;
 
-                    if (dest.Length > 3 && dest[3] == '1')
+                    if (dest.Length > 3 && dest[dest.Length-1-3] == '1')
                         dests[3] = 1.0;
                     else
                         dests[3] = 0.0;
@@ -247,7 +255,9 @@ namespace ANNTest
 
                     ANNWrapper.SaveBPParameters(Application.StartupPath + "\\" + textParas.Text);
                 }
+                textUnMatch.AppendText(this_dif.ToString()+"\r\n");
                 btTraining.Text=this_dif.ToString();
+                btTraining.Update();
                 if(this_dif<=accpt_diff || m_stop==true)
                 {
                     ANNWrapper.SaveBPParameters(Application.StartupPath + "\\" + textParas.Text);
@@ -577,6 +587,16 @@ namespace ANNTest
             {
                 MessageBox.Show(textToPath.Text);
             }
+        }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+            if (textParas.Text.Length > 0)
+                ANNWrapper.LoadBPParameters(Application.StartupPath + "\\" + textParas.Text);
+            else
+                ANNWrapper.InitBPParameters(64, 8, 4);
+
+            ANNWrapper.PrintBPParameters(Application.StartupPath + "\\" + textParas.Text+"Print.txt");
         }
     }
 }
