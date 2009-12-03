@@ -71,6 +71,9 @@ DECLARE_HANDLE(HDIB);
 ANNRECOGNITION_API int		 ANNRecognitionVersion(void);
 ANNRECOGNITION_API void		 ANNRecognitionLog(LPSTR message,int logType);
 
+typedef void(__stdcall *  fun_Logger)(int logType,LPSTR strContent);
+ANNRECOGNITION_API void		 SetLogHandler( fun_Logger logger);
+
 /************************************************************************/
 /*   DIBAPI º¯ÊýÔ­ÐÍ                                                    */
 /************************************************************************/
