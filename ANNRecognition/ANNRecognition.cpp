@@ -31,7 +31,15 @@ ANNRECOGNITION_API int ANNRecognitionVersion(void)
 	return THIS_VERSION;
 }
 
+fun_Logger g_logger=0;
+
 ANNRECOGNITION_API void ANNRecognitionLog( LPSTR message,int logType )
 {
+	if(g_logger)
+		g_logger(logType,message);		
 	return ;	
+}
+ANNRECOGNITION_API void SetLogHandler( fun_Logger logger )
+{
+		g_logger=logger;
 }

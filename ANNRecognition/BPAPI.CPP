@@ -243,8 +243,8 @@ ANNRECOGNITION_API BOOL	InitBPParameters_EX(LONG input,LONG implicit,LONG output
 			if(b1!=0)
 				B_IMPLICITDEM[i]=b1[i];
 			else
-//				B_IMPLICITDEM[i]=rand()*1.0/temp/RAND_MAX;
-				B_IMPLICITDEM[i]=0.0;
+				B_IMPLICITDEM[i]=rand()*1.0/temp/RAND_MAX;
+//				B_IMPLICITDEM[i]=0.0;
 		}    
 		temp=pow(G_IMPLICITDEM,0.5);	
 		for(   i=0;i<G_OUTPUTDEM;i++)     //???W2,B2
@@ -261,8 +261,8 @@ ANNRECOGNITION_API BOOL	InitBPParameters_EX(LONG input,LONG implicit,LONG output
 			if(b2!=0)
 				B_OUTPUTDEM[i]=b2[i];
 			else
-//				B_OUTPUTDEM[i]=rand()*1.0/temp/RAND_MAX;
-				B_OUTPUTDEM[i]=0.0;
+				B_OUTPUTDEM[i]=rand()*1.0/temp/RAND_MAX;
+//				B_OUTPUTDEM[i]=0.0;
 		}
 		
 		bRet=TRUE;
@@ -306,8 +306,8 @@ ANNRECOGNITION_API double	 CheakDiffs(double *output,double * dest)
 	double aver_def=0;
 	while(k<G_OUTPUTDEM) 
 	{
-		DEF_OUTPUTDEM[G_OUTPUTDEM-1-k]=(dest[k]-output[k])*DEF_WEIGHTS[k];		 		
-		aver_def+=DEF_OUTPUTDEM[G_OUTPUTDEM-1-k]*DEF_OUTPUTDEM[G_OUTPUTDEM-1-k]*0.5;         
+		DEF_OUTPUTDEM[k]=(dest[k]-output[k])*DEF_WEIGHTS[k];		 		
+		aver_def+=DEF_OUTPUTDEM[k]*DEF_OUTPUTDEM[k]*0.5;         
 		k++; 
 	}
 	aver_def/=G_OUTPUTDEM;

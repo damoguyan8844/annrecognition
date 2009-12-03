@@ -63,6 +63,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "ShiJiaSDKWrapper"=..\..\CCB\CCB2010\ShiJiaSDKWrapper\ShiJiaSDKWrapper.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "test"=..\..\CCB\CCB2010\ShiJiaSDK\test\test.dsp - Package Owner=<4>
 
 Package=<5>
