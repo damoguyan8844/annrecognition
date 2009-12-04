@@ -193,13 +193,18 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 	pDoc->Create(strFileName.c_str());
 	pDoc->OCR( G_MILANGUAGE, G_WithAutoRotation, G_WithStraighten);
 	IImages images = pDoc->GetImages();
-	long	  num =images.GetCount();
-	for( int i = 0; i < num; i++ )
+	
+	if(images!=0)
 	{
-		IImage  image = images.GetItem(i);
-		ILayout layout = image.GetLayout();
-		strOut+=layout.GetText();
+		long num =images.GetCount();
+		for( int i = 0; i < num; i++ )
+		{
+			IImage  image = images.GetItem(i);
+			ILayout layout = image.GetLayout();
+			strOut+=layout.GetText();
+		}
 	}
+
 	pDoc->Close(0);
 	pDoc->ReleaseDispatch();
 	delete pDoc;
@@ -210,5 +215,5 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 		strncpy(content,strOut.c_str(),strOut.size());
 	}
 
-	return (num > 0) ? TRUE : FALSE;
+	return (!strOut.empty()) ? TRUE : FALSE;
 }
