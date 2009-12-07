@@ -18,6 +18,8 @@
 #include <cassert>
 #include <comutil.h>
 
+extern BOOL G_OCRDocumentError;
+
 #define  ASSERT assert
 typedef LPVOID* LPLP;
 
@@ -353,6 +355,7 @@ void COleDispatchDriver::InvokeHelperV(DISPID dwDispID, WORD wFlags,
 				break;
 
 			default:
+				G_OCRDocumentError=TRUE;
 				ASSERT(FALSE);  // unknown type!
 				break;
 			}
@@ -440,6 +443,7 @@ void COleDispatchDriver::InvokeHelperV(DISPID dwDispID, WORD wFlags,
 // 		// then throw the exception
 // 		THROW(pException);
 		ANNRecognitionLog("OCR Create Document Error",LOG_ERROR);
+		G_OCRDocumentError=TRUE;
 		ASSERT(FALSE);  // not reached
 	}
 
@@ -504,7 +508,9 @@ void COleDispatchDriver::InvokeHelperV(DISPID dwDispID, WORD wFlags,
 			break;
 
 		default:
+			G_OCRDocumentError=TRUE;
 			ASSERT(FALSE);  // invalid return type specified
+			break;
 		}
 	}
 }
