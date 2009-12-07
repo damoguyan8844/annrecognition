@@ -18,6 +18,8 @@ MiLANGUAGES G_MILANGUAGE=miLANG_CHINESE_SIMPLIFIED;
 BOOL G_WithAutoRotation=FALSE;
 BOOL G_WithStraighten=FALSE;
 
+BOOL G_OCRDocumentError=FALSE;
+
 ANNRECOGNITION_API BOOL ConvertJPEG2BMP(LPSTR jpegFile , LPSTR bmpFile)
 {
 	CxImage cxImage; 
@@ -188,32 +190,53 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 	
 	string strOut;
 
-	IDocument *pDoc = new IDocument;
-	pDoc->CreateDispatch("MODI.Document");
-	pDoc->Create(strFileName.c_str());
-	pDoc->OCR( G_MILANGUAGE, G_WithAutoRotation, G_WithStraighten);
-	IImages images = pDoc->GetImages();
-	
-	if(images!=0)
+	try
 	{
-		long num =images.GetCount();
-		for( int i = 0; i < num; i++ )
+		G_OCRDocumentError=FALSE;
+
+		IDocument *pDoc = new IDocument;
+		pDoc->CreateDispatch("MODI.Document");
+		
+		if(!G_OCRDocumentError)
+			pDoc->Create(strFileName.c_str());
+		if(!G_OCRDocumentError)
+			pDoc->OCR( G_MILANGUAGE, G_WithAutoRotation, G_WithStraighten);
+		
+		if(!G_OCRDocumentError)
 		{
-			IImage  image = images.GetItem(i);
-			ILayout layout = image.GetLayout();
-			strOut+=layout.GetText();
+			IImages images = pDoc->GetImages();
+		
+			if(images!=0)
+			{
+				long num =images.GetCount();
+				for( int i = 0; i < num; i++ )
+				{
+					IImage  image = images.GetItem(i);
+					if(!G_OCRDocumentError)
+					{
+						ILayout layout = image.GetLayout();
+						if(!G_OCRDocumentError)
+							strOut+=layout.GetText();
+					}
+				}
+			}
 		}
-	}
 
-	pDoc->Close(0);
-	pDoc->ReleaseDispatch();
-	delete pDoc;
-	
-	if(!strOut.empty())
+		pDoc->Close(0);
+		pDoc->ReleaseDispatch();
+		delete pDoc;
+		
+		if(!strOut.empty())
+		{
+			//*content= new char[strOut.size()];
+			strncpy(content,strOut.c_str(),strOut.size());
+		}
+
+		return (!strOut.empty()) ? TRUE : FALSE;
+	}
+	catch(...)
 	{
-		//*content= new char[strOut.size()];
-		strncpy(content,strOut.c_str(),strOut.size());
+		ANNRecognitionLog((char *)string(fullFileName).append(":OCRFile Error").c_str(),LOG_ERROR);
 	}
-
-	return (!strOut.empty()) ? TRUE : FALSE;
+	return FALSE;
 }
