@@ -429,18 +429,23 @@ namespace ANNTest
                     //ANNWrapper.StdDIBbyRect(hdibHandle, charRectID, 16, 16);
                     IntPtr newHdibHandle = ANNWrapper.AutoAlign(hdibHandle, charRectID);
                     ANNWrapper.SaveDIB(newHdibHandle, Application.StartupPath + "\\AutoAlign.bmp");
-                    //ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
-                    ANNWrapper.Recognition_EX(newHdibHandle,charRectID,intRes);
+                    //charRectID = ANNWrapper.CharSegment(newHdibHandle);
 
-                    string res="";
-                    foreach(int value in intRes)
+                    if (charRectID >= 0)
                     {
-                        if (value == -1)
-                            break;
-                        res += value.ToString();
-                    }
+                        ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
+                        ANNWrapper.Recognition_EX(newHdibHandle, charRectID, intRes);
 
-                    MessageBox.Show(res);
+                        string res = "";
+                        foreach (int value in intRes)
+                        {
+                            if (value == -1)
+                                break;
+                            res += value.ToString();
+                        }
+
+                        MessageBox.Show(res);
+                    }
 
                     ANNWrapper.ReleaseDIBFile(newHdibHandle);
                 }

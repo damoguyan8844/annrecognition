@@ -371,7 +371,7 @@ namespace ANNTest
             this.textParas.Name = "textParas";
             this.textParas.Size = new System.Drawing.Size(142, 21);
             this.textParas.TabIndex = 34;
-            this.textParas.Text = "001278.dat";
+            this.textParas.Text = "BWParas.dat";
             // 
             // btnStop
             // 
