@@ -177,7 +177,7 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 
 	ENUM_CXIMAGE_FORMATS type=CXIMAGE_FORMAT_BMP;
 	if( stricmp(strType.c_str(),"tif")==0||
-		stricmp(strType.c_str(),"tiff")==0) 
+		stricmp(strType.c_str(),"iff")==0) 
 		type=CXIMAGE_FORMAT_TIF;
 	else if( stricmp(strType.c_str(),"jpg")==0 ) 
 		type=CXIMAGE_FORMAT_JPG;
@@ -189,19 +189,26 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 	ComEnvSetter envSetter;
 	
 	string strOut;
-
+	
+	int debug=0;
 	try
 	{
 		G_OCRDocumentError=FALSE;
 
 		IDocument *pDoc = new IDocument;
 		pDoc->CreateDispatch("MODI.Document");
-		
+
+		debug=1;
 		if(!G_OCRDocumentError)
+		{
 			pDoc->Create(strFileName.c_str());
+		}
+		debug=2;
 		if(!G_OCRDocumentError)
+		{
 			pDoc->OCR( G_MILANGUAGE, G_WithAutoRotation, G_WithStraighten);
-		
+		}
+		debug=3;
 		if(!G_OCRDocumentError)
 		{
 			IImages images = pDoc->GetImages();
@@ -212,18 +219,20 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 				for( int i = 0; i < num; i++ )
 				{
 					IImage  image = images.GetItem(i);
-					if(!G_OCRDocumentError)
+					if(!G_OCRDocumentError && image!=0)
 					{
 						ILayout layout = image.GetLayout();
-						if(!G_OCRDocumentError)
+						if(!G_OCRDocumentError && layout!=0)
+						{
 							strOut+=layout.GetText();
+						}
 					}
 				}
 			}
 		}
-
 		pDoc->Close(0);
 		pDoc->ReleaseDispatch();
+
 		delete pDoc;
 		
 		if(!strOut.empty())
@@ -236,7 +245,9 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 	}
 	catch(...)
 	{
-		ANNRecognitionLog((char *)string(fullFileName).append(":OCRFile Error").c_str(),LOG_ERROR);
+		char temp[256];
+		sprintf(temp,"Debug=%d, OCR File %s Failure",debug,strFileName.c_str());
+		ANNRecognitionLog(temp,LOG_ERROR);
 	}
 	return FALSE;
 }
