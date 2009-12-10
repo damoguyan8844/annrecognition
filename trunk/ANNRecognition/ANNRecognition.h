@@ -228,4 +228,7 @@ ANNRECOGNITION_API double    GetLearningSpeed();
 ANNRECOGNITION_API double    Training(double *input,double * dest);
 ANNRECOGNITION_API double	 CheakDiffs(double *output,double * dest);
 ANNRECOGNITION_API BOOL		 Recognition(double *intput,double * result);
+ANNRECOGNITION_API BOOL		 Recognition_EX(HDIB hInputDIB,LONG charRectID,int * outValues);
 ANNRECOGNITION_API BOOL	     BPEncode(HDIB hInputDIB,double * outCode,LONG top=0, LONG left=0,LONG right=0, LONG bottom=0,LPSTR gridFile=0);
+ANNRECOGNITION_API BOOL	     SetErrorRecordFolder(LPSTR lpErrorFolder);
+
