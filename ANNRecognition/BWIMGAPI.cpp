@@ -882,7 +882,7 @@ ANNRECOGNITION_API LONG CharSegment(HDIB hDIB)
 	//????
 	::GlobalUnlock(hDIB);
 	
-	if(g_CharSegmentRet.size()>1000)
+	if(g_CharSegmentRet.size()>200)
 		g_CharSegmentRet.clear();
 
 	g_CharSegmentRet.push_back(charRect1);
@@ -2465,68 +2465,73 @@ ANNRECOGNITION_API LONG	GetSegmentCount(LONG charRectID)
 
 ANNRECOGNITION_API void	SaveSegment(HDIB hInputDIB,LONG charRectID,LPSTR destFolder)
 {
-	if(charRectID>=g_CharSegmentRet.size()) return ;
-	
-	CRectLink m_charRect = g_CharSegmentRet[charRectID];
-	CRectLink m_charRectCopy=m_charRect;
-	
-	int digicount=GetSegmentCount(charRectID);
-	
-	HDIBLink m_dibRect;
-	HDIBLink m_dibRectCopy;
+	try{
+		if(charRectID>=g_CharSegmentRet.size()) return ;
+		
+		CRectLink m_charRect = g_CharSegmentRet[charRectID];
+		CRectLink m_charRectCopy=m_charRect;
+		
+		int digicount=GetSegmentCount(charRectID);
+		
+		HDIBLink m_dibRect;
+		HDIBLink m_dibRectCopy;
 
-	unsigned char* lpSrc;
-	int w,h;
-	w=RECTWIDTH(&m_charRect.front ());
-	h=RECTHEIGHT(&m_charRect.front ());
-	
-	int i_src,j_src;
-	int i,j;
-	int counts=0;
-	RECT rect;
-	BYTE* lpDIB=(BYTE*)::GlobalLock ((HGLOBAL)hInputDIB);
-	BYTE* lpDIBBits=(BYTE*)::FindDIBBits ((char*)lpDIB);
-	BYTE* lpNewDIBBits;
-	BYTE* lpDst;
-	LONG lLineBytes=(digicount*w+3)/4*4;
-	LONG lLineBytesnew =(w+3)/4*4;
-	HDIB hDIB=NULL;
-	while(!m_charRect.empty ())
-	{
-		hDIB=::NewDIB (w,h,8);
-		lpDIB=(BYTE*) ::GlobalLock((HGLOBAL)hDIB);	
-		lpNewDIBBits = (BYTE*)::FindDIBBits((char*)lpDIB);
-		lpDst=(BYTE*)lpNewDIBBits;
-		memset(lpDst,(BYTE)255,lLineBytesnew * h);		
-		rect=m_charRect.front ();
-		m_charRect.pop_front ();
-		for(i=0;i<h;i++)
-			for(j=0;j<w;j++)
-			{
-				i_src=rect.top + i;
-				j_src=j+counts*w;
-				lpSrc=(BYTE *)lpDIBBits + lLineBytes *  i_src + j_src;
-				lpDst=(BYTE *)lpNewDIBBits + lLineBytesnew * i + j;
-				*lpDst=*lpSrc;
-			}
-			::GlobalUnlock (hDIB);
+		unsigned char* lpSrc;
+		int w,h;
+		w=RECTWIDTH(&m_charRect.front ());
+		h=RECTHEIGHT(&m_charRect.front ());
+		
+		int i_src,j_src;
+		int i,j;
+		int counts=0;
+		RECT rect;
+		BYTE* lpDIB=(BYTE*)::GlobalLock ((HGLOBAL)hInputDIB);
+		BYTE* lpDIBBits=(BYTE*)::FindDIBBits ((char*)lpDIB);
+		BYTE* lpNewDIBBits;
+		BYTE* lpDst;
+		LONG lLineBytes=(digicount*w+3)/4*4;
+		LONG lLineBytesnew =(w+3)/4*4;
+		HDIB hDIB=NULL;
+		while(!m_charRect.empty ())
+		{
+			hDIB=::NewDIB (w,h,8);
+			lpDIB=(BYTE*) ::GlobalLock((HGLOBAL)hDIB);	
+			lpNewDIBBits = (BYTE*)::FindDIBBits((char*)lpDIB);
+			lpDst=(BYTE*)lpNewDIBBits;
+			memset(lpDst,(BYTE)255,lLineBytesnew * h);		
+			rect=m_charRect.front ();
+			m_charRect.pop_front ();
+			for(i=0;i<h;i++)
+				for(j=0;j<w;j++)
+				{
+					i_src=rect.top + i;
+					j_src=j+counts*w;
+					lpSrc=(BYTE *)lpDIBBits + lLineBytes *  i_src + j_src;
+					lpDst=(BYTE *)lpNewDIBBits + lLineBytesnew * i + j;
+					*lpDst=*lpSrc;
+				}
+				::GlobalUnlock (hDIB);
 
-			RemoveScatterNoise(hDIB);
-			m_dibRect.push_back (hDIB);
+				RemoveScatterNoise(hDIB);
+				m_dibRect.push_back (hDIB);
+				counts++;
+		}
+		m_charRect=m_charRectCopy;
+		m_dibRectCopy=m_dibRect;
+		//???.bmp??
+		counts=1;
+		while(!m_dibRect.empty ())
+		{
+			char  str[256];
+			sprintf(str,"%s\\%d_part%d.bmp",destFolder,charRectID,counts);
+			::SaveDIB (m_dibRect.front (),str);
+			m_dibRect.pop_front ();
 			counts++;
+		}
+		m_dibRect=m_dibRectCopy;
 	}
-	m_charRect=m_charRectCopy;
-	m_dibRectCopy=m_dibRect;
-	//???.bmp??
-	counts=1;
-	while(!m_dibRect.empty ())
+	catch(...)
 	{
-		char  str[256];
-		sprintf(str,"%s\\%d_part%d.bmp",destFolder,charRectID,counts);
-		::SaveDIB (m_dibRect.front (),str);
-		m_dibRect.pop_front ();
-		counts++;
+//		ANNRecognitionLog("Save DiB File Error",LOG_ERROR);
 	}
-	m_dibRect=m_dibRectCopy;
-
 }

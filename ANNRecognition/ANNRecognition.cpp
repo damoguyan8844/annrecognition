@@ -41,5 +41,5 @@ ANNRECOGNITION_API void ANNRecognitionLog( LPSTR message,int logType )
 }
 ANNRECOGNITION_API void SetLogHandler( fun_Logger logger )
 {
-		g_logger=logger;
+	g_logger=logger;
 }

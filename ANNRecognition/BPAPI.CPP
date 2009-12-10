@@ -34,6 +34,7 @@ double  DEF_OUTPUTDEM[MAXDEM];
 double  DEF_WEIGHTS[MAXDEM];
 
 string  G_SettingFile("ANNRecognition.dat");
+string  G_ErrorRecordFolder("C:");
 
 ANNRECOGNITION_API BOOL LoadBPParameters( LPSTR settingFile )
 {
@@ -701,37 +702,54 @@ ANNRECOGNITION_API BOOL	Recognition_EX(HDIB hInputDIB,LONG charRectID,int * outV
 
 	std::vector<double> input(G_INPUTDEM,0.0);
 	std::vector<double> result(G_OUTPUTDEM,0.0);
-
+	
+	BOOL bHasError=FALSE;
 	while(!m_dibRect.empty ())
 	{
-		for(int i=0;i<G_INPUTDEM;i++)  input[i]=0.0;
-		for(int j=0;i<G_OUTPUTDEM;j++)  result[j]=0.0;
-		
-		if(BPEncode(m_dibRect.front (),&input[0],0,0,0,0,0))
+		if(!bHasError)
 		{
-			Recognition(&input[0],&result[0]);
+			for(int i=0;i<G_INPUTDEM;i++)  input[i]=0.0;
+			for(int j=0;i<G_OUTPUTDEM;j++)  result[j]=0.0;
 			
-			int intRes=0;
+			if(BPEncode(m_dibRect.front (),&input[0],0,0,0,0,0))
+			{
+				Recognition(&input[0],&result[0]);
+				
+				int intRes=0;
 
-			if(result[0]>0.5)
-				intRes+=1;
-			if(result[1]>0.5)
-				intRes+=2;
-			if(result[2]>0.5)
-				intRes+=4;
-			if(result[3]>0.5)
-				intRes+=8;
-			
-			outValues[counts]=intRes;
+				if(result[0]>0.5)
+					intRes+=1;
+				if(result[1]>0.5)
+					intRes+=2;
+				if(result[2]>0.5)
+					intRes+=4;
+				if(result[3]>0.5)
+					intRes+=8;
+				
+				if(intRes>=10) 
+					bHasError=TRUE;
 
-			counts++;
-
+				outValues[counts]=intRes;
+				counts++;
+			}
 		}
 		ReleaseDIBFile(m_dibRect.front ());
 		m_dibRect.pop_front ();
 	}
 	m_dibRect=m_dibRectCopy;
-
 	outValues[counts]=-1;
+
+	if(bHasError)
+	{
+		outValues[0]=-1;
+		SaveSegment(hInputDIB,charRectID,(LPSTR)G_ErrorRecordFolder.c_str());
+	}
+	return !bHasError;
+}
+
+
+ANNRECOGNITION_API BOOL SetErrorRecordFolder( LPSTR lpErrorFolder )
+{
+	G_ErrorRecordFolder=lpErrorFolder==0?"C:":lpErrorFolder;
 	return TRUE;
 }

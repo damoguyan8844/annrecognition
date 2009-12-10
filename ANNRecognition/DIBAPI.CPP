@@ -796,6 +796,6 @@ ANNRECOGNITION_API WORD  PaletteSize(LPSTR lpbi)
 ANNRECOGNITION_API BOOL  ReleaseDIBFile(HDIB hDib)
 {
 	if(hDib>0)
-		GlobalFree(hDib);
+		GlobalFree((HGLOBAL)hDib);
 	return TRUE;
 }
