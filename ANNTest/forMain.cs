@@ -16,6 +16,11 @@ namespace ANNTest
         {
             InitializeComponent();
             ANNWrapper.SetLogHandler(new LogCallbackDelegate(LoggerFunction));
+
+            DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\ErrorRec");
+            if (!Dir.Exists)
+                Dir.Create();
+            ANNWrapper.SetErrorRecordFolder(Application.StartupPath+"\\ErrorRec");
         }
 
         private static void LoggerFunction(Int32 logType,string message)
@@ -67,10 +72,15 @@ namespace ANNTest
         {
             string strContent;
             byte[] tempParas = new byte[1024];
-            ANNWrapper.OCRFile(Application.StartupPath + "\\" + textInputTIF.Text, tempParas);
-
-            strContent  = System.Text.Encoding.GetEncoding("GB2312").GetString(tempParas, 0, tempParas.Length);
-            textOCRContent.Text = strContent;
+            if (ANNWrapper.OCRFile(Application.StartupPath + "\\" + textInputTIF.Text, tempParas))
+            {
+                strContent = System.Text.Encoding.GetEncoding("GB2312").GetString(tempParas, 0, tempParas.Length);
+                textOCRContent.Text = strContent;
+            }
+            else
+            {
+                MessageBox.Show("OCRFile Failure");
+            }
         }
 
         private void EncodeBMPs(DirectoryInfo Dir, int dest)
@@ -433,18 +443,23 @@ namespace ANNTest
 
                     if (charRectID >= 0)
                     {
-                        ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
-                        ANNWrapper.Recognition_EX(newHdibHandle, charRectID, intRes);
-
-                        string res = "";
-                        foreach (int value in intRes)
+                        //ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
+                        if(ANNWrapper.Recognition_EX(newHdibHandle, charRectID, intRes))
                         {
-                            if (value == -1)
-                                break;
-                            res += value.ToString();
-                        }
+                            string res = "";
+                            foreach (int value in intRes)
+                            {
+                                if (value == -1)
+                                    break;
+                                res += value.ToString();
+                            }
 
-                        MessageBox.Show(res);
+                            MessageBox.Show(res);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Recognition Failure");
+                        }
                     }
 
                     ANNWrapper.ReleaseDIBFile(newHdibHandle);
