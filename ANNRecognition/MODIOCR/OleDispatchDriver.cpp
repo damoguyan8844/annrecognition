@@ -422,21 +422,21 @@ void COleDispatchDriver::InvokeHelperV(DISPID dwDispID, WORD wFlags,
 // 		COleDispatchException* pException =
 // 			new COleDispatchException(NULL, 0, excepInfo.wCode);
 // 		ASSERT(pException->m_wCode == excepInfo.wCode);
-// 		if (excepInfo.bstrSource != NULL)
-// 		{
-// 			pException->m_strSource = excepInfo.bstrSource;
-// 			SysFreeString(excepInfo.bstrSource);
-// 		}
-// 		if (excepInfo.bstrDescription != NULL)
-// 		{
-// 			pException->m_strDescription = excepInfo.bstrDescription;
-// 			SysFreeString(excepInfo.bstrDescription);
-// 		}
-// 		if (excepInfo.bstrHelpFile != NULL)
-// 		{
-// 			pException->m_strHelpFile = excepInfo.bstrHelpFile;
-// 			SysFreeString(excepInfo.bstrHelpFile);
-// 		}
+		if (excepInfo.bstrSource != NULL)
+		{
+		//	pException->m_strSource = excepInfo.bstrSource;
+			SysFreeString(excepInfo.bstrSource);
+		}
+		if (excepInfo.bstrDescription != NULL)
+		{
+		//	pException->m_strDescription = excepInfo.bstrDescription;
+			SysFreeString(excepInfo.bstrDescription);
+		}
+		if (excepInfo.bstrHelpFile != NULL)
+		{
+		//	pException->m_strHelpFile = excepInfo.bstrHelpFile;
+			SysFreeString(excepInfo.bstrHelpFile);
+		}
 // 		pException->m_dwHelpContext = excepInfo.dwHelpContext;
 // 		pException->m_scError = excepInfo.scode;
 // 
