@@ -142,7 +142,7 @@ namespace ANNTest
             this.textInputInt.Name = "textInputInt";
             this.textInputInt.Size = new System.Drawing.Size(106, 21);
             this.textInputInt.TabIndex = 7;
-            this.textInputInt.Text = "128";
+            this.textInputInt.Text = "180";
             // 
             // button4
             // 

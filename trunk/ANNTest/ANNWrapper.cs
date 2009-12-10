@@ -110,6 +110,9 @@ namespace ANNTest
 
         [DllImport("ANNRecognition.dll", EntryPoint = "SaveSegment")]
         public static extern void SaveSegment(IntPtr hInputDIB, Int32 charRectID, string toFolder);
-                
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "SetErrorRecordFolder")]
+        public static extern bool SetErrorRecordFolder(string errorRecFolder);
+        
     }
 }
