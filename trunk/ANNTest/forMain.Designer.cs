@@ -72,6 +72,7 @@ namespace ANNTest
             this.button12 = new System.Windows.Forms.Button();
             this.button13 = new System.Windows.Forms.Button();
             this.button14 = new System.Windows.Forms.Button();
+            this.textLoop = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
@@ -470,11 +471,20 @@ namespace ANNTest
             this.button14.UseVisualStyleBackColor = true;
             this.button14.Click += new System.EventHandler(this.button14_Click);
             // 
+            // textLoop
+            // 
+            this.textLoop.Location = new System.Drawing.Point(787, 2);
+            this.textLoop.Name = "textLoop";
+            this.textLoop.Size = new System.Drawing.Size(63, 21);
+            this.textLoop.TabIndex = 45;
+            this.textLoop.Text = "1";
+            // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(862, 580);
+            this.Controls.Add(this.textLoop);
             this.Controls.Add(this.button14);
             this.Controls.Add(this.button13);
             this.Controls.Add(this.button12);
@@ -572,6 +582,7 @@ namespace ANNTest
         private System.Windows.Forms.Button button12;
         private System.Windows.Forms.Button button13;
         private System.Windows.Forms.Button button14;
+        private System.Windows.Forms.TextBox textLoop;
     }
 }
 
