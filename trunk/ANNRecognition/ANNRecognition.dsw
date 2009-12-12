@@ -63,31 +63,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "ShiJiaSDKWrapper"=..\..\CCB2010\ShiJiaSDKWrapper\ShiJiaSDKWrapper.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "TCAPI"=..\..\CCB2010\TCAPI\TCAPI.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "test"=..\..\CCB2010\ShiJiaSDK\test\test.dsp - Package Owner=<4>
+Project: "TCAPI"=..\..\TCAPI\TCAPI.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
