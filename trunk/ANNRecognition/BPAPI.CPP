@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "ANNRecognition.h"
+#include "Lock.h"
+
 #include <fstream>
 #include <ctime> 
 #include <iostream>
@@ -38,6 +40,8 @@ string  G_ErrorRecordFolder("C:");
 
 ANNRECOGNITION_API BOOL LoadBPParameters( LPSTR settingFile )
 {
+	Lock lock(&_cs);
+
 	FILE *fp;
 	if((fp=fopen(settingFile,"rb"))==NULL)
 	{
@@ -380,7 +384,9 @@ ANNRECOGNITION_API double   Training(double *input,double * dest)
 ANNRECOGNITION_API BOOL	Recognition(double *input,double * result)
 {
 	if(result==0 || input==0) return FALSE;
-
+	
+	Lock lock(&_cs);
+	
 	//??????a1=logsign(W1*a0+B1) 
 	for(int i=0;i<G_IMPLICITDEM;i++)
 	{    
@@ -427,7 +433,9 @@ ANNRECOGNITION_API BOOL	Recognition(double *input,double * result)
 ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG left,LONG right, LONG bottom,LPSTR gridFile)
 {
 	if(hInputDIB==0 || outCode==0) return FALSE;
-	
+
+	Lock lock(&_cs);
+
 	try
 	{
 		for(int i=0; i<G_INPUTDEM ; i++)
@@ -646,6 +654,8 @@ extern std::vector<CRectLink> g_CharSegmentRet;
 ANNRECOGNITION_API BOOL	Recognition_EX(HDIB hInputDIB,LONG charRectID,int * outValues)
 {
 	if(charRectID>=g_CharSegmentRet.size()) return FALSE;
+	
+	Lock lock(&_cs);
 	
 	CRectLink m_charRect = g_CharSegmentRet[charRectID];
 	CRectLink m_charRectCopy=m_charRect;

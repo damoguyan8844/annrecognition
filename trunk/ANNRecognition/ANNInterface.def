@@ -54,3 +54,5 @@ EXPORTS
 		SaveBlockToBMP3
 		SetLogHandler
 		SetErrorRecordFolder
+
+		PreProcess

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ANNRecognition.h"
+#include "Lock.h"
 #include <iostream>
 #include <vector>
 #include <math.h>
@@ -83,6 +84,9 @@ ANNRECOGNITION_API void ClearAll(HDC pDC)
 ANNRECOGNITION_API HDIB AutoAlign(HDIB hDIB,LONG charRectID)
 {   
 	if(charRectID>=g_CharSegmentRet.size()) return 0;
+	
+	Lock lock(&_cs);
+
 	CRectLink & m_charRect=g_CharSegmentRet[charRectID];
 	if(m_charRect.empty()) return 0;
 
@@ -595,7 +599,8 @@ ANNRECOGNITION_API void ThinnerRosenfeld(void *image, unsigned long lx, unsigned
 
 ANNRECOGNITION_API LONG CharSegment(HDIB hDIB)
 {
-	
+	Lock lock(&_cs);
+
 	//???????????????
 	CRectLink charRect1,charRect2;
 	charRect1.clear();
@@ -909,6 +914,8 @@ ANNRECOGNITION_API LONG CharSegment(HDIB hDIB)
 
 ANNRECOGNITION_API void Convert256toGray(HDIB hDIB)
 {
+	Lock lock(&_cs);
+
 	LPSTR	lpDIB;
 	
 	// ?DIB????DIB?????DIB
@@ -1023,6 +1030,8 @@ ANNRECOGNITION_API void Convert256toGray(HDIB hDIB)
 
 ANNRECOGNITION_API void ConvertGrayToWhiteBlack(HDIB hDIB)
 {
+	Lock lock(&_cs);
+
 	// ??DIB???
 	LPSTR	lpDIB;
 	
@@ -1481,6 +1490,7 @@ ANNRECOGNITION_API void GradientSharp(HDIB hDIB)
 ****************************************************************/
 ANNRECOGNITION_API void RemoveScatterNoise(HDIB hDIB)
 {
+	Lock lock(&_cs);
 	
 	// ??DIB???
 	LPSTR lpDIB=(LPSTR) ::GlobalLock((HGLOBAL)hDIB);
@@ -2459,6 +2469,7 @@ ANNRECOGNITION_API void Equalize(HDIB hDIB)
 
 ANNRECOGNITION_API LONG	GetSegmentCount(LONG charRectID)
 {
+	Lock lock(&_cs);
 	if(charRectID>=g_CharSegmentRet.size()) return 0;
 	return g_CharSegmentRet[charRectID].size();
 }
