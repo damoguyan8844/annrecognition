@@ -562,7 +562,7 @@ ANNRECOGNITION_API BOOL  SaveDIB(HDIB hDib, LPSTR fileName)
 
 ANNRECOGNITION_API HDIB  ReadDIBFile(LPCSTR fileName)
 {
-	Lock lock(&_cs);
+//	Lock lock(&_cs);
 
 	BITMAPFILEHEADER bmfHeader;
 	DWORD dwBitsSize;
@@ -797,7 +797,7 @@ ANNRECOGNITION_API WORD  PaletteSize(LPSTR lpbi)
 
 ANNRECOGNITION_API BOOL  ReleaseDIBFile(HDIB hDib)
 {
-	Lock lock(&_cs);
+//	Lock lock(&_cs);
 
 	if(hDib>0)
 		GlobalFree((HGLOBAL)hDib);
