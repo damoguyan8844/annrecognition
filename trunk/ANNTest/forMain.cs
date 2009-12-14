@@ -625,5 +625,29 @@ namespace ANNTest
 
             ANNWrapper.PrintBPParameters(Application.StartupPath + "\\" + textParas.Text+"Print.txt");
         }
+
+        private void button15_Click(object sender, EventArgs e)
+        {
+            string fileName = Application.StartupPath + "\\" + textSubsystemBMP.Text;
+            Bitmap bmp = new Bitmap(fileName);
+            IntPtr hBmp = bmp.GetHbitmap();
+            byte[] data = new byte[256];
+            if (!ANNWrapper.PreProcess(hBmp,
+                int.Parse(textLeft.Text),
+                int.Parse(textTop.Text),
+                int.Parse(textRight.Text),
+                int.Parse(textBottom.Text),
+                int.Parse(textInputInt.Text),
+                Application.StartupPath + "\\" + "temp.tif",
+                data))
+            {
+                MessageBox.Show("failed");
+            }
+            else
+            {
+                string text = System.Text.Encoding.GetEncoding("GB2312").GetString(data, 0, data.Length);
+                MessageBox.Show(text);
+            }
+        }
     }
 }

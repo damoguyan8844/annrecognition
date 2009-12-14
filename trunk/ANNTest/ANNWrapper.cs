@@ -113,6 +113,10 @@ namespace ANNTest
 
         [DllImport("ANNRecognition.dll", EntryPoint = "SetErrorRecordFolder")]
         public static extern bool SetErrorRecordFolder(string errorRecFolder);
-        
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "PreProcess")]
+        public static extern bool PreProcess(IntPtr hInputDIB, Int32 left, Int32 top, Int32 right,
+            Int32 bottom, int threshHold, string tifFileName, byte[] data );
+
     }
 }
