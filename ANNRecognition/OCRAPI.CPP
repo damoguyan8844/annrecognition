@@ -32,7 +32,7 @@ ANNRECOGNITION_API BOOL ConvertJPEG2BMP(LPSTR jpegFile , LPSTR bmpFile)
 }
 ANNRECOGNITION_API BOOL ConvertBMP2TIF(LPSTR bmpFile , LPSTR tifFile)
 {
-	Lock lock(&_csOCR);
+//	Lock lock(&_csOCR);
 
  	CxImage image; 
  	image.Load(bmpFile,CXIMAGE_FORMAT_BMP); 
@@ -52,7 +52,7 @@ ANNRECOGNITION_API BOOL ConvertBMP2TIF(LPSTR bmpFile , LPSTR tifFile)
 
 ANNRECOGNITION_API BOOL BlackWhiteBMP( LPSTR bmpFile ,int threshold)
 {
-	Lock lock(&_cs);
+//	Lock lock(&_cs);
 	CxImage cxImage; 
 	cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP);
 	
@@ -77,7 +77,7 @@ ANNRECOGNITION_API BOOL BlackWhiteBMP( LPSTR bmpFile ,int threshold)
 
 ANNRECOGNITION_API BOOL RevertBlackWhiteBMP( LPSTR bmpFile )
 {
-	Lock lock(&_cs);
+//	Lock lock(&_cs);
 
 	CxImage cxImage; 
 	cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP);
@@ -108,7 +108,7 @@ ANNRECOGNITION_API BOOL SaveBlockToBMP(LPSTR bmpFile,double leftRate,double topR
 
 ANNRECOGNITION_API BOOL SaveBlockToBMP2(LPSTR bmpFile,long left,long top, long right, long bottom,LPSTR bmpBlock)
 {
-	Lock lock(&_cs);
+//	Lock lock(&_cs);
 
 	CxImage cxImage; 
 	cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP);
@@ -129,7 +129,7 @@ ANNRECOGNITION_API BOOL SaveBlockToBMP2(LPSTR bmpFile,long left,long top, long r
 
 ANNRECOGNITION_API BOOL SaveBlockToBMP3(HBITMAP hDib,long left,long top, long right, long bottom,LPSTR bmpBlock)
 {
-	Lock lock(&_cs);
+//	Lock lock(&_cs);
 
 	CxImage cxImage; 
 	cxImage.CreateFromHBITMAP(hDib);
@@ -194,7 +194,6 @@ ANNRECOGNITION_API BOOL PreProcess( HBITMAP hDib, long left, long top, long righ
 	return FALSE;
 }
 
-
 ANNRECOGNITION_API BOOL	IsOCRAvailable()
 {
 	try	
@@ -227,7 +226,7 @@ ANNRECOGNITION_API void	SetWithStraightenImage(BOOL isUse)
 }
 ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 {
-	Lock lock(&_csOCR);
+//	Lock lock(&_csOCR);
 
 	string strFileName=fullFileName;
 	
