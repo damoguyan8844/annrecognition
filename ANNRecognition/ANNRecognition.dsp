@@ -141,6 +141,10 @@ SOURCE=.\ANNRecognition.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Lock.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.h
 # End Source File
 # End Group

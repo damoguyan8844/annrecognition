@@ -209,6 +209,10 @@ ANNRECOGNITION_API void		 SetWithAutoRotation(BOOL isUse);
 ANNRECOGNITION_API void		 SetWithStraightenImage(BOOL isUse);
 ANNRECOGNITION_API BOOL		 OCRFile(LPSTR fileName,LPSTR content);
 
+ANNRECOGNITION_API BOOL		 PreProcess( HBITMAP hDib, long left, long top, long right, long bottom, int threshHold, LPSTR tifFileName, LPSTR data );
+ANNRECOGNITION_API BOOL		 PreProcess2( HBITMAP hDib, long left, long top, long right, long bottom, int threshHold, LPSTR tifFileName, LPSTR data );
+
+
 /************************************************************************/
 /* BP 神经网络接口                                                      */
 /************************************************************************/
