@@ -58,7 +58,7 @@ LINK32=link.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy Files
-PostBuild_Cmds=Copy .\\Release\ANNRecognition.dll  ..\\DigitRec	Copy .\\ANNRecognition.h  ..\\DigitRec	Copy .\\Release\ANNRecognition.lib  ..\\DigitRec	Copy .\\Release\ANNRecognition.dll  ..\\ANNOut
+PostBuild_Cmds=Copy .\\Release\ANNRecognition.dll  ..\\DigitRec	Copy .\\ANNRecognition.h  ..\\DigitRec	Copy .\\Release\ANNRecognition.lib  ..\\DigitRec	Copy .\\Release\ANNRecognition.dll  ..\\ANNOut	copy .\\Release\ANNRecognition.dll C:\Code\CMPW\Digit	copy .\\Release\ANNRecognition.dll C:\Code\CMPW\Presentation	copy .\\Release\ANNRecognition.dll C:\Code\CMPW\out
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "ANNRecognition - Win32 Debug"

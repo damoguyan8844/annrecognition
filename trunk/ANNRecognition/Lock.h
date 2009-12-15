@@ -11,7 +11,7 @@ struct Lock
 	CRITICAL_SECTION * _cs;
 }  ;
 
-extern CRITICAL_SECTION _cs;
+//extern CRITICAL_SECTION _cs;
 extern CRITICAL_SECTION _csOCR;
 
 #endif

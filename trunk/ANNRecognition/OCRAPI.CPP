@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include <windef.h>
-
+#include <comdef.h>
 #include <atlbase.h>
 #include <atlapp.h>
 #include <atlgdi.h>
@@ -151,7 +151,7 @@ ANNRECOGNITION_API BOOL SaveBlockToBMP3(HBITMAP hDib,long left,long top, long ri
 ANNRECOGNITION_API BOOL PreProcess( HBITMAP hDib, long left, long top, long right, long bottom, 
 								   int threshHold, LPSTR tifFileName, LPSTR data )
 {
-	Lock lock(&_cs);
+//	Lock lock(&_cs);
 
 	CxImage cxImage;
 	cxImage.CreateFromHBITMAP(hDib);
@@ -226,7 +226,7 @@ ANNRECOGNITION_API void	SetWithStraightenImage(BOOL isUse)
 }
 ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 {
-//	Lock lock(&_csOCR);
+	Lock lock(&_csOCR);
 
 	string strFileName=fullFileName;
 	
@@ -250,11 +250,18 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 	string strOut;
 	
 	int debug=0;
+	string debugMessage;
+
+	IDocument *pDoc=0;
 	try
 	{
 		G_OCRDocumentError=FALSE;
 
-		IDocument *pDoc = new IDocument;
+		debugMessage="OCRFile:";
+		debugMessage+=string(fullFileName);
+		ANNRecognitionLog((char *)debugMessage.c_str(),LOG_ERROR);
+
+		pDoc = new IDocument;
 		pDoc->CreateDispatch("MODI.Document");
 
 		debug=1;
@@ -293,20 +300,45 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 		pDoc->ReleaseDispatch();
 
 		delete pDoc;
+		pDoc=0;
 		
 		if(!strOut.empty())
 		{
 			//*content= new char[strOut.size()];
 			strncpy(content,strOut.c_str(),strOut.size());
 		}
-
+		
+		ANNRecognitionLog("OCRFile: Return ",LOG_ERROR);
+		
 		return (!strOut.empty()) ? TRUE : FALSE;
+	}
+	catch(_com_error & e)
+	{
+		char temp[1024];
+		sprintf(temp,"Debug=%d,OCR File %s Failure,Source=%s,Message=%s",debug,strFileName.c_str(),(const char *)e.Source(),e.ErrorMessage()?e.ErrorMessage():"");
+		ANNRecognitionLog(temp,LOG_ERROR);
+	}
+	catch(exception &e)
+	{
+		char temp[1024];
+		sprintf(temp,"Debug=%d,OCR File %s Failure,Exception=%s",debug,strFileName.c_str(),e.what());
+		ANNRecognitionLog(temp,LOG_ERROR);
 	}
 	catch(...)
 	{
 		char temp[256];
-		sprintf(temp,"Debug=%d, OCR File %s Failure",debug,strFileName.c_str());
+		sprintf(temp,"Debug=%d,OCR File %s Failure,Unknown Error",debug,strFileName.c_str());
 		ANNRecognitionLog(temp,LOG_ERROR);
 	}
+	
+	if(pDoc!=0)
+	{
+		pDoc->Close(0);
+		pDoc->ReleaseDispatch();
+		delete pDoc;
+	}
+
+	ANNRecognitionLog("OCRFile: Return Has Exception",LOG_ERROR);
+
 	return FALSE;
 }
