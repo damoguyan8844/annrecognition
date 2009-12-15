@@ -28,8 +28,8 @@ typedef LPVOID* LPLP;
 #define TRACE1(sz, p1)
 #define TRACE2(sz, p1, p2)
 #define TRACE3(sz, p1, p2, p3) 
-#define AfxThrowMemoryException  TRACE
-#define AfxThrowOleException TRACE
+#define AfxThrowMemoryException  G_OCRDocumentError=TRUE;TRACE
+#define AfxThrowOleException G_OCRDocumentError=TRUE;TRACE
 /////////////////////////////////////////////////////////////////////////////
 // COleDispatchDriver constructors/destructors
 // helper(s) for reliable and small QueryInterface calls
@@ -442,7 +442,7 @@ void COleDispatchDriver::InvokeHelperV(DISPID dwDispID, WORD wFlags,
 // 
 // 		// then throw the exception
 // 		THROW(pException);
-		ANNRecognitionLog("OCR Create Document Error",LOG_ERROR);
+		//ANNRecognitionLog("OCR Create Document Error",LOG_ERROR);
 		G_OCRDocumentError=TRUE;
 		ASSERT(FALSE);  // not reached
 	}

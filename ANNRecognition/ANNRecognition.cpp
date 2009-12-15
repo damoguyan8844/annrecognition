@@ -6,7 +6,7 @@
 
 #define THIS_VERSION  9010101
 
-CRITICAL_SECTION _cs;
+//CRITICAL_SECTION _cs;
 CRITICAL_SECTION _csOCR;
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
@@ -17,7 +17,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
     switch (ul_reason_for_call)
 	{
 		case DLL_PROCESS_ATTACH:
-			::InitializeCriticalSection(&_cs);
+			//::InitializeCriticalSection(&_cs);
 			::InitializeCriticalSection(&_csOCR);
 			break;
 		case DLL_THREAD_ATTACH:
@@ -26,7 +26,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 			break;
 		case DLL_PROCESS_DETACH:
 			::DeleteCriticalSection(&_csOCR);
-			::DeleteCriticalSection(&_cs);
+			//::DeleteCriticalSection(&_cs);
 			break;
     }
     return TRUE;
@@ -49,4 +49,6 @@ ANNRECOGNITION_API void ANNRecognitionLog( LPSTR message,int logType )
 ANNRECOGNITION_API void SetLogHandler( fun_Logger logger )
 {
 	g_logger=logger;
+	if(g_logger)
+		g_logger(LOG_INFO,"Init Log Handler Ok!");
 }
