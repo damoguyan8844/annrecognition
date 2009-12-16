@@ -46,7 +46,8 @@ ANNRECOGNITION_API void ANNRecognitionLog( LPSTR message,int logType )
 		g_logger(logType,message);		
 	return ;	
 }
-ANNRECOGNITION_API void SetLogHandler( fun_Logger logger )
+
+void __stdcall SetLogHandler( fun_Logger logger )
 {
 	g_logger=logger;
 	if(g_logger)
