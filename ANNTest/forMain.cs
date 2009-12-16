@@ -23,9 +23,15 @@ namespace ANNTest
             ANNWrapper.SetErrorRecordFolder(Application.StartupPath+"\\ErrorRec");
         }
 
-        private static void LoggerFunction(Int32 logType,string message)
+        public static void LoggerFunction(Int32 logType,string message)
         {
-            MessageBox.Show(message);
+            FileStream fs = new FileStream("C:\\log.txt",FileMode.Create);
+            StreamWriter sw = new StreamWriter(fs);
+            string data = "LogType:" + logType.ToString() + "Message:" + message.ToString();
+            sw.Write(data);
+            sw.Flush();
+            sw.Close();
+            fs.Close();
         }
 
         private void button1_Click(object sender, EventArgs e)

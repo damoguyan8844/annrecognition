@@ -12,7 +12,7 @@ namespace ANNTest
 
     public class ANNWrapper
     {
-        [DllImport("ANNRecognition.dll", EntryPoint = "SetLogHandler")]
+        [DllImport("ANNRecognition.dll", CallingConvention=CallingConvention.StdCall,EntryPoint = "SetLogHandler")]
         public static extern void SetLogHandler( LogCallbackDelegate logger);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "ConvertJPEG2BMP")]
