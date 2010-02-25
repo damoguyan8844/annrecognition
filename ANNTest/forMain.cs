@@ -8,14 +8,23 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
 
+using log4net;
+using JOYFULL.CMPW.Digit;
+
 namespace ANNTest
 {
     public partial class formMain : Form
     {
+        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(IntPtr hObject);
+
+        private static ILog log = LogManager.GetLogger(typeof(formMain));
+        private static LogCallbackDelegate logHandler = null;
         public formMain()
         {
             InitializeComponent();
-            ANNWrapper.SetLogHandler(new LogCallbackDelegate(LoggerFunction));
+            logHandler=new LogCallbackDelegate(LoggerFunction);
+            ANNWrapper.SetLogHandler(logHandler);
 
             DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\ErrorRec");
             if (!Dir.Exists)
@@ -23,15 +32,24 @@ namespace ANNTest
             ANNWrapper.SetErrorRecordFolder(Application.StartupPath+"\\ErrorRec");
         }
 
-        public static void LoggerFunction(Int32 logType,string message)
+        public static void LoggerFunction(Int32 logTyp,string message)
         {
-            FileStream fs = new FileStream("C:\\log.txt",FileMode.Create);
-            StreamWriter sw = new StreamWriter(fs);
-            string data = "LogType:" + logType.ToString() + "Message:" + message.ToString();
-            sw.Write(data);
-            sw.Flush();
-            sw.Close();
-            fs.Close();
+            if (logTyp == ANNWrapper.ANN_LOG_ERROR)
+                log.Error(message);
+            else if (logTyp == ANNWrapper.ANN_LOG_INFO)
+                log.Info(message);
+            else if (logTyp == ANNWrapper.ANN_LOG_DEBUG)
+                log.Debug(message);
+            else
+                log.Fatal(message);
+
+            //FileStream fs = new FileStream(Application.StartupPath+"\\log.txt",FileMode.Append);
+            //StreamWriter sw = new StreamWriter(fs);
+            //string data = "\r\nDateTime:"+DateTime.Now.ToString()+"\tLogType:" + logType.ToString() + "\tMessage:" + message.ToString();
+            //sw.Write(data);
+            //sw.Flush();
+            //sw.Close();
+            //fs.Close();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -76,16 +94,24 @@ namespace ANNTest
 
         private void button6_Click(object sender, EventArgs e)
         {
-            string strContent;
-            byte[] tempParas = new byte[1024];
-            if (ANNWrapper.OCRFile(Application.StartupPath + "\\" + textInputTIF.Text, tempParas))
+            int loop = Int32.Parse(textLoop.Text);
+            while (loop > 0)
             {
-                strContent = System.Text.Encoding.GetEncoding("GB2312").GetString(tempParas, 0, tempParas.Length);
-                textOCRContent.Text = strContent;
-            }
-            else
-            {
-                MessageBox.Show("OCRFile Failure");
+                loop--;
+                string strContent;
+                byte[] tempParas = new byte[1024];
+                if (ANNWrapper.OCRFile(Application.StartupPath + "\\" + textInputTIF.Text, tempParas))
+                {
+                    strContent = System.Text.Encoding.GetEncoding("GB2312").GetString(tempParas, 0, tempParas.Length);
+                    textOCRContent.Text = strContent.Substring(0,strContent.IndexOf("\0"));
+                }
+                else
+                {
+                    if (textTraingInputs.Lines.Length == 0)
+                        textTraingInputs.AppendText("OCRFile: "+Application.StartupPath + "\\" + textInputTIF.Text +" Failure!");
+                    else
+                        textTraingInputs.AppendText("\r\nOCRFile: " + Application.StartupPath + "\\" + textInputTIF.Text + " Failure!");
+                }
             }
         }
 
@@ -420,73 +446,79 @@ namespace ANNTest
 
         private void button10_Click(object sender, EventArgs e)
         {
-            try
+            int loop = Int32.Parse(textLoop.Text);
+            while (loop > 0)
             {
-                int[] intRes = new int[64];
+                loop--;
 
-                ANNWrapper.BlackWhiteBMP(Application.StartupPath + "\\" + textToPath.Text, Int32.Parse(textInputInt.Text));
-
-                IntPtr hdibHandle = ANNWrapper.ReadDIBFile(Application.StartupPath + "\\" + textToPath.Text);
-
-                ANNWrapper.Convert256toGray(hdibHandle);
-
-                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Convert256toGray.bmp");
-
-                ANNWrapper.ConvertGrayToWhiteBlack(hdibHandle);
-
-                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\ConvertGrayToWhiteBlack.bmp");
-
-                //ANNWrapper.GradientSharp(hdibHandle);
-                ANNWrapper.RemoveScatterNoise(hdibHandle);
-
-                ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\RemoveScatterNoise.bmp");
-
-                //ANNWrapper.SlopeAdjust(hdibHandle);
-
-                Int32 charRectID = ANNWrapper.CharSegment(hdibHandle);
-
-                if (charRectID >= 0)
+                try
                 {
-                    ANNWrapper.LoadBPParameters(Application.StartupPath + "\\" + textParas.Text);
-           
-                    //ANNWrapper.StdDIBbyRect(hdibHandle, charRectID, 16, 16);
-                    IntPtr newHdibHandle = ANNWrapper.AutoAlign(hdibHandle, charRectID);
-                    ANNWrapper.SaveDIB(newHdibHandle, Application.StartupPath + "\\AutoAlign.bmp");
-                    //charRectID = ANNWrapper.CharSegment(newHdibHandle);
+                    int[] intRes = new int[64];
+
+                    ANNWrapper.BlackWhiteBMP(Application.StartupPath + "\\" + textToPath.Text, Int32.Parse(textInputInt.Text));
+
+                    IntPtr hdibHandle = ANNWrapper.ReadDIBFile(Application.StartupPath + "\\" + textToPath.Text);
+
+                    ANNWrapper.Convert256toGray(hdibHandle);
+
+                    ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\Convert256toGray.bmp");
+
+                    ANNWrapper.ConvertGrayToWhiteBlack(hdibHandle);
+
+                    ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\ConvertGrayToWhiteBlack.bmp");
+
+                    //ANNWrapper.GradientSharp(hdibHandle);
+                    ANNWrapper.RemoveScatterNoise(hdibHandle);
+
+                    ANNWrapper.SaveDIB(hdibHandle, Application.StartupPath + "\\RemoveScatterNoise.bmp");
+
+                    //ANNWrapper.SlopeAdjust(hdibHandle);
+
+                    Int32 charRectID = ANNWrapper.CharSegment(hdibHandle);
 
                     if (charRectID >= 0)
                     {
-                        //ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
-                        if(ANNWrapper.Recognition_EX(newHdibHandle, charRectID, intRes))
-                        {
-                            string res = "";
-                            foreach (int value in intRes)
-                            {
-                                if (value == -1)
-                                    break;
-                                res += value.ToString();
-                            }
+                        ANNWrapper.LoadBPParameters(Application.StartupPath + "\\" + textParas.Text);
 
-                            MessageBox.Show(res);
-                        }
-                        else
+                        //ANNWrapper.StdDIBbyRect(hdibHandle, charRectID, 16, 16);
+                        IntPtr newHdibHandle = ANNWrapper.AutoAlign(hdibHandle, charRectID);
+                        ANNWrapper.SaveDIB(newHdibHandle, Application.StartupPath + "\\AutoAlign.bmp");
+                        //charRectID = ANNWrapper.CharSegment(newHdibHandle);
+
+                        if (charRectID >= 0)
                         {
-                            MessageBox.Show("Recognition Failure");
+                            //ANNWrapper.SaveSegment(newHdibHandle, charRectID, Application.StartupPath + "\\");
+                            if (ANNWrapper.Recognition_EX(newHdibHandle, charRectID, intRes))
+                            {
+                                string res = "";
+                                foreach (int value in intRes)
+                                {
+                                    if (value == -1)
+                                        break;
+                                    res += value.ToString();
+                                }
+
+                                textUnMatch.AppendText(res.ToString() + "\r\n"); 
+                            }
+                            else
+                            {
+                                textUnMatch.AppendText("Recognition Failure" + "\r\n");
+                            }
                         }
+
+                        ANNWrapper.ReleaseDIBFile(newHdibHandle);
+                    }
+                    else
+                    {
+                        textUnMatch.AppendText("CharSegment Step False" + "\r\n");
                     }
 
-                    ANNWrapper.ReleaseDIBFile(newHdibHandle);
+                    ANNWrapper.ReleaseDIBFile(hdibHandle);
                 }
-                else
+                catch (Exception exp)
                 {
-                    MessageBox.Show("CharSegment Step False");
+                    textUnMatch.AppendText(textToPath.Text + "\r\n");
                 }
-
-                ANNWrapper.ReleaseDIBFile(hdibHandle);
-            }
-            catch (Exception exp)
-            {
-                MessageBox.Show(textToPath.Text);
             }
         }
 
@@ -637,23 +669,70 @@ namespace ANNTest
             string fileName = Application.StartupPath + "\\" + textSubsystemBMP.Text;
             Bitmap bmp = new Bitmap(fileName);
             IntPtr hBmp = bmp.GetHbitmap();
-            byte[] data = new byte[256];
-            if (!ANNWrapper.PreProcess(hBmp,
+            
+            byte[] data = new byte[1024];
+            if (!ANNWrapper.RecognitionWhiteText(hBmp,
                 int.Parse(textLeft.Text),
                 int.Parse(textTop.Text),
                 int.Parse(textRight.Text),
                 int.Parse(textBottom.Text),
                 int.Parse(textInputInt.Text),
-                Application.StartupPath + "\\" + "temp.tif",
+                Application.StartupPath + "\\" + textInputTIF.Text,
                 data))
             {
-                MessageBox.Show("failed");
+                MessageBox.Show("Recognition White File Failed");
             }
             else
             {
                 string text = System.Text.Encoding.GetEncoding("GB2312").GetString(data, 0, data.Length);
-                MessageBox.Show(text);
+                text = text.Substring(0, text.IndexOf("\0"));
+                textOCRContent.Text = text;
             }
+
+            DeleteObject(hBmp);
         }
+
+        private void button16_Click(object sender, EventArgs e)
+        {
+            string fileName = Application.StartupPath + "\\" + textSubsystemBMP.Text;
+            Bitmap bmp = new Bitmap(fileName);
+            IntPtr hBmp = bmp.GetHbitmap();
+
+            byte[] data = new byte[1024];
+            if (!ANNWrapper.RecognitionBlackText(hBmp,
+                int.Parse(textLeft.Text),
+                int.Parse(textTop.Text),
+                int.Parse(textRight.Text),
+                int.Parse(textBottom.Text),
+                int.Parse(textInputInt.Text),
+                Application.StartupPath + "\\" + textInputTIF.Text,
+                data))
+            {
+                MessageBox.Show("Recognition Black File Failed");
+            }
+            else
+            {
+                string text = System.Text.Encoding.GetEncoding("GB2312").GetString(data, 0, data.Length);
+                text = text.Substring(0, text.IndexOf("\0"));
+                textOCRContent.Text=text;
+            }
+            DeleteObject(hBmp);
+        }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            textUnMatch.Text=EnDeCrypt.EnDeCryptMethod.Encode(textTraingInputs.Text);
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            textTraingInputs.Text = EnDeCrypt.EnDeCryptMethod.Decode(textUnMatch.Text);
+        }
+
+        private void button19_Click(object sender, EventArgs e)
+        {
+            textUnMatch.Text = EnDeCrypt.EnDeCryptMethod.MD5_EncryptPassword(textTraingInputs.Text);
+        }
+
     }
 }

@@ -40,12 +40,13 @@ string  G_ErrorRecordFolder("C:");
 
 ANNRECOGNITION_API BOOL LoadBPParameters( LPSTR settingFile )
 {
+	try{
 //	Lock lock(&_cs);
 
 	FILE *fp;
 	if((fp=fopen(settingFile,"rb"))==NULL)
 	{
-		ANNRecognitionLog("Open File Failure",LOG_ERROR);
+		ANNRecognitionLog(LOG_ERROR,"Open File Failure");
 		return FALSE;
 	}
 	
@@ -56,7 +57,7 @@ ANNRECOGNITION_API BOOL LoadBPParameters( LPSTR settingFile )
 
 	if(bufferLong[0]>=MAXDEM || bufferLong[1]>=MAXDEM ||bufferLong[2]>=MAXDEM)
 	{
-		ANNRecognitionLog("Dem Bigger Than MAXDEM",LOG_ERROR);
+		ANNRecognitionLog(LOG_ERROR,"Dem Bigger Than MAXDEM");
 		free(bufferLong);
 		fclose(fp);
 		return FALSE;
@@ -115,10 +116,15 @@ ANNRECOGNITION_API BOOL LoadBPParameters( LPSTR settingFile )
 	InitTrainBPWeights(0);
 
 	return TRUE;	
+	} catch(...) {
+		ANNRecognitionLog(LOG_ERROR,"LoadBPParameters Exception");
+		return FALSE;
+	}
 }
 
 ANNRECOGNITION_API BOOL SaveBPParameters( LPSTR settingFile )
 {
+	try{
 	FILE *fp;
 	fp=fopen(settingFile,"wb+");
 	long *bufferLong;
@@ -147,11 +153,16 @@ ANNRECOGNITION_API BOOL SaveBPParameters( LPSTR settingFile )
 	
 	fclose(fp);
 	return TRUE;
+	} catch(...) {
+		ANNRecognitionLog(LOG_ERROR,"SaveBPParameters Exception");
+		return FALSE;
+	}
 }
 
 
 ANNRECOGNITION_API BOOL	PrintBPParameters(LPSTR textFile)
 {
+	try{
 	FILE *fp;
 	fp=fopen(textFile,"wt+");
 
@@ -199,14 +210,23 @@ ANNRECOGNITION_API BOOL	PrintBPParameters(LPSTR textFile)
 	fclose(fp);
 
 	return TRUE;
+	} catch(...) {
+		ANNRecognitionLog(LOG_ERROR,"PrintBPParameters Exception");
+		return FALSE;
+	}
 }
 
 
 ANNRECOGNITION_API BOOL	InitBPParameters(LONG input,LONG implicit,LONG output)
 {
+	try{
 	BOOL bRet=InitBPParameters_EX(input,implicit,output);
 	bRet = bRet && 	InitTrainBPWeights(0);
 	return bRet;
+	} catch(...) {
+		ANNRecognitionLog(LOG_ERROR,"InitBPParameters Exception");
+		return FALSE;
+	}
 }
 
 ANNRECOGNITION_API BOOL	InitBPParameters_EX(LONG input,LONG implicit,LONG output,double ** w1,double *b1,double **w2,double *b2)
@@ -216,7 +236,7 @@ ANNRECOGNITION_API BOOL	InitBPParameters_EX(LONG input,LONG implicit,LONG output
 	{
 		if(input>=MAXDEM || implicit>=MAXDEM ||output>=MAXDEM)
 		{
-			ANNRecognitionLog("Dem Bigger Than MAXDEM",LOG_ERROR);
+			ANNRecognitionLog(LOG_ERROR,"Dem Bigger Than MAXDEM");
 			return FALSE;
 		}
 		
@@ -274,7 +294,7 @@ ANNRECOGNITION_API BOOL	InitBPParameters_EX(LONG input,LONG implicit,LONG output
 	}
 	catch(...)
 	{
-		ANNRecognitionLog("InitParameter Exception",LOG_ERROR);
+		ANNRecognitionLog(LOG_ERROR,"InitParameter Exception");
 	}
 	return bRet;
 }
@@ -375,7 +395,7 @@ ANNRECOGNITION_API double   Training(double *input,double * dest)
 	}
 	catch(...)
 	{
-		ANNRecognitionLog("Training By Input Exception",LOG_ERROR);
+		ANNRecognitionLog(LOG_ERROR,"Training By Input Exception");
 	}
 
 	return avrg_diff;
@@ -383,6 +403,7 @@ ANNRECOGNITION_API double   Training(double *input,double * dest)
 
 ANNRECOGNITION_API BOOL	Recognition(double *input,double * result)
 {
+	try{
 	if(result==0 || input==0) return FALSE;
 	
 //	Lock lock(&_cs);
@@ -424,8 +445,13 @@ ANNRECOGNITION_API BOOL	Recognition(double *input,double * result)
 	}
 	catch(...)
 	{
-		ANNRecognitionLog("Recognition Error",LOG_ERROR);
+		ANNRecognitionLog(LOG_ERROR,"Recognition Error");
 	}
+	} catch(...) {
+		ANNRecognitionLog(LOG_ERROR,"Recognition Exception 2");
+		return FALSE;
+	}
+
 	return FALSE;
 }
 
@@ -653,106 +679,127 @@ extern std::vector<CRectLink> g_CharSegmentRet;
 
 ANNRECOGNITION_API BOOL	Recognition_EX(HDIB hInputDIB,LONG charRectID,int * outValues)
 {
+	if(hInputDIB==0) return FALSE;
 	if(charRectID>=g_CharSegmentRet.size()) return FALSE;
 	
 //	Lock lock(&_cs);
-	
-	CRectLink m_charRect = g_CharSegmentRet[charRectID];
-	CRectLink m_charRectCopy=m_charRect;
-	
-	int digicount=GetSegmentCount(charRectID);
-	
-	HDIBLink m_dibRect;
-	HDIBLink m_dibRectCopy;
-	
-	unsigned char* lpSrc;
-	int w,h;
-	w=RECTWIDTH(&m_charRect.front ());
-	h=RECTHEIGHT(&m_charRect.front ());
-	
-	int i_src,j_src;
-	int i,j;
-	int counts=0;
-	RECT rect;
-	BYTE* lpDIB=(BYTE*)::GlobalLock ((HGLOBAL)hInputDIB);
-	BYTE* lpDIBBits=(BYTE*)::FindDIBBits ((char*)lpDIB);
-	BYTE* lpNewDIBBits;
-	BYTE* lpDst;
-	LONG lLineBytes=(digicount*w+3)/4*4;
-	LONG lLineBytesnew =(w+3)/4*4;
-	HDIB hDIB=NULL;
-	while(!m_charRect.empty ())
-	{
-		hDIB=::NewDIB (w,h,8);
-		lpDIB=(BYTE*) ::GlobalLock((HGLOBAL)hDIB);	
-		lpNewDIBBits = (BYTE*)::FindDIBBits((char*)lpDIB);
-		lpDst=(BYTE*)lpNewDIBBits;
-		memset(lpDst,(BYTE)255,lLineBytesnew * h);		
-		rect=m_charRect.front ();
-		m_charRect.pop_front ();
-		for(i=0;i<h;i++)
-			for(j=0;j<w;j++)
-			{
-				i_src=rect.top + i;
-				j_src=j+counts*w;
-				lpSrc=(BYTE *)lpDIBBits + lLineBytes *  i_src + j_src;
-				lpDst=(BYTE *)lpNewDIBBits + lLineBytesnew * i + j;
-				*lpDst=*lpSrc;
-			}
-			::GlobalUnlock (hDIB);
-			
-			RemoveScatterNoise(hDIB);
-			m_dibRect.push_back (hDIB);
-			counts++;
-	}
-	m_charRect=m_charRectCopy;
-	m_dibRectCopy=m_dibRect;
-
-	counts=0;
-
-	std::vector<double> input(G_INPUTDEM,0.0);
-	std::vector<double> result(G_OUTPUTDEM,0.0);
-	
 	BOOL bHasError=FALSE;
-	while(!m_dibRect.empty ())
-	{
-		if(!bHasError)
-		{
-			for(int i=0;i<G_INPUTDEM;i++)  input[i]=0.0;
-			for(int j=0;i<G_OUTPUTDEM;j++)  result[j]=0.0;
-			
-			if(BPEncode(m_dibRect.front (),&input[0],0,0,0,0,0))
-			{
-				Recognition(&input[0],&result[0]);
-				
-				int intRes=0;
 
-				if(result[0]>0.5)
-					intRes+=1;
-				if(result[1]>0.5)
-					intRes+=2;
-				if(result[2]>0.5)
-					intRes+=4;
-				if(result[3]>0.5)
-					intRes+=8;
-				
-				if(intRes>=10) 
-					bHasError=TRUE;
-
-				outValues[counts]=intRes;
-				counts++;
-			}
-		}
-		ReleaseDIBFile(m_dibRect.front ());
-		m_dibRect.pop_front ();
-	}
-	m_dibRect=m_dibRectCopy;
-	outValues[counts]=-1;
-
-	if(bHasError)
+	try
 	{
 		outValues[0]=-1;
-		SaveSegment(hInputDIB,charRectID,(LPSTR)G_ErrorRecordFolder.c_str());
+
+		CRectLink m_charRect = g_CharSegmentRet[charRectID];
+		CRectLink m_charRectCopy=m_charRect;
+		
+		int digicount=GetSegmentCount(charRectID);
+		
+		HDIBLink m_dibRect;
+		HDIBLink m_dibRectCopy;
+		
+		unsigned char* lpSrc;
+		int w,h;
+		w=RECTWIDTH(&m_charRect.front ());
+		h=RECTHEIGHT(&m_charRect.front ());
+		
+		int i_src,j_src;
+		int i,j;
+		int counts=0;
+		RECT rect;
+		BYTE* lpDIB=(BYTE*)::GlobalLock ((HGLOBAL)hInputDIB);
+		BYTE* lpDIBBits=(BYTE*)::FindDIBBits ((char*)lpDIB);
+		BYTE* lpNewDIBBits;
+		BYTE* lpDst;
+		LONG lLineBytes=(digicount*w+3)/4*4;
+		LONG lLineBytesnew =(w+3)/4*4;
+		HDIB hDIB=NULL;
+		while(!m_charRect.empty ())
+		{
+			hDIB=::NewDIB (w,h,8);
+			lpDIB=(BYTE*) ::GlobalLock((HGLOBAL)hDIB);	
+			lpNewDIBBits = (BYTE*)::FindDIBBits((char*)lpDIB);
+			lpDst=(BYTE*)lpNewDIBBits;
+			memset(lpDst,(BYTE)255,lLineBytesnew * h);		
+			rect=m_charRect.front ();
+			m_charRect.pop_front ();
+			for(i=0;i<h;i++)
+			{
+				for(j=0;j<w;j++)
+				{
+					i_src=rect.top + i;
+					j_src=j+counts*w;
+					lpSrc=(BYTE *)lpDIBBits + lLineBytes *  i_src + j_src;
+					lpDst=(BYTE *)lpNewDIBBits + lLineBytesnew * i + j;
+					*lpDst=*lpSrc;
+				}
+			}
+			::GlobalUnlock (hDIB);
+				
+			if(RemoveScatterNoise(hDIB))
+			{
+				m_dibRect.push_back (hDIB);
+				counts++;
+			}
+			else
+			{
+				ReleaseDIBFile(hDIB);
+			}
+		}
+		m_charRect=m_charRectCopy;
+		m_dibRectCopy=m_dibRect;
+
+		counts=0;
+
+		std::vector<double> input(G_INPUTDEM,0.0);
+		std::vector<double> result(G_OUTPUTDEM,0.0);
+		
+		while(!m_dibRect.empty ())
+		{
+			if(!bHasError)
+			{
+				for(int i=0;i<G_INPUTDEM;i++)  input[i]=0.0;
+				for(int j=0;i<G_OUTPUTDEM;j++)  result[j]=0.0;
+				
+				if(BPEncode(m_dibRect.front (),&input[0],0,0,0,0,0))
+				{
+					Recognition(&input[0],&result[0]);
+					
+					int intRes=0;
+
+					if(result[0]>0.5)
+						intRes+=1;
+					if(result[1]>0.5)
+						intRes+=2;
+					if(result[2]>0.5)
+						intRes+=4;
+					if(result[3]>0.5)
+						intRes+=8;
+					
+					if(intRes>=10) 
+						bHasError=TRUE;
+
+					outValues[counts]=intRes;
+					counts++;
+				}
+			}
+			ReleaseDIBFile(m_dibRect.front ());
+			m_dibRect.pop_front ();
+		}
+		m_dibRect=m_dibRectCopy;
+		outValues[counts]=-1;
+
+		if(bHasError)
+		{
+			outValues[0]=-1;
+			SaveSegment(hInputDIB,charRectID,(LPSTR)G_ErrorRecordFolder.c_str());
+		}
+	}
+	catch(...)
+	{
+		outValues[0]=-1;
+		bHasError=TRUE;
+
+		ANNRecognitionLog(LOG_ERROR,"Recognition Ex  Digit Exception Error");
 	}
 	return !bHasError;
 }
@@ -761,5 +808,8 @@ ANNRECOGNITION_API BOOL	Recognition_EX(HDIB hInputDIB,LONG charRectID,int * outV
 ANNRECOGNITION_API BOOL SetErrorRecordFolder( LPSTR lpErrorFolder )
 {
 	G_ErrorRecordFolder=lpErrorFolder==0?"C:":lpErrorFolder;
+
+	if(G_ErrorRecordFolder[G_ErrorRecordFolder.size()-1]=='\\')
+		G_ErrorRecordFolder=G_ErrorRecordFolder.substr(0,G_ErrorRecordFolder.size()-1);
 	return TRUE;
 }

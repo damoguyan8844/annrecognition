@@ -2,17 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
-namespace ANNTest
+namespace JOYFULL.CMPW.Digit
 {
     //#define  LOG_ERROR 0x0000
     //#define  LOG_INFO 0x0010
     //#define  LOG_DEBUG 0x0100
 
-    public delegate void LogCallbackDelegate(Int32 logType,string newCapture);
+    public delegate void LogCallbackDelegate(Int32 logType, string newCapture);
 
     public class ANNWrapper
     {
-        [DllImport("ANNRecognition.dll", CallingConvention=CallingConvention.StdCall,EntryPoint = "SetLogHandler")]
+        public static readonly Int32 ANN_LOG_ERROR = 0x0000;
+        public static readonly Int32 ANN_LOG_INFO = 0x0010;
+        public static readonly Int32 ANN_LOG_DEBUG = 0x0100;
+
+        [DllImport("ANNRecognition.dll",EntryPoint = "SetLogHandler")]
         public static extern void SetLogHandler( LogCallbackDelegate logger);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "ConvertJPEG2BMP")]
@@ -114,9 +118,13 @@ namespace ANNTest
         [DllImport("ANNRecognition.dll", EntryPoint = "SetErrorRecordFolder")]
         public static extern bool SetErrorRecordFolder(string errorRecFolder);
 
-        [DllImport("ANNRecognition.dll", EntryPoint = "PreProcess")]
-        public static extern bool PreProcess(IntPtr hInputDIB, Int32 left, Int32 top, Int32 right,
-            Int32 bottom, int threshHold, string tifFileName, byte[] data );
+        [DllImport("ANNRecognition.dll", EntryPoint = "RecognitionWhiteText")]
+        public static extern bool RecognitionWhiteText(IntPtr hInputDIB, Int32 left, Int32 top, Int32 right,
+            Int32 bottom, Int32 threshHold, string tifFileName, byte[] data );
+
+        [DllImport("ANNRecognition.dll", EntryPoint = "RecognitionBlackText")]
+        public static extern bool RecognitionBlackText(IntPtr hInputDIB, Int32 left, Int32 top, Int32 right,
+            Int32 bottom, Int32 threshHold, string tifFileName, byte[] data);
 
     }
 }

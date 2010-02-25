@@ -40,7 +40,7 @@ ANNRECOGNITION_API int ANNRecognitionVersion(void)
 
 fun_Logger g_logger=0;
 
-ANNRECOGNITION_API void ANNRecognitionLog( LPSTR message,int logType )
+ANNRECOGNITION_API void ANNRecognitionLog(int logType , LPSTR message)
 {
 	if(g_logger)
 		g_logger(logType,message);		
@@ -50,6 +50,4 @@ ANNRECOGNITION_API void ANNRecognitionLog( LPSTR message,int logType )
 void __stdcall SetLogHandler( fun_Logger logger )
 {
 	g_logger=logger;
-	if(g_logger)
-		g_logger(LOG_INFO,"Init Log Handler Ok!");
 }

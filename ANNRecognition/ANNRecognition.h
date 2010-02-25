@@ -69,7 +69,7 @@ DECLARE_HANDLE(HDIB);
 
 //版本信息
 ANNRECOGNITION_API int		 ANNRecognitionVersion(void);
-ANNRECOGNITION_API void		 ANNRecognitionLog(LPSTR message,int logType);
+ANNRECOGNITION_API void		 ANNRecognitionLog(int logType,LPSTR message);
 
 typedef void(__stdcall *  fun_Logger)(int logType,LPSTR strContent);
 void __stdcall SetLogHandler( fun_Logger logger);
@@ -124,15 +124,15 @@ ANNRECOGNITION_API void		 StdDIB(HDIB hDIB,int tarWidth, int tarHeight);
 //整体斜率调整
 ANNRECOGNITION_API void		 SlopeAdjust(HDIB hDIB);
 //去除离散噪声点
-ANNRECOGNITION_API void		 RemoveScatterNoise(HDIB hDIB);
+ANNRECOGNITION_API BOOL		 RemoveScatterNoise(HDIB hDIB);
 //梯度锐化
 ANNRECOGNITION_API void		 GradientSharp(HDIB hDIB);
 //画框
 ANNRECOGNITION_API void		 DrawFrame(HDC pDC,HDIB hDIB, LONG charRectID,unsigned int linewidth,COLORREF color);
 //将灰度图二值化
-ANNRECOGNITION_API void		 ConvertGrayToWhiteBlack(HDIB hDIB);
+ANNRECOGNITION_API BOOL		 ConvertGrayToWhiteBlack(HDIB hDIB);
 //将256色位图转为灰度图
-ANNRECOGNITION_API void		 Convert256toGray(HDIB hDIB);
+ANNRECOGNITION_API BOOL		 Convert256toGray(HDIB hDIB);
 //细化
 ANNRECOGNITION_API void		 Thinning(HDIB hDIB);
 //对位图进行分割.返回一个存储着每块分割区域的链表
@@ -140,7 +140,7 @@ ANNRECOGNITION_API LONG		 CharSegment(HDIB hDIB);
 //紧缩、重排调整
 ANNRECOGNITION_API HDIB		 AutoAlign(HDIB hDIB,LONG charRectID);
 //判断是否是离散噪声点
-ANNRECOGNITION_API bool		 DeleteScaterJudge(LPSTR lpDIBBits,WORD lLineBytes, LPBYTE lplab, int lWidth, int lHeight, int x, int y, POINT lab[], int lianXuShu);
+ANNRECOGNITION_API bool		 DeleteScaterJudge(LPSTR lpDIBBits,WORD lLineBytes, LPBYTE lplab, int lWidth, int lHeight, int x, int y, POINT lab[], int lianXuShu,int & m_lianXuShu);
 //对图像进行模板操作
 ANNRECOGNITION_API HDIB		 Template(HDIB hDIB,double * tem ,int tem_w,int tem_h,double xishu);
 //对图像进行中值滤波
@@ -202,6 +202,8 @@ ANNRECOGNITION_API BOOL      RevertBlackWhiteBMP(LPSTR bmpFile);
 ANNRECOGNITION_API BOOL      SaveBlockToBMP(LPSTR bmpFile,double leftRate,double topRate, double rightRate, double bottomRate,LPSTR bmpBlock);
 ANNRECOGNITION_API BOOL      SaveBlockToBMP2(LPSTR bmpFile,long left,long top, long right, long bottom,LPSTR bmpBlock);
 ANNRECOGNITION_API BOOL      SaveBlockToBMP3(HBITMAP hDib,long left,long top, long right, long bottom,LPSTR bmpBlock);
+ANNRECOGNITION_API BOOL      SaveBlockToBMP4(HBITMAP hDib,long left,long top, long right, long bottom,LPSTR bmpBlock,long threshold,bool needRevert);
+
 ANNRECOGNITION_API BOOL		 IsOCRAvailable();
 ANNRECOGNITION_API LONG		 GetOCRLanguage();
 ANNRECOGNITION_API void		 SetOCRLanguage(LONG language);
@@ -209,8 +211,8 @@ ANNRECOGNITION_API void		 SetWithAutoRotation(BOOL isUse);
 ANNRECOGNITION_API void		 SetWithStraightenImage(BOOL isUse);
 ANNRECOGNITION_API BOOL		 OCRFile(LPSTR fileName,LPSTR content);
 
-ANNRECOGNITION_API BOOL		 PreProcess( HBITMAP hDib, long left, long top, long right, long bottom, int threshHold, LPSTR tifFileName, LPSTR data );
-ANNRECOGNITION_API BOOL		 PreProcess2( HBITMAP hDib, long left, long top, long right, long bottom, int threshHold, LPSTR tifFileName, LPSTR data );
+ANNRECOGNITION_API BOOL		 RecognitionWhiteText( HBITMAP hDib, long left, long top, long right, long bottom, long threshHold, LPSTR tifFileName, LPSTR data );
+ANNRECOGNITION_API BOOL		 RecognitionBlackText( HBITMAP hDib, long left, long top, long right, long bottom, long threshHold, LPSTR tifFileName, LPSTR data );
 
 
 /************************************************************************/

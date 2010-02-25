@@ -420,104 +420,106 @@ ANNRECOGNITION_API HGLOBAL  CopyHandle (HGLOBAL h)
 
 ANNRECOGNITION_API BOOL  SaveDIB(HDIB hDib, LPSTR fileName)
 {
-	// Bitmap文件头
-	BITMAPFILEHEADER bmfHdr;
-	
-	// 指向BITMAPINFOHEADER的指针
-	LPBITMAPINFOHEADER lpBI;
-	
-	// DIB大小
-	DWORD dwDIBSize;
-
-	if (hDib == NULL)
-	{
-		// 如果DIB为空，返回FALSE
-		return FALSE;
-	}
-
-	// 读取BITMAPINFO结构，并锁定
-	lpBI = (LPBITMAPINFOHEADER) ::GlobalLock((HGLOBAL) hDib);
-	
-	if (lpBI == NULL)
-	{
-		// 为空，返回FALSE
-		return FALSE;
-	}
-	
-	// 判断是否是WIN3.0 DIB
-	if (!IS_WIN30_DIB(lpBI))
-	{
-		// 不支持其它类型的DIB保存
-		
-		// 解除锁定
-		::GlobalUnlock((HGLOBAL) hDib);
-		
-		// 返回FALSE
-		return FALSE;
-	}
-
-	// 填充文件头
-
-	// 文件类型"BM"
-	bmfHdr.bfType = DIB_HEADER_MARKER;
-
-	// 计算DIB大小时，最简单的方法是调用GlobalSize()函数。但是全局内存大小并
-	// 不是DIB真正的大小，它总是多几个字节。这样就需要计算一下DIB的真实大小。
-	
-	// 文件头大小＋颜色表大小
-	// （BITMAPINFOHEADER和BITMAPCOREHEADER结构的第一个DWORD都是该结构的大小）
-	dwDIBSize = *(LPDWORD)lpBI + ::PaletteSize((LPSTR)lpBI);
-	
-	// 计算图像大小
-	if ((lpBI->biCompression == BI_RLE8) || (lpBI->biCompression == BI_RLE4))
-	{
-		// 对于RLE位图，没法计算大小，只能信任biSizeImage内的值
-		dwDIBSize += lpBI->biSizeImage;
-	}
-	else
-	{
-		// 象素的大小
-		DWORD dwBmBitsSize;
-
-		// 大小为Width * Height
-		dwBmBitsSize = WIDTHBYTES((lpBI->biWidth)*((DWORD)lpBI->biBitCount)) * lpBI->biHeight;
-		
-		// 计算出DIB真正的大小
-		dwDIBSize += dwBmBitsSize;
-
-		// 更新biSizeImage（很多BMP文件头中biSizeImage的值是错误的）
-		lpBI->biSizeImage = dwBmBitsSize;
-	}
-
-
-	// 计算文件大小：DIB大小＋BITMAPFILEHEADER结构大小
-	bmfHdr.bfSize = dwDIBSize + sizeof(BITMAPFILEHEADER);
-	
-	// 两个保留字
-	bmfHdr.bfReserved1 = 0;
-	bmfHdr.bfReserved2 = 0;
-
-	// 计算偏移量bfOffBits，它的大小为Bitmap文件头大小＋DIB头大小＋颜色表大小
-	bmfHdr.bfOffBits = (DWORD)sizeof(BITMAPFILEHEADER) + lpBI->biSize
-											  + PaletteSize((LPSTR)lpBI);
-	
-	
-	SECURITY_ATTRIBUTES sa;
-	sa.nLength = sizeof(sa);
-	sa.lpSecurityDescriptor = NULL;
-	sa.bInheritHandle = 1;
-
-	HANDLE hFile = ::CreateFile(fileName, GENERIC_READ|GENERIC_WRITE, 0, &sa,
-		CREATE_ALWAYS , FILE_ATTRIBUTE_NORMAL, NULL);
-	
-	if(hFile==INVALID_HANDLE_VALUE)
-		return FALSE;
-
+	HANDLE hFile=0;
 	BOOL bRet=FALSE;
 
-	// 尝试写文件
 	try
-	{	
+	{
+		// Bitmap文件头
+		BITMAPFILEHEADER bmfHdr;
+		
+		// 指向BITMAPINFOHEADER的指针
+		LPBITMAPINFOHEADER lpBI;
+		
+		// DIB大小
+		DWORD dwDIBSize;
+
+		if (hDib == NULL)
+		{
+			// 如果DIB为空，返回FALSE
+			return FALSE;
+		}
+
+		// 读取BITMAPINFO结构，并锁定
+		lpBI = (LPBITMAPINFOHEADER) ::GlobalLock((HGLOBAL) hDib);
+		
+		if (lpBI == NULL)
+		{
+			// 为空，返回FALSE
+			return FALSE;
+		}
+		
+		// 判断是否是WIN3.0 DIB
+		if (!IS_WIN30_DIB(lpBI))
+		{
+			// 不支持其它类型的DIB保存
+			
+			// 解除锁定
+			::GlobalUnlock((HGLOBAL) hDib);
+			
+			// 返回FALSE
+			return FALSE;
+		}
+
+		// 填充文件头
+
+		// 文件类型"BM"
+		bmfHdr.bfType = DIB_HEADER_MARKER;
+
+		// 计算DIB大小时，最简单的方法是调用GlobalSize()函数。但是全局内存大小并
+		// 不是DIB真正的大小，它总是多几个字节。这样就需要计算一下DIB的真实大小。
+		
+		// 文件头大小＋颜色表大小
+		// （BITMAPINFOHEADER和BITMAPCOREHEADER结构的第一个DWORD都是该结构的大小）
+		dwDIBSize = *(LPDWORD)lpBI + ::PaletteSize((LPSTR)lpBI);
+		
+		// 计算图像大小
+		if ((lpBI->biCompression == BI_RLE8) || (lpBI->biCompression == BI_RLE4))
+		{
+			// 对于RLE位图，没法计算大小，只能信任biSizeImage内的值
+			dwDIBSize += lpBI->biSizeImage;
+		}
+		else
+		{
+			// 象素的大小
+			DWORD dwBmBitsSize;
+
+			// 大小为Width * Height
+			dwBmBitsSize = WIDTHBYTES((lpBI->biWidth)*((DWORD)lpBI->biBitCount)) * lpBI->biHeight;
+			
+			// 计算出DIB真正的大小
+			dwDIBSize += dwBmBitsSize;
+
+			// 更新biSizeImage（很多BMP文件头中biSizeImage的值是错误的）
+			lpBI->biSizeImage = dwBmBitsSize;
+		}
+
+
+		// 计算文件大小：DIB大小＋BITMAPFILEHEADER结构大小
+		bmfHdr.bfSize = dwDIBSize + sizeof(BITMAPFILEHEADER);
+		
+		// 两个保留字
+		bmfHdr.bfReserved1 = 0;
+		bmfHdr.bfReserved2 = 0;
+
+		// 计算偏移量bfOffBits，它的大小为Bitmap文件头大小＋DIB头大小＋颜色表大小
+		bmfHdr.bfOffBits = (DWORD)sizeof(BITMAPFILEHEADER) + lpBI->biSize
+												  + PaletteSize((LPSTR)lpBI);
+		
+		
+		SECURITY_ATTRIBUTES sa;
+		sa.nLength = sizeof(sa);
+		sa.lpSecurityDescriptor = NULL;
+		sa.bInheritHandle = 1;
+
+		hFile = ::CreateFile(fileName, GENERIC_READ|GENERIC_WRITE, 0, &sa,
+			CREATE_ALWAYS , FILE_ATTRIBUTE_NORMAL, NULL);
+		
+		if(hFile==INVALID_HANDLE_VALUE)
+			return FALSE;
+
+		// 尝试写文件
+	
 		do
 		{
 			DWORD nWritten;
@@ -529,16 +531,24 @@ ANNRECOGNITION_API BOOL  SaveDIB(HDIB hDib, LPSTR fileName)
 			bRet=TRUE;
 		
 		} while(false);
+
+		// 解除锁定
+		::GlobalUnlock((HGLOBAL) hDib);
+		
+		CloseHandle(hFile);
+		// 返回TRUE	 
 	}
-	catch (exception e)
+	catch (...)
 	{
+		// 解除锁定
+		::GlobalUnlock((HGLOBAL) hDib);
+		if(hFile!=INVALID_HANDLE_VALUE)
+			CloseHandle(hFile);
+		
+		bRet=FALSE;
+
+		ANNRecognitionLog(LOG_ERROR,"Save DIB File ERROR");
 	}
-	// 解除锁定
-	::GlobalUnlock((HGLOBAL) hDib);
-	
-	CloseHandle(hFile);
-	// 返回TRUE
-	
 	return bRet;
 }
 
@@ -563,77 +573,87 @@ ANNRECOGNITION_API BOOL  SaveDIB(HDIB hDib, LPSTR fileName)
 ANNRECOGNITION_API HDIB  ReadDIBFile(LPCSTR fileName)
 {
 //	Lock lock(&_cs);
-
-	BITMAPFILEHEADER bmfHeader;
-	DWORD dwBitsSize;
-	HDIB hDIB;
-	LPSTR pDIB;
-
-	// 获取DIB（文件）长度（字节）
-	std::ifstream file;
-	file.open(fileName,ios::in | ios::binary);
-	
-	file.seekg (0, ios::end);
-	dwBitsSize = file.tellg();
-	file.seekg (0, ios::beg);
-
-	// 尝试读取DIB文件头
-	file.read((LPSTR)&bmfHeader, sizeof(bmfHeader));
-	if (file.flags()==ios::eofbit || file.flags()==ios::badbit || file.flags()==ios::failbit)
+	try
 	{
-		// 大小不对，返回NULL。
-		file.close();
-		return NULL;
-	}
-	
-	// 判断是否是DIB对象，检查头两个字节是否是"BM"
-	if (bmfHeader.bfType != DIB_HEADER_MARKER)
-	{
-		// 非DIB对象，返回NULL。
-		return NULL;
-	}
+		BITMAPFILEHEADER bmfHeader;
+		DWORD dwBitsSize;
+		HDIB hDIB;
+		LPSTR pDIB;
 
-	// 为DIB分配内存
-	hDIB = (HDIB) ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, dwBitsSize);
-	if (hDIB == 0)
-	{
-		// 内存分配失败，返回NULL。
-		return NULL;
-	}
-	
-	// 锁定
-	pDIB = (LPSTR) ::GlobalLock((HGLOBAL) hDIB);
-
-	// 读象素
-	DWORD dwBitsBegin = file.tellg();
-
-	file.read(pDIB, dwBitsSize - sizeof(BITMAPFILEHEADER));
-	
-	DWORD dwBitsEnd = file.tellg();
-
-	if ((dwBitsEnd-dwBitsBegin)!=(dwBitsSize - sizeof(BITMAPFILEHEADER)))
-	{
-		// 大小不对。
+		// 获取DIB（文件）长度（字节）
+		std::ifstream file;
+		file.open(fileName,ios::in | ios::binary);
 		
+		file.seekg (0, ios::end);
+		dwBitsSize = file.tellg();
+		file.seekg (0, ios::beg);
+
+		// 尝试读取DIB文件头
+		file.read((LPSTR)&bmfHeader, sizeof(bmfHeader));
+		if (file.flags()==ios::eofbit || file.flags()==ios::badbit || file.flags()==ios::failbit)
+		{
+			// 大小不对，返回NULL。
+			file.close();
+			return NULL;
+		}
+		
+		// 判断是否是DIB对象，检查头两个字节是否是"BM"
+		if (bmfHeader.bfType != DIB_HEADER_MARKER)
+		{
+			// 非DIB对象，返回NULL。
+			// 大小不对，返回NULL。
+			file.close();
+			return NULL;
+		}
+
+		// 为DIB分配内存
+		hDIB = (HDIB) ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, dwBitsSize);
+		if (hDIB == 0)
+		{
+			// 内存分配失败，返回NULL。
+			return NULL;
+		}
+		
+		// 锁定
+		pDIB = (LPSTR) ::GlobalLock((HGLOBAL) hDIB);
+
+		// 读象素
+		DWORD dwBitsBegin = file.tellg();
+
+		file.read(pDIB, dwBitsSize - sizeof(BITMAPFILEHEADER));
+		
+		DWORD dwBitsEnd = file.tellg();
+
+		if ((dwBitsEnd-dwBitsBegin)!=(dwBitsSize - sizeof(BITMAPFILEHEADER)))
+		{
+			// 大小不对。
+			
+			// 解除锁定
+			::GlobalUnlock((HGLOBAL) hDIB);
+			
+			// 释放内存
+			::GlobalFree((HGLOBAL) hDIB);
+			
+			file.close();
+			// 返回NULL。
+			return NULL;
+		}
+		
+		file.close();
+
 		// 解除锁定
 		::GlobalUnlock((HGLOBAL) hDIB);
 		
-		// 释放内存
-		::GlobalFree((HGLOBAL) hDIB);
-		
-		file.close();
-		// 返回NULL。
-		return NULL;
+		// 返回DIB句柄
+		return hDIB;
 	}
-	
-	file.close();
-
-	// 解除锁定
-	::GlobalUnlock((HGLOBAL) hDIB);
-	
-	// 返回DIB句柄
-	return hDIB;
+	catch(...)
+	{
+		ANNRecognitionLog(LOG_ERROR,"Read DIB File Error!");
+	}
+	return NULL;
 }
+
 /*******************************************************************
 *函数名称：
 * NewDIB()
