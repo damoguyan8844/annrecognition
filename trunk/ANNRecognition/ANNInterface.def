@@ -54,5 +54,6 @@ EXPORTS
 		SaveBlockToBMP3
 		SetLogHandler
 		SetErrorRecordFolder
-
-		PreProcess
+		RecognitionWhiteText
+		RecognitionBlackText
+		SaveBlockToBMP4

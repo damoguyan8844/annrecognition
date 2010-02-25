@@ -54,11 +54,11 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comsupp.lib /nologo /dll /machine:I386 /libpath:".\WTL71" /libpath:".\BMP2TIF" /libpath:".\CXImage"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comsupp.lib /nologo /dll /machine:I386 /out:"..\CMPW\Out\ANNRecognition.dll" /libpath:".\WTL71" /libpath:".\BMP2TIF" /libpath:".\CXImage"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy Files
-PostBuild_Cmds=Copy .\\Release\ANNRecognition.dll  ..\\DigitRec	Copy .\\ANNRecognition.h  ..\\DigitRec	Copy .\\Release\ANNRecognition.lib  ..\\DigitRec	Copy .\\Release\ANNRecognition.dll  ..\\ANNOut	copy .\\Release\ANNRecognition.dll C:\Code\CMPW\Digit	copy .\\Release\ANNRecognition.dll C:\Code\CMPW\Presentation	copy .\\Release\ANNRecognition.dll C:\Code\CMPW\out
+PostBuild_Cmds=Copy /y ..\CMPW\Out\ANNRecognition.dll ..\CMPW\Digit	Copy /y ..\CMPW\Out\ANNRecognition.dll ..\CMPW\Presentation
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "ANNRecognition - Win32 Debug"
@@ -86,11 +86,11 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comsupp.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comsupp.lib /nologo /dll /debug /machine:I386 /out:"..\CMPW\Out\ANNRecognition.dll" /pdbtype:sept
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy Files
-PostBuild_Cmds=Copy .\\Debug\ANNRecognition.dll  ..\\DigitRec	Copy .\\ANNRecognition.h  ..\\DigitRec	Copy .\\Debug\ANNRecognition.lib  ..\\DigitRec	Copy .\\Debug\ANNRecognition.dll  ..\\ANNOut
+PostBuild_Cmds=Copy /y ..\CMPW\Out\ANNRecognition.dll ..\CMPW\Presentation	Copy /y ..\CMPW\Out\ANNRecognition.dll ..\CMPW\Digit
 # End Special Build Tool
 
 !ENDIF 

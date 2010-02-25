@@ -13,6 +13,7 @@
 #include <ximage.h>
 #include <ximatif.h>
 #include <MODIVWCTL.h>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -25,24 +26,24 @@ BOOL G_OCRDocumentError=FALSE;
 ANNRECOGNITION_API BOOL ConvertJPEG2BMP(LPSTR jpegFile , LPSTR bmpFile)
 {
 	CxImage cxImage; 
-	cxImage.Load(jpegFile,CXIMAGE_FORMAT_JPG); 
-	cxImage.Save(bmpFile,CXIMAGE_FORMAT_BMP);
-	
-	return TRUE;
+	return cxImage.Load(jpegFile,CXIMAGE_FORMAT_JPG) && cxImage.Save(bmpFile,CXIMAGE_FORMAT_BMP);
 }
 ANNRECOGNITION_API BOOL ConvertBMP2TIF(LPSTR bmpFile , LPSTR tifFile)
 {
 //	Lock lock(&_csOCR);
 
  	CxImage image; 
- 	image.Load(bmpFile,CXIMAGE_FORMAT_BMP); 
+ 	if(!image.Load(bmpFile,CXIMAGE_FORMAT_BMP))
+		return FALSE; 
 
 	FILE* hFile;
  	hFile = fopen(tifFile,"w+b");
 	
 	if (!image.Encode(&CxIOFile(hFile),CXIMAGE_FORMAT_TIF)){
-		ANNRecognitionLog((char *)image.GetLastError(),LOG_ERROR);
 		fclose(hFile);
+		DeleteFile(tifFile);
+
+		ANNRecognitionLog(LOG_ERROR,(char *)string(image.GetLastError()).c_str());
 		return FALSE;
 	}
 	fclose(hFile);
@@ -54,7 +55,8 @@ ANNRECOGNITION_API BOOL BlackWhiteBMP( LPSTR bmpFile ,int threshold)
 {
 //	Lock lock(&_cs);
 	CxImage cxImage; 
-	cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP);
+	if(!cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP))
+		return FALSE; 
 	
 	BOOL bRet=TRUE;
 
@@ -80,7 +82,9 @@ ANNRECOGNITION_API BOOL RevertBlackWhiteBMP( LPSTR bmpFile )
 //	Lock lock(&_cs);
 
 	CxImage cxImage; 
-	cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP);
+	if(!cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP))
+		return FALSE; 
+
 	cxImage.Negative();
 	cxImage.Save(bmpFile,CXIMAGE_FORMAT_BMP);
 
@@ -90,7 +94,8 @@ ANNRECOGNITION_API BOOL RevertBlackWhiteBMP( LPSTR bmpFile )
 ANNRECOGNITION_API BOOL SaveBlockToBMP(LPSTR bmpFile,double leftRate,double topRate, double rightRate, double bottomRate,LPSTR bmpBlock)
 {
 	CxImage cxImage; 
-	cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP);
+	if(!cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP))
+		return FALSE; 
 
 	RECT rect;
 	rect.left=leftRate* cxImage.GetWidth();
@@ -111,8 +116,9 @@ ANNRECOGNITION_API BOOL SaveBlockToBMP2(LPSTR bmpFile,long left,long top, long r
 //	Lock lock(&_cs);
 
 	CxImage cxImage; 
-	cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP);
-	
+	if(!cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP))
+		return FALSE; 
+
 	RECT rect;
 	rect.left=left;
 	rect.top=top;
@@ -132,7 +138,8 @@ ANNRECOGNITION_API BOOL SaveBlockToBMP3(HBITMAP hDib,long left,long top, long ri
 //	Lock lock(&_cs);
 
 	CxImage cxImage; 
-	cxImage.CreateFromHBITMAP(hDib);
+	if(!cxImage.CreateFromHBITMAP(hDib))
+		return FALSE;
 
 	RECT rect;
 	rect.left=left;
@@ -148,50 +155,181 @@ ANNRECOGNITION_API BOOL SaveBlockToBMP3(HBITMAP hDib,long left,long top, long ri
 	return FALSE;
 }
 
-ANNRECOGNITION_API BOOL PreProcess( HBITMAP hDib, long left, long top, long right, long bottom, 
-								   int threshHold, LPSTR tifFileName, LPSTR data )
+ANNRECOGNITION_API BOOL SaveBlockToBMP4(HBITMAP hDib,long left,long top, long right, long bottom,LPSTR bmpBlock,long threshold,bool needRevert)
+{
+	//	Lock lock(&_cs);
+	HDIB hDibBlock=0;
+	BOOL bRet=TRUE;
+
+	try
+	{
+		CxImage cxImage; 
+		if(!cxImage.CreateFromHBITMAP(hDib))
+			return FALSE;
+		
+		RECT rect;
+		rect.left=left;
+		rect.top=top;
+		rect.right = right;
+		rect.bottom = bottom;
+		
+		CxImage imgBlock;
+		bRet=cxImage.Crop(rect,&imgBlock);
+		if(bRet)
+		{
+			//Revert
+			if(needRevert)
+				imgBlock.Negative();
+			
+			//Black White
+			imgBlock.IncreaseBpp(8);
+
+			//	bRet=bRet&&cxImage.Negative();
+			bRet=bRet&&imgBlock.GrayScale();
+			if(bRet)
+			{
+				bRet=bRet&&imgBlock.Threshold(threshold);
+			}
+			
+			imgBlock.IncreaseBpp(8);
+			imgBlock.DecreaseBpp(8,false);
+			
+			if(bRet)
+			{
+				bRet=imgBlock.Save(bmpBlock,CXIMAGE_FORMAT_BMP);
+				imgBlock=NULL;
+
+				if(bRet)
+				{
+					hDibBlock=ReadDIBFile(bmpBlock);
+					if(hDib!=NULL)
+					{
+						bRet=bRet && Convert256toGray(hDibBlock);
+						bRet=bRet && ConvertGrayToWhiteBlack(hDibBlock);
+						bRet=bRet && RemoveScatterNoise(hDibBlock);
+						bRet=bRet && SaveDIB(hDibBlock,bmpBlock);
+						ReleaseDIBFile(hDibBlock);
+					}
+					else
+					{
+						bRet=FALSE;
+					}
+				}
+			}
+		}
+	}
+	catch(...)
+	{
+		if(hDibBlock!=NULL)
+			ReleaseDIBFile(hDibBlock);
+		bRet=FALSE;
+		ANNRecognitionLog(LOG_ERROR,"Save Block 4 Error!");
+	}
+
+	if(!bRet)
+	{
+		struct stat fileStates;
+		if(::stat(bmpBlock,&fileStates)==0)
+			DeleteFile(bmpBlock);
+	}
+	return bRet;
+}
+
+ANNRECOGNITION_API BOOL RecognitionWhiteText ( HBITMAP hDib, long left, long top, long right, long bottom, 
+								   long threshHold, LPSTR tifFileName, LPSTR data )
 {
 //	Lock lock(&_cs);
 
 	CxImage cxImage;
-	cxImage.CreateFromHBITMAP(hDib);
+	if(!cxImage.CreateFromHBITMAP(hDib))
+		return FALSE;
+
 	RECT rect;
-	rect.left = left;
-	rect.top = top;
-	rect.right = right;
-	rect.bottom = bottom;
+	rect.left = left>=0 && left<cxImage.GetWidth()?left: 0;
+	rect.top = top>=0 && top<cxImage.GetHeight()?top: 0;
+	rect.right = right>rect.left && right<=cxImage.GetWidth()?right:cxImage.GetWidth();
+	rect.bottom = bottom>rect.top && bottom<=cxImage.GetHeight()?bottom:cxImage.GetHeight();
 
 	CxImage imgBlock;
-	if( cxImage.Crop( rect, &imgBlock ) )
+
+	BOOL bRet=TRUE;
+	bRet = bRet && cxImage.Crop( rect, &imgBlock );
+	bRet = bRet && imgBlock.Negative(); 
+	
+	if(bRet==FALSE)
 	{
-		imgBlock.Negative(); // revert black & white
-
-
-		//convert image to black & white
-		imgBlock.IncreaseBpp(8);
-		if(imgBlock.GrayScale() && imgBlock.Threshold(threshHold))
-		{
-			imgBlock.IncreaseBpp(8);
-			imgBlock.DecreaseBpp(8,false);
-
-			// convert to tif
-			FILE* hFile = fopen(tifFileName,"w+b");
-			
-			if (!imgBlock.Encode(&CxIOFile(hFile),CXIMAGE_FORMAT_TIF)){
-				ANNRecognitionLog((char *)imgBlock.GetLastError(),LOG_ERROR);
-				fclose(hFile);
-				return FALSE;
-			}
-			fclose(hFile);
-			
-			//recognize data
-			if( OCRFile( tifFileName, data ) )
-			{
-				return TRUE;
-			}
-		}
+		ANNRecognitionLog(LOG_ERROR," White TextCrop , Negative File Come To Failure");
+		return FALSE;
 	}
-	return FALSE;
+
+	imgBlock.IncreaseBpp(8);
+	bRet=bRet&&imgBlock.GrayScale();
+	if(bRet)
+	{
+		bRet=bRet&&imgBlock.Threshold(threshHold);
+	}
+	
+	imgBlock.IncreaseBpp(8);
+	imgBlock.DecreaseBpp(8,false);
+
+	FILE* hFile;
+	hFile = fopen(tifFileName,"w+b");
+	if (!imgBlock.Encode(&CxIOFile(hFile),CXIMAGE_FORMAT_TIF)){
+		ANNRecognitionLog(LOG_ERROR,(char *)imgBlock.GetLastError());
+		fclose(hFile);
+		return FALSE;
+	}
+	fclose(hFile);
+
+	return OCRFile( tifFileName, data );
+}
+
+ANNRECOGNITION_API BOOL RecognitionBlackText ( HBITMAP hDib, long left, long top, long right, long bottom, 
+											  long threshHold, LPSTR tifFileName, LPSTR data )
+{
+	//	Lock lock(&_cs);
+	
+	CxImage cxImage;
+	if(!cxImage.CreateFromHBITMAP(hDib))
+		return FALSE;
+
+	RECT rect;
+	rect.left = left>=0 && left<cxImage.GetWidth()?left: 0;
+	rect.top = top>=0 && top<cxImage.GetHeight()?top: 0;
+	rect.right = right>rect.left && right<=cxImage.GetWidth()?right:cxImage.GetWidth();
+	rect.bottom = bottom>rect.top && bottom<=cxImage.GetHeight()?bottom:cxImage.GetHeight();
+	
+	CxImage imgBlock;
+	
+	BOOL bRet=TRUE;
+	bRet = bRet && cxImage.Crop( rect, &imgBlock );
+	
+	if(bRet==FALSE)
+	{
+		ANNRecognitionLog(LOG_ERROR," Black Text Crop , Negative File Come To Failure");
+		return FALSE;
+	}
+	
+	imgBlock.IncreaseBpp(8);
+	bRet=bRet&&imgBlock.GrayScale();
+	if(bRet)
+	{
+		bRet=bRet&&imgBlock.Threshold(threshHold);
+	}
+	
+	imgBlock.IncreaseBpp(8);
+	imgBlock.DecreaseBpp(8,false);
+	
+	FILE* hFile;
+	hFile = fopen(tifFileName,"w+b");
+	if (!imgBlock.Encode(&CxIOFile(hFile),CXIMAGE_FORMAT_TIF)){
+		ANNRecognitionLog(LOG_ERROR,(char *)imgBlock.GetLastError());
+		fclose(hFile);
+		return FALSE;
+	}
+	fclose(hFile);
+	
+	return OCRFile( tifFileName, data );
 }
 
 ANNRECOGNITION_API BOOL	IsOCRAvailable()
@@ -201,6 +339,7 @@ ANNRECOGNITION_API BOOL	IsOCRAvailable()
 		IDocument *pDoc = new IDocument;
 		if(pDoc!=NULL && pDoc->CreateDispatch("MODI.Document"))
 		{
+			delete pDoc;
 			return TRUE;
 		}
 	}
@@ -227,6 +366,14 @@ ANNRECOGNITION_API void	SetWithStraightenImage(BOOL isUse)
 ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 {
 	Lock lock(&_csOCR);
+	
+	if( !content )
+		return FALSE;
+	content[ 0 ] = '\0';
+
+	struct stat fileStates;
+	if(::stat(fullFileName,&fileStates)!=0)
+		return FALSE;
 
 	string strFileName=fullFileName;
 	
@@ -257,23 +404,28 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 	{
 		G_OCRDocumentError=FALSE;
 
-		debugMessage="OCRFile:";
+//		ANNRecognitionLog(LOG_INFO,"OCR File Start");
+
+		debugMessage="OCRFile: ";
 		debugMessage+=string(fullFileName);
-		ANNRecognitionLog((char *)debugMessage.c_str(),LOG_ERROR);
+//		ANNRecognitionLog(LOG_INFO,(char *)debugMessage.c_str());
 
 		pDoc = new IDocument;
 		pDoc->CreateDispatch("MODI.Document");
-
+		
 		debug=1;
 		if(!G_OCRDocumentError)
 		{
 			pDoc->Create(strFileName.c_str());
+//			ANNRecognitionLog(LOG_INFO,"After Create Doc");
 		}
 		debug=2;
 		if(!G_OCRDocumentError)
 		{
 			pDoc->OCR( G_MILANGUAGE, G_WithAutoRotation, G_WithStraighten);
+//			ANNRecognitionLog(LOG_INFO,"After Create OCR");
 		}
+
 		debug=3;
 		if(!G_OCRDocumentError)
 		{
@@ -281,6 +433,8 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 		
 			if(images!=0)
 			{
+//				ANNRecognitionLog(LOG_INFO,"After Create GetImages");
+
 				long num =images.GetCount();
 				for( int i = 0; i < num; i++ )
 				{
@@ -306,29 +460,35 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 		{
 			//*content= new char[strOut.size()];
 			strncpy(content,strOut.c_str(),strOut.size());
+			content[strOut.size()]='\0';
 		}
 		
-		ANNRecognitionLog("OCRFile: Return ",LOG_ERROR);
-		
-		return (!strOut.empty()) ? TRUE : FALSE;
+		if(strOut.empty())
+		{
+			ANNRecognitionLog(LOG_INFO,"OCRFile: Return False ");
+			return FALSE;
+		}
+		else
+			ANNRecognitionLog(LOG_INFO,"OCRFile: Return TRUE  ");
+		return TRUE;
 	}
 	catch(_com_error & e)
 	{
 		char temp[1024];
 		sprintf(temp,"Debug=%d,OCR File %s Failure,Source=%s,Message=%s",debug,strFileName.c_str(),(const char *)e.Source(),e.ErrorMessage()?e.ErrorMessage():"");
-		ANNRecognitionLog(temp,LOG_ERROR);
+		ANNRecognitionLog(LOG_ERROR,temp);
 	}
 	catch(exception &e)
 	{
 		char temp[1024];
 		sprintf(temp,"Debug=%d,OCR File %s Failure,Exception=%s",debug,strFileName.c_str(),e.what());
-		ANNRecognitionLog(temp,LOG_ERROR);
+		ANNRecognitionLog(LOG_ERROR,temp);
 	}
 	catch(...)
 	{
 		char temp[256];
 		sprintf(temp,"Debug=%d,OCR File %s Failure,Unknown Error",debug,strFileName.c_str());
-		ANNRecognitionLog(temp,LOG_ERROR);
+		ANNRecognitionLog(LOG_ERROR,temp);
 	}
 	
 	if(pDoc!=0)
@@ -337,8 +497,5 @@ ANNRECOGNITION_API BOOL	OCRFile(LPSTR fullFileName,LPSTR content)
 		pDoc->ReleaseDispatch();
 		delete pDoc;
 	}
-
-	ANNRecognitionLog("OCRFile: Return Has Exception",LOG_ERROR);
-
 	return FALSE;
 }
