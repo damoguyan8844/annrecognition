@@ -1187,6 +1187,7 @@ ANNRECOGNITION_API BOOL ConvertGrayToWhiteBlack(HDIB hDIB)
 ANNRECOGNITION_API bool DeleteScaterJudge(LPSTR lpDIBBits, WORD lLineBytes, LPBYTE lplab, int lWidth, int lHeight, int x, int y, POINT lab[], int lianXuShu,int & m_lianXuShu)
 {
 	try
+	{
 	//如果连续长度满足要求，说明不是离散点，返回
 		if(m_lianXuShu>=lianXuShu)
 			return TRUE;
