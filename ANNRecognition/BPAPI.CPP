@@ -41,82 +41,83 @@ string  G_ErrorRecordFolder("C:");
 ANNRECOGNITION_API BOOL LoadBPParameters( LPSTR settingFile )
 {
 	try{
-//	Lock lock(&_cs);
+	//	Lock lock(&_cs);
 
-	FILE *fp;
-	if((fp=fopen(settingFile,"rb"))==NULL)
-	{
-		ANNRecognitionLog(LOG_ERROR,"Open File Failure");
-		return FALSE;
-	}
-	
-	//??????,????,??????
-	long *bufferLong;
-	bufferLong=(long *)malloc(3*sizeof(long));
-	fread((char*)bufferLong,sizeof(long),3,fp);
+		FILE *fp;
+		if((fp=fopen(settingFile,"rb"))==NULL)
+		{
+			ANNRecognitionLog(LOG_ERROR,"Open File Failure");
+			return FALSE;
+		}
+		
+	//读取输入节点，隐层节点，输出节点维度
+		long *bufferLong;
+		bufferLong=(long *)malloc(3*sizeof(long));
+		fread((char*)bufferLong,sizeof(long),3,fp);
 
-	if(bufferLong[0]>=MAXDEM || bufferLong[1]>=MAXDEM ||bufferLong[2]>=MAXDEM)
-	{
-		ANNRecognitionLog(LOG_ERROR,"Dem Bigger Than MAXDEM");
+		if(bufferLong[0]>=MAXDEM || bufferLong[1]>=MAXDEM ||bufferLong[2]>=MAXDEM)
+		{
+			ANNRecognitionLog(LOG_ERROR,"Dem Bigger Than MAXDEM");
+			free(bufferLong);
+			fclose(fp);
+			return FALSE;
+		}
+
+		G_INPUTDEM=bufferLong[0];
+		G_IMPLICITDEM=bufferLong[1];
+		G_OUTPUTDEM=bufferLong[2];
 		free(bufferLong);
+		
+		if(feof(fp)) return FALSE;
+		
+		double dblTemp=0.0;
+		//读取输入层隐层节点权值以及偏移
+		for(int i=0;i<G_IMPLICITDEM;i++)
+		{
+			for(int j=0;j<G_INPUTDEM;j++)
+			{
+				fread((char*)&dblTemp,sizeof(double),1,fp);
+				W_IMPLICITDEM_INPUTDEM[i][j]=dblTemp;
+			}
+		}
+		
+		if(feof(fp)) return FALSE;
+
+
+		for(i=0;i<G_IMPLICITDEM;i++)
+		{
+			fread((char*)&dblTemp,sizeof(double),1,fp);
+			B_IMPLICITDEM[i]=dblTemp;
+		}
+		
+		if(feof(fp)) return FALSE;
+
+		for(i=0;i<G_OUTPUTDEM;i++)
+		{
+			for(int j=0;j<G_IMPLICITDEM;j++)
+			{
+				fread((char*)&dblTemp,sizeof(double),1,fp);
+				W_OUTPUTDEM_IMPLICITDEM[i][j]=dblTemp;
+			}
+		}
+		
+		if(feof(fp)) return FALSE;
+
+		for(i=0;i<G_OUTPUTDEM;i++)
+		{
+			fread((char*)&dblTemp,sizeof(double),1,fp);
+			B_OUTPUTDEM[i]=dblTemp;
+		}
+		
 		fclose(fp);
-		return FALSE;
-	}
 
-	G_INPUTDEM=bufferLong[0];
-	G_IMPLICITDEM=bufferLong[1];
-	G_OUTPUTDEM=bufferLong[2];
-	free(bufferLong);
-	
-	if(feof(fp)) return FALSE;
-	
-	double dblTemp=0.0;
-	//???????????????
-	for(int i=0;i<G_IMPLICITDEM;i++)
-	{
-		for(int j=0;j<G_INPUTDEM;j++)
-		{
-			fread((char*)&dblTemp,sizeof(double),1,fp);
-			W_IMPLICITDEM_INPUTDEM[i][j]=dblTemp;
-		}
-	}
-	
-	if(feof(fp)) return FALSE;
+		G_SettingFile=settingFile;
+		
+		InitTrainBPWeights(0);
 
-
-	for(i=0;i<G_IMPLICITDEM;i++)
-	{
-		fread((char*)&dblTemp,sizeof(double),1,fp);
-		B_IMPLICITDEM[i]=dblTemp;
-	}
-	
-	if(feof(fp)) return FALSE;
-
-	for(i=0;i<G_OUTPUTDEM;i++)
-	{
-		for(int j=0;j<G_IMPLICITDEM;j++)
-		{
-			fread((char*)&dblTemp,sizeof(double),1,fp);
-			W_OUTPUTDEM_IMPLICITDEM[i][j]=dblTemp;
-		}
-	}
-	
-	if(feof(fp)) return FALSE;
-
-	for(i=0;i<G_OUTPUTDEM;i++)
-	{
-		fread((char*)&dblTemp,sizeof(double),1,fp);
-		B_OUTPUTDEM[i]=dblTemp;
-	}
-	
-	fclose(fp);
-
-	G_SettingFile=settingFile;
-	
-	InitTrainBPWeights(0);
-
-	return TRUE;	
-	} catch(...) {
+		return TRUE;	
+	} 
+	catch(...) {
 		ANNRecognitionLog(LOG_ERROR,"LoadBPParameters Exception");
 		return FALSE;
 	}
@@ -125,35 +126,36 @@ ANNRECOGNITION_API BOOL LoadBPParameters( LPSTR settingFile )
 ANNRECOGNITION_API BOOL SaveBPParameters( LPSTR settingFile )
 {
 	try{
-	FILE *fp;
-	fp=fopen(settingFile,"wb+");
-	long *bufferLong;
-	bufferLong=(long*)malloc(3*sizeof(long));
-	bufferLong[0]=G_INPUTDEM;
-	bufferLong[1]=G_IMPLICITDEM;
-	bufferLong[2]=G_OUTPUTDEM;
-	fwrite((char*)bufferLong,sizeof(long),3,fp);
-	free(bufferLong);
+		FILE *fp;
+		fp=fopen(settingFile,"wb+");
+		long *bufferLong;
+		bufferLong=(long*)malloc(3*sizeof(long));
+		bufferLong[0]=G_INPUTDEM;
+		bufferLong[1]=G_IMPLICITDEM;
+		bufferLong[2]=G_OUTPUTDEM;
+		fwrite((char*)bufferLong,sizeof(long),3,fp);
+		free(bufferLong);
 
-	for(int k=0;k<G_IMPLICITDEM;k++)
-	{
-		for(int j=0;j<G_INPUTDEM;j++)
-			fwrite((char*)&W_IMPLICITDEM_INPUTDEM[k][j],sizeof(double),1,fp);
-	}
-	for( k=0;k<G_IMPLICITDEM;k++)
-		fwrite((char*)&B_IMPLICITDEM[k],sizeof(double),1,fp);
-	
-	for( k=0;k<G_OUTPUTDEM;k++)
-	{	
-		for(int j=0;j<G_IMPLICITDEM;j++)
-			fwrite((char*)&W_OUTPUTDEM_IMPLICITDEM[k][j],sizeof(double),1,fp);
-	}
-	for( k=0;k<G_OUTPUTDEM;k++)
-		fwrite((char*)&B_OUTPUTDEM[k],sizeof(double),1,fp);
-	
-	fclose(fp);
-	return TRUE;
-	} catch(...) {
+		for(int k=0;k<G_IMPLICITDEM;k++)
+		{
+			for(int j=0;j<G_INPUTDEM;j++)
+				fwrite((char*)&W_IMPLICITDEM_INPUTDEM[k][j],sizeof(double),1,fp);
+		}
+		for( k=0;k<G_IMPLICITDEM;k++)
+			fwrite((char*)&B_IMPLICITDEM[k],sizeof(double),1,fp);
+		
+		for( k=0;k<G_OUTPUTDEM;k++)
+		{	
+			for(int j=0;j<G_IMPLICITDEM;j++)
+				fwrite((char*)&W_OUTPUTDEM_IMPLICITDEM[k][j],sizeof(double),1,fp);
+		}
+		for( k=0;k<G_OUTPUTDEM;k++)
+			fwrite((char*)&B_OUTPUTDEM[k],sizeof(double),1,fp);
+		
+		fclose(fp);
+		return TRUE;
+	} 
+	catch(...) {
 		ANNRecognitionLog(LOG_ERROR,"SaveBPParameters Exception");
 		return FALSE;
 	}
@@ -163,54 +165,55 @@ ANNRECOGNITION_API BOOL SaveBPParameters( LPSTR settingFile )
 ANNRECOGNITION_API BOOL	PrintBPParameters(LPSTR textFile)
 {
 	try{
-	FILE *fp;
-	fp=fopen(textFile,"wt+");
+		FILE *fp;
+		fp=fopen(textFile,"wt+");
 
-	char  time[10];
-	char  date[10];
-    _strtime(time);  
-	_strdate(date);
-	fprintf(fp,"BPParameters:Version:%d \t Date: %s \t Time:%s \n",ANNRecognitionVersion(),date,time);    //????????	
-	fprintf(fp,"InputLayerDem:%d\tImplicitLayerDem:%d\tOutputLayerDem:%d\n",G_INPUTDEM,G_IMPLICITDEM,G_OUTPUTDEM);
+		char  time[10];
+		char  date[10];
+		_strtime(time);  
+		_strdate(date);
+		fprintf(fp,"BPParameters:Version:%d \t Date: %s \t Time:%s \n",ANNRecognitionVersion(),date,time);    //????????	
+		fprintf(fp,"InputLayerDem:%d\tImplicitLayerDem:%d\tOutputLayerDem:%d\n",G_INPUTDEM,G_IMPLICITDEM,G_OUTPUTDEM);
 
-	fprintf(fp,"\nW_IMPLICITDEM_INPUTDEM:\n{\n");
-	for(int k=0;k<G_IMPLICITDEM;k++)
-	{
-		fprintf(fp,"{");
-		for(int i=0;i<G_INPUTDEM;i++)
-			fprintf(fp,"%5.10f,",W_IMPLICITDEM_INPUTDEM[k][i]);
-		fprintf(fp,"}\n");
-	}
-	fprintf(fp,"\n}\n");
+		fprintf(fp,"\nW_IMPLICITDEM_INPUTDEM:\n{\n");
+		for(int k=0;k<G_IMPLICITDEM;k++)
+		{
+			fprintf(fp,"{");
+			for(int i=0;i<G_INPUTDEM;i++)
+				fprintf(fp,"%5.10f,",W_IMPLICITDEM_INPUTDEM[k][i]);
+			fprintf(fp,"}\n");
+		}
+		fprintf(fp,"\n}\n");
 
-	fprintf(fp,"\nB_IMPLICITDEM:\n{\n");
-	for(k=0;k<G_IMPLICITDEM;k++)
-	{
-		fprintf(fp,"%5.10f,",B_IMPLICITDEM[k]);
-	}
-	fprintf(fp,"\n}\n");
-	
-	fprintf(fp,"\nW_OUTPUTDEM_IMPLICITDEM:\n{\n");
-	for(k=0;k<G_OUTPUTDEM;k++)
-	{
-		fprintf(fp,"{");
-		for(int i=0;i<G_IMPLICITDEM;i++)
-			fprintf(fp,"%5.10f,",W_OUTPUTDEM_IMPLICITDEM[k][i]);
-		fprintf(fp,"}\n");
-	}
-	fprintf(fp,"\n}\n");
-	
-	fprintf(fp,"\nB_OUTPUTDEM:\n{\n");
-	for(k=0;k<G_OUTPUTDEM;k++)
-	{
-		fprintf(fp,"%5.10f,",B_OUTPUTDEM[k]);
-	}
-	fprintf(fp,"\n}\n");
-	
-	fclose(fp);
+		fprintf(fp,"\nB_IMPLICITDEM:\n{\n");
+		for(k=0;k<G_IMPLICITDEM;k++)
+		{
+			fprintf(fp,"%5.10f,",B_IMPLICITDEM[k]);
+		}
+		fprintf(fp,"\n}\n");
+		
+		fprintf(fp,"\nW_OUTPUTDEM_IMPLICITDEM:\n{\n");
+		for(k=0;k<G_OUTPUTDEM;k++)
+		{
+			fprintf(fp,"{");
+			for(int i=0;i<G_IMPLICITDEM;i++)
+				fprintf(fp,"%5.10f,",W_OUTPUTDEM_IMPLICITDEM[k][i]);
+			fprintf(fp,"}\n");
+		}
+		fprintf(fp,"\n}\n");
+		
+		fprintf(fp,"\nB_OUTPUTDEM:\n{\n");
+		for(k=0;k<G_OUTPUTDEM;k++)
+		{
+			fprintf(fp,"%5.10f,",B_OUTPUTDEM[k]);
+		}
+		fprintf(fp,"\n}\n");
+		
+		fclose(fp);
 
-	return TRUE;
-	} catch(...) {
+		return TRUE;
+	} 
+	catch(...) {
 		ANNRecognitionLog(LOG_ERROR,"PrintBPParameters Exception");
 		return FALSE;
 	}
@@ -220,10 +223,11 @@ ANNRECOGNITION_API BOOL	PrintBPParameters(LPSTR textFile)
 ANNRECOGNITION_API BOOL	InitBPParameters(LONG input,LONG implicit,LONG output)
 {
 	try{
-	BOOL bRet=InitBPParameters_EX(input,implicit,output);
-	bRet = bRet && 	InitTrainBPWeights(0);
-	return bRet;
-	} catch(...) {
+		BOOL bRet=InitBPParameters_EX(input,implicit,output);
+		bRet = bRet && 	InitTrainBPWeights(0);
+		return bRet;
+	} 
+	catch(...) {
 		ANNRecognitionLog(LOG_ERROR,"InitBPParameters Exception");
 		return FALSE;
 	}
@@ -253,7 +257,7 @@ ANNRECOGNITION_API BOOL	InitBPParameters_EX(LONG input,LONG implicit,LONG output
 			srand(G_RANDSEED);
 
 		double temp=pow(G_INPUTDEM,0.5);
-		for(int i=0;i<G_IMPLICITDEM;i++)        //???W1,B1
+		for(int i=0;i<G_IMPLICITDEM;i++)        //初始化W1,B1
 		{  
 			int num=G_INPUTDEM;
 			while(num>0)   
@@ -272,7 +276,7 @@ ANNRECOGNITION_API BOOL	InitBPParameters_EX(LONG input,LONG implicit,LONG output
 //				B_IMPLICITDEM[i]=0.0;
 		}    
 		temp=pow(G_IMPLICITDEM,0.5);	
-		for(   i=0;i<G_OUTPUTDEM;i++)     //???W2,B2
+		for(   i=0;i<G_OUTPUTDEM;i++)     //初始化W2,B2
 		{
 			int num=G_IMPLICITDEM;
 			while(num>0)  
@@ -349,17 +353,17 @@ ANNRECOGNITION_API double   Training(double *input,double * dest)
 		if(!Recognition(input,A_OUTPUTDEM))
 			return avrg_diff;
 		
-		//????  data[INDESENSION] ? ???t(???)
+		//计算误差  data[INDESENSION] 中 存储有t（目标值）
 		avrg_diff=CheakDiffs(A_OUTPUTDEM,dest);
 		
-		//????????
+		//反向传播敏感性值
 		//S2
 		double S2_OUTPUTDEM[MAXDEM];
 		for(int	i=0;i<G_OUTPUTDEM;i++)
 			S2_OUTPUTDEM[i]=(-2)*(1-A_OUTPUTDEM[i])*A_OUTPUTDEM[i]*DEF_OUTPUTDEM[i];
 		//S1
 		double S1_IMPLICITDEM[MAXDEM];
-		//?????
+		//矩阵的转置
 		double temp_IMPLICITDEM_OUTPUTDEM[MAXDEM][MAXDEM];
 		for(    i=0;i<G_IMPLICITDEM;i++)
 			for(int j=0;j<G_OUTPUTDEM;j++)
@@ -376,20 +380,20 @@ ANNRECOGNITION_API double   Training(double *input,double * dest)
 			S1_IMPLICITDEM[i]*=(1-A_IMPLICITDEM[i])*A_IMPLICITDEM[i];			  
 		}
 		
-		//??????
+		//确定学习速度
 		double a=GetLearningSpeed();
-		//W2??
+		//W2更新
 		for(   i=0;i<G_OUTPUTDEM;i++)
 			for( int j=0;j<G_IMPLICITDEM;j++)
 				W_OUTPUTDEM_IMPLICITDEM[i][j]-=a*S2_OUTPUTDEM[i]*A_IMPLICITDEM[j];
-		//B2??
+		//B2更新
 		for(   i=0;i<G_OUTPUTDEM;i++)
 			B_OUTPUTDEM[i]-=a*S2_OUTPUTDEM[i];
-		//W1??
+		//W1更新
 		for(   i=0;i<G_IMPLICITDEM;i++)
 			for( int j=0;j<G_INPUTDEM;j++)
 				W_IMPLICITDEM_INPUTDEM[i][j]-=a*S1_IMPLICITDEM[i]*input[j];	 
-		//B1??
+		//B1更新
 		for(   i=0;i<G_IMPLICITDEM;i++)
 			B_IMPLICITDEM[i]-=a*S1_IMPLICITDEM[i];
 	}
@@ -404,50 +408,51 @@ ANNRECOGNITION_API double   Training(double *input,double * dest)
 ANNRECOGNITION_API BOOL	Recognition(double *input,double * result)
 {
 	try{
-	if(result==0 || input==0) return FALSE;
-	
-//	Lock lock(&_cs);
-	
-	//??????a1=logsign(W1*a0+B1) 
-	for(int i=0;i<G_IMPLICITDEM;i++)
-	{    
-		int num=0;
-		A_IMPLICITDEM[i]=0;
-		while(num<G_INPUTDEM)   
-		{
-			A_IMPLICITDEM[i]+=W_IMPLICITDEM_INPUTDEM[i][num]*input[num];
-			num++;
+		if(result==0 || input==0) return FALSE;
+		
+	//	Lock lock(&_cs);
+		
+	//第一层的输出a1=logsign(W1*a0+B1) 
+		for(int i=0;i<G_IMPLICITDEM;i++)
+		{    
+			int num=0;
+			A_IMPLICITDEM[i]=0;
+			while(num<G_INPUTDEM)   
+			{
+				A_IMPLICITDEM[i]+=W_IMPLICITDEM_INPUTDEM[i][num]*input[num];
+				num++;
+			}
+			A_IMPLICITDEM[i]+=B_IMPLICITDEM[i];
+			A_IMPLICITDEM[i]=1/(1+exp(-A_IMPLICITDEM[i]));
 		}
-		A_IMPLICITDEM[i]+=B_IMPLICITDEM[i];
-		A_IMPLICITDEM[i]=1/(1+exp(-A_IMPLICITDEM[i]));
-	}
-	//??????a2=logsign(W2*a1+B2)
-	for(   i=0;i<G_OUTPUTDEM;i++)
-	{    
-		int num=0;
-		A_OUTPUTDEM[i]=0;
-		while(num<G_IMPLICITDEM)   
-		{
-			A_OUTPUTDEM[i]+=W_OUTPUTDEM_IMPLICITDEM[i][num]*A_IMPLICITDEM[num];
-			num++;
-		}
-		A_OUTPUTDEM[i]+=B_OUTPUTDEM[i];
-		A_OUTPUTDEM[i]=1/(1+exp(-A_OUTPUTDEM[i]));
-	}
-
-	try
-	{
+	//第二层的输出a2=logsign(W2*a1+B2)
 		for(   i=0;i<G_OUTPUTDEM;i++)
 		{    
-			*(result+i)=A_OUTPUTDEM[i];
+			int num=0;
+			A_OUTPUTDEM[i]=0;
+			while(num<G_IMPLICITDEM)   
+			{
+				A_OUTPUTDEM[i]+=W_OUTPUTDEM_IMPLICITDEM[i][num]*A_IMPLICITDEM[num];
+				num++;
+			}
+			A_OUTPUTDEM[i]+=B_OUTPUTDEM[i];
+			A_OUTPUTDEM[i]=1/(1+exp(-A_OUTPUTDEM[i]));
 		}
-		return TRUE;
+
+		try
+		{
+			for(   i=0;i<G_OUTPUTDEM;i++)
+			{    
+				*(result+i)=A_OUTPUTDEM[i];
+			}
+			return TRUE;
+		}
+		catch(...)
+		{
+			ANNRecognitionLog(LOG_ERROR,"Recognition Error");
+		}
 	}
-	catch(...)
-	{
-		ANNRecognitionLog(LOG_ERROR,"Recognition Error");
-	}
-	} catch(...) {
+	catch(...) {
 		ANNRecognitionLog(LOG_ERROR,"Recognition Exception 2");
 		return FALSE;
 	}
@@ -472,37 +477,37 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 		return FALSE;
 	}
 
-	// ??DIB???
+	// 指向DIB的指针
 	LPSTR	lpDIB;
 	
-	// ?DIB????DIB?????DIB
+	// 由DIB句柄得到DIB指针并锁定DIB
 	lpDIB = (LPSTR) ::GlobalLock((HGLOBAL)hInputDIB);
 	
-	// ??DIB????????
+	// 指向DIB象素数据区的指针
 	LPSTR   lpDIBBits;
 	
-	// ??DIB?????
+	// 指向DIB象素的指针
 	BYTE *	lpSrc;	
 	BYTE byte255=255;
 
-	// ????
+	// 图像宽度
 	LONG	lWidth;	
 	
-	// ????
+	// 图像高度
 	LONG	lHeight;	
-	// ????????
+	// 图像每行的字节数
 	LONG	lLineBytes;	
 	
-	// ??DIB????????
+	// 找到DIB图像象素起始位置
 	lpDIBBits = ::FindDIBBits(lpDIB);	
 	
-	// ??????
+	// 获取图像宽度
 	lWidth = ::DIBWidth(lpDIB);	
 	
-	// ??????
+	// 获取图像高度
 	lHeight = ::DIBHeight(lpDIB);	
 	
-	// ??????????
+	// 计算图像每行的字节数
 	lLineBytes = WIDTHBYTES(lWidth * 8);	
 	
 	RECT range;
@@ -528,7 +533,7 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 
 	if(G_INPUTDEM==64)
 	{
-		//??????,????????,?????,???
+		//八行八列取值，截图范围整数倍化，按边缘补齐，行优先
 
 		RECT smallRange;
 		smallRange.left=range.right;
@@ -616,13 +621,13 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 		}
 
 		double factor=1.0/(gridWidth*gridHeight);
-		//????
+		//逐行扫描
 		for(int i = enlargedRange.bottom; i > enlargedRange.top; i --)
 		{		
 		//	int line=lHeight-(i-enlargedRange.top);
 			int line=i;
 
-			//????
+			//逐列扫描
 			for(int j = enlargedRange.left; j < enlargedRange.right; j++)
 			{	
 				int col=j;
@@ -630,10 +635,10 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 				if(line<=range.top || line>range.bottom ||col<range.left || col>=range.right)
 					lpSrc = & byte255; 					
 				else
-					// ??DIB?i?,?j??????
+				// 指向DIB第i行，第j个象素的指针
 					lpSrc = (unsigned char*)lpDIBBits + lLineBytes * line + col;
 			
-				//??150,?????
+				//小于150，作为有效点
 				if(*lpSrc<200)
 				{
 					if(pfout) (*pfout)<<1<<",";
@@ -665,7 +670,7 @@ ANNRECOGNITION_API BOOL	BPEncode(HDIB hInputDIB,double * outCode,LONG top, LONG 
 		delete pfout;
 	}
 
-	//????
+	//解除锁定
 	::GlobalUnlock((HGLOBAL)hInputDIB);
 
 	return bRet;
