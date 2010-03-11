@@ -734,5 +734,110 @@ namespace ANNTest
             textUnMatch.Text = EnDeCrypt.EnDeCryptMethod.MD5_EncryptPassword(textTraingInputs.Text);
         }
 
+        private void button20_Click(object sender, EventArgs e)
+        {
+            ANNWrapper.LoadBPParameters(Application.StartupPath + "\\" + textParas.Text);
+
+            string fileName = Application.StartupPath + "\\" + textSubsystemBMP.Text;
+            Bitmap bmp = new Bitmap(fileName);
+            IntPtr hBmp = bmp.GetHbitmap();
+
+            bool needRevert = true;
+
+            ANNWrapper.SaveBlockToBMP4(hBmp, int.Parse(textLeft.Text),
+                int.Parse(textTop.Text),
+                int.Parse(textRight.Text),
+                int.Parse(textBottom.Text),
+                Application.StartupPath + "\\" + textInputBMP.Text, 
+                Int32.Parse(textInputInt.Text),
+                needRevert);
+
+            string ret="";
+
+            if (NumberParse_1(Application.StartupPath + "\\" + textInputBMP.Text, out ret))
+                MessageBox.Show(ret);
+            else
+                MessageBox.Show("Numeral Parser Error!");
+            DeleteObject(hBmp);
+        }
+
+        public bool NumberParse_1(string bmpFile, out string ret)
+        {
+            ret = string.Empty;
+            IntPtr hdibHandle = IntPtr.Zero;
+            try
+            {
+                hdibHandle = ANNWrapper.ReadDIBFile(bmpFile);
+                if (hdibHandle == IntPtr.Zero) return false;
+
+                int[] intRes = new int[64];
+
+                if (ANNWrapper.Convert256toGray(hdibHandle) &&
+                ANNWrapper.ConvertGrayToWhiteBlack(hdibHandle) &&
+                ANNWrapper.RemoveScatterNoise(hdibHandle))
+                {
+
+                    Int32 charRectID = ANNWrapper.CharSegment(hdibHandle);
+
+                    if (charRectID >= 0)
+                    {
+                        IntPtr newHdibHandle = ANNWrapper.AutoAlign(hdibHandle, charRectID);
+
+                        if (newHdibHandle != IntPtr.Zero && ANNWrapper.Recognition_EX(newHdibHandle, charRectID, intRes))
+                        {
+                            foreach (int value in intRes)
+                            {
+                                if (value == -1)
+                                {
+                                    break;
+                                }
+                                else if (value >= 10)
+                                {
+                                    ret = string.Empty;
+                                    break;
+                                }
+                                ret += value.ToString();
+                            }
+                        }
+                        ANNWrapper.ReleaseDIBFile(newHdibHandle);
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+            }
+
+            if (hdibHandle != IntPtr.Zero)
+                ANNWrapper.ReleaseDIBFile(hdibHandle);
+
+            return !string.IsNullOrEmpty(ret);
+        }
+
+        private void button21_Click(object sender, EventArgs e)
+        {
+               ANNWrapper.LoadBPParameters(Application.StartupPath + "\\" + textParas.Text);
+
+            string fileName = Application.StartupPath + "\\" + textSubsystemBMP.Text;
+            Bitmap bmp = new Bitmap(fileName);
+            IntPtr hBmp = bmp.GetHbitmap();
+
+            bool needRevert = false;
+
+            ANNWrapper.SaveBlockToBMP4(hBmp, int.Parse(textLeft.Text),
+                int.Parse(textTop.Text),
+                int.Parse(textRight.Text),
+                int.Parse(textBottom.Text),
+                Application.StartupPath + "\\" + textInputBMP.Text, 
+                Int32.Parse(textInputInt.Text),
+                needRevert);
+
+            string ret="";
+
+            if (NumberParse_1(Application.StartupPath + "\\" + textInputBMP.Text, out ret))
+                MessageBox.Show(ret);
+            else
+                MessageBox.Show("Numeral Parser Error!");
+            DeleteObject(hBmp);
+        }
     }
 }
