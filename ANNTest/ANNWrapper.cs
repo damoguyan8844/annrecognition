@@ -16,11 +16,11 @@ namespace JOYFULL.CMPW.Digit
         public static readonly Int32 ANN_LOG_INFO = 0x0010;
         public static readonly Int32 ANN_LOG_DEBUG = 0x0100;
 
-        [DllImport("ANNRecognition.dll",EntryPoint = "SetLogHandler")]
-        public static extern void SetLogHandler( LogCallbackDelegate logger);
+        [DllImport("ANNRecognition.dll", CallingConvention = CallingConvention.StdCall, EntryPoint = "SetLogHandler")]
+        public static extern void SetLogHandler(LogCallbackDelegate logger);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "ConvertJPEG2BMP")]
-        public static extern bool ConvertJPEG2BMP(string jpegFile,string bmpFile);
+        public static extern bool ConvertJPEG2BMP(string jpegFile, string bmpFile);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "ConvertBMP2TIF")]
         public static extern bool ConvertBMP2TIF(string bmpFile, string tifFile);
@@ -32,10 +32,10 @@ namespace JOYFULL.CMPW.Digit
         public static extern bool RevertBlackWhiteBMP(string bmpFile);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "SaveBlockToBMP")]
-        public static extern bool SaveBlockToBMP(string bmpFile, 
+        public static extern bool SaveBlockToBMP(string bmpFile,
                 double leftRate, double topRate, double rightRate, double bottomRate,
                 string blockBMPFile);
-        
+
         [DllImport("ANNRecognition.dll", EntryPoint = "SaveBlockToBMP2")]
         public static extern bool SaveBlockToBMP2(string bmpFile,
                 Int32 leftRate, Int32 topRate, Int32 rightRate, Int32 bottomRate,
@@ -46,11 +46,16 @@ namespace JOYFULL.CMPW.Digit
                 Int32 leftRate, Int32 topRate, Int32 rightRate, Int32 bottomRate,
                 string blockBMPFile);
 
+        [DllImport("ANNRecognition.dll", EntryPoint = "SaveBlockToBMP4")]
+        public static extern bool SaveBlockToBMP4(IntPtr hInputDIB,
+                Int32 leftRate, Int32 topRate, Int32 rightRate, Int32 bottomRate,
+                string blockBMPFile, Int32 threshHold, bool needRevert);
+
         [DllImport("ANNRecognition.dll", EntryPoint = "OCRFile")]
         public static extern bool OCRFile(string bmpFile, byte[] content);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "ReadDIBFile")]
-        public static extern IntPtr ReadDIBFile( string fileName);
+        public static extern IntPtr ReadDIBFile(string fileName);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "SaveDIB")]
         public static extern bool SaveDIB(IntPtr hInputDIB, string fileName);
@@ -86,16 +91,16 @@ namespace JOYFULL.CMPW.Digit
         public static extern bool ReleaseDIBFile(IntPtr hInputDIB);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "Convert256toGray")]
-        public static extern void Convert256toGray(IntPtr hInputDIB);
+        public static extern bool Convert256toGray(IntPtr hInputDIB);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "ConvertGrayToWhiteBlack")]
-        public static extern void ConvertGrayToWhiteBlack(IntPtr hInputDIB);
+        public static extern bool ConvertGrayToWhiteBlack(IntPtr hInputDIB);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "GradientSharp")]
         public static extern void GradientSharp(IntPtr hInputDIB);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "RemoveScatterNoise")]
-        public static extern void RemoveScatterNoise(IntPtr hInputDIB);
+        public static extern bool RemoveScatterNoise(IntPtr hInputDIB);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "SlopeAdjust")]
         public static extern void SlopeAdjust(IntPtr hInputDIB);
@@ -120,7 +125,7 @@ namespace JOYFULL.CMPW.Digit
 
         [DllImport("ANNRecognition.dll", EntryPoint = "RecognitionWhiteText")]
         public static extern bool RecognitionWhiteText(IntPtr hInputDIB, Int32 left, Int32 top, Int32 right,
-            Int32 bottom, Int32 threshHold, string tifFileName, byte[] data );
+            Int32 bottom, Int32 threshHold, string tifFileName, byte[] data);
 
         [DllImport("ANNRecognition.dll", EntryPoint = "RecognitionBlackText")]
         public static extern bool RecognitionBlackText(IntPtr hInputDIB, Int32 left, Int32 top, Int32 right,
