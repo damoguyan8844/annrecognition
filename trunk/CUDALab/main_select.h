@@ -5,7 +5,7 @@
 #include "cuda_functions.h"
 #include "cuda_helper.h"
 
-#define Main_HelloCUDA
+#define Main_SumOfSquares
 //#define Main_VectorAdd
 //#define Main_BlendTexture
 //#define Main_BenchMark
