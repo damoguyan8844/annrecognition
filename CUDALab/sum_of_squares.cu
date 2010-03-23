@@ -9,10 +9,10 @@
 #define BLOCK_NUM	32
 #define THREAD_NUM	256
 
-int data[DATA_SIZE];
 
-
-__global__ static void sumOfSquares(int *num, int* result, clock_t* time)
+extern "C" __global__  void sumOfSquares(int *num, int* result, clock_t* time);
+ 
+__global__  void sumOfSquares(int *num, int* result, clock_t* time)
 {
 	extern __shared__ int shared[];
 	const int tid = threadIdx.x;

@@ -32,7 +32,7 @@
 				Name="VCCustomBuildTool"
 			/>
 			<Tool
-				Name="CUDA"
+				Name="CUDA Build Rule"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -68,6 +68,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="cublas.lib cuda.lib cudart.lib "
+				OutputFile=".\Debug\$(ProjectName).exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -113,7 +114,7 @@
 				Name="VCCustomBuildTool"
 			/>
 			<Tool
-				Name="CUDA"
+				Name="CUDA Build Rule"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -223,7 +224,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\main_SumOfSquares.cpp"
+				RelativePath=".\main_SumOfSquares.cu"
 				>
 			</File>
 			<File
