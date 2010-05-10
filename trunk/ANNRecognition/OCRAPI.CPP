@@ -94,64 +94,87 @@ ANNRECOGNITION_API BOOL RevertBlackWhiteBMP( LPSTR bmpFile )
 ANNRECOGNITION_API BOOL SaveBlockToBMP(LPSTR bmpFile,double leftRate,double topRate, double rightRate, double bottomRate,LPSTR bmpBlock)
 {
 	CxImage cxImage; 
-	if(!cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP))
-		return FALSE; 
+	try
+	{
+		if(!cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP))
+			return FALSE; 
 
-	RECT rect;
-	rect.left=leftRate* cxImage.GetWidth();
-	rect.top=topRate* cxImage.GetHeight();
-	rect.right = rightRate*cxImage.GetWidth();
-	rect.bottom = bottomRate*cxImage.GetHeight();
+		RECT rect;
+		rect.left=leftRate* cxImage.GetWidth();
+		rect.top=topRate* cxImage.GetHeight();
+		rect.right = rightRate*cxImage.GetWidth();
+		rect.bottom = bottomRate*cxImage.GetHeight();
 
-	CxImage imgBlock;
-	
-	if(cxImage.Crop(rect,&imgBlock))
-		return imgBlock.Save(bmpBlock,CXIMAGE_FORMAT_BMP);
-
+		CxImage imgBlock;
+		
+		if(cxImage.Crop(rect,&imgBlock))
+			return imgBlock.Save(bmpBlock,CXIMAGE_FORMAT_BMP);
+	}
+	catch(...)
+	{
+		string err="Save Block To BMP  Error!";
+		err+=cxImage.GetLastError();
+		ANNRecognitionLog(LOG_ERROR,const_cast<char *>(err.c_str()));
+	}
 	return FALSE;
 }
 
 ANNRECOGNITION_API BOOL SaveBlockToBMP2(LPSTR bmpFile,long left,long top, long right, long bottom,LPSTR bmpBlock)
 {
 //	Lock lock(&_cs);
-
 	CxImage cxImage; 
-	if(!cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP))
-		return FALSE; 
+	try
+	{
+		if(!cxImage.Load(bmpFile,CXIMAGE_FORMAT_BMP))
+			return FALSE; 
 
-	RECT rect;
-	rect.left=left;
-	rect.top=top;
-	rect.right = right;
-	rect.bottom = bottom;
-	
-	CxImage imgBlock;
-	
-	if(cxImage.Crop(rect,&imgBlock))
-		return imgBlock.Save(bmpBlock,CXIMAGE_FORMAT_BMP);
-	
+		RECT rect;
+		rect.left=left;
+		rect.top=top;
+		rect.right = right;
+		rect.bottom = bottom;
+		
+		CxImage imgBlock;
+		
+		if(cxImage.Crop(rect,&imgBlock))
+			return imgBlock.Save(bmpBlock,CXIMAGE_FORMAT_BMP);
+	}
+	catch(...)
+	{
+		string err="Save Block To BMP 2 Error!";
+		err+=cxImage.GetLastError();
+		ANNRecognitionLog(LOG_ERROR,const_cast<char *>(err.c_str()));
+	}
 	return FALSE;
 }
 
 ANNRECOGNITION_API BOOL SaveBlockToBMP3(HBITMAP hDib,long left,long top, long right, long bottom,LPSTR bmpBlock)
 {
 //	Lock lock(&_cs);
-
 	CxImage cxImage; 
-	if(!cxImage.CreateFromHBITMAP(hDib))
-		return FALSE;
+	try
+	{
+		if(!cxImage.CreateFromHBITMAP(hDib))
+			return FALSE;
 
-	RECT rect;
-	rect.left=left;
-	rect.top=top;
-	rect.right = right;
-	rect.bottom = bottom;
-	
-	CxImage imgBlock;
-	
-	if(cxImage.Crop(rect,&imgBlock))
-		return imgBlock.Save(bmpBlock,CXIMAGE_FORMAT_BMP);
-	
+		RECT rect;
+		rect.left=left;
+		rect.top=top;
+		rect.right = right;
+		rect.bottom = bottom;
+		
+		CxImage imgBlock;
+		
+		if(cxImage.Crop(rect,&imgBlock))
+			return imgBlock.Save(bmpBlock,CXIMAGE_FORMAT_BMP);
+	}
+	catch(...)
+	{
+		string err="Save Block To BMP 3 Error!";
+		err+=cxImage.GetLastError();
+		ANNRecognitionLog(LOG_ERROR,const_cast<char *>(err.c_str()));
+	}
+
 	return FALSE;
 }
 
@@ -160,10 +183,9 @@ ANNRECOGNITION_API BOOL SaveBlockToBMP4(HBITMAP hDib,long left,long top, long ri
 	//	Lock lock(&_cs);
 	HDIB hDibBlock=0;
 	BOOL bRet=TRUE;
-
+	CxImage cxImage; 
 	try
 	{
-		CxImage cxImage; 
 		if(!cxImage.CreateFromHBITMAP(hDib))
 			return FALSE;
 		
@@ -209,6 +231,7 @@ ANNRECOGNITION_API BOOL SaveBlockToBMP4(HBITMAP hDib,long left,long top, long ri
 						bRet=bRet && RemoveScatterNoise(hDibBlock);
 						bRet=bRet && SaveDIB(hDibBlock,bmpBlock);
 						ReleaseDIBFile(hDibBlock);
+						hDibBlock=NULL;
 					}
 					else
 					{
@@ -223,14 +246,23 @@ ANNRECOGNITION_API BOOL SaveBlockToBMP4(HBITMAP hDib,long left,long top, long ri
 		if(hDibBlock!=NULL)
 			ReleaseDIBFile(hDibBlock);
 		bRet=FALSE;
-		ANNRecognitionLog(LOG_ERROR,"Save Block 4 Error!");
-	}
 
-	if(!bRet)
+		string err="Save Block To BMP 4 Error!";
+		err+=cxImage.GetLastError();
+		ANNRecognitionLog(LOG_ERROR,const_cast<char *>(err.c_str()));
+	}
+	try
 	{
-		struct stat fileStates;
-		if(::stat(bmpBlock,&fileStates)==0)
-			DeleteFile(bmpBlock);
+		if(!bRet)
+		{
+			struct stat fileStates;
+			if(::stat(bmpBlock,&fileStates)==0)
+				DeleteFile(bmpBlock);
+		}
+	}
+	catch(...)
+	{
+		ANNRecognitionLog(LOG_ERROR,"DeleteFile Error");
 	}
 	return bRet;
 }
