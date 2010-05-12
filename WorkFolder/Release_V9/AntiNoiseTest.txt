@@ -1,0 +1,19 @@
+BWParas.dat(Update From V8 )
+Count\Factor	1	0.5
+1		98%	99.5%
+2		96%	99%
+3		94%	98.5%
+5		90%	97%
+8		84%	94%
+12		76%	91%
+18		68%	85%
+
+Training.dat(All from beginning)
+Count\Factor	1	0.5
+1		99%	99.9%
+2		97%	99.5%
+3		95%	99%
+5		91%	98%
+8		84%	95%
+12		76%	91%
+18		68%	85%
