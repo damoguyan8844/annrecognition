@@ -337,9 +337,11 @@ namespace ANNTest
             double[] dests = new double[4];
             
             int divideFactor = Int32.Parse(textParaFactor.Text);
-
-            
             int matchCount=0;
+
+            Random rand = new Random(); 
+            Double noiseFactor = Double.Parse(textNoiseFactor.Text);
+
             foreach (string line in textTraingInputs.Lines)
             {
                 string[] strs = line.Split(',');
@@ -348,6 +350,13 @@ namespace ANNTest
                 for (int i = 0; i < 64; i++)
                 {
                     inputs[i] = Double.Parse(strs[i]) / divideFactor;
+                }
+
+                //Add Noise Factor to Input
+                int noiseCount = Int32.Parse(textNoiseCount.Text); 
+                for (int i = 0; i < noiseCount; i++ )
+                {
+                    inputs[rand.Next(0,63)]=noiseFactor;
                 }
 
                /* string dest = Convert.ToString(Int32.Parse(strs[64]), 2);*/
@@ -838,6 +847,11 @@ namespace ANNTest
             else
                 MessageBox.Show("Numeral Parser Error!");
             DeleteObject(hBmp);
+        }
+
+        private void formMain_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

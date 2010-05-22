@@ -15,7 +15,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "TCAPI"=..\TCAPI\TCAPI.dsp - Package Owner=<4>
+Project: "CxImage"=..\CXImage\CxImage\cximage.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

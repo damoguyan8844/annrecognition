@@ -5,6 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ANNTest", "ANNTest\ANNTest.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureCapture", "PictureCapturer\PictureCapture.csproj", "{D22A32AB-83AE-47BF-9CD3-60CAFF78F018}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetHisogram", "PCC\PCC\GetHisogram.csproj", "{A638FD86-81C6-4BC2-A96D-C648F06C448C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicCompare", "PCC\PicCompare\PicCompare.csproj", "{33845860-28BE-46FE-A329-EDC6ED1456DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +23,16 @@ Global
 		{D22A32AB-83AE-47BF-9CD3-60CAFF78F018}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D22A32AB-83AE-47BF-9CD3-60CAFF78F018}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D22A32AB-83AE-47BF-9CD3-60CAFF78F018}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A638FD86-81C6-4BC2-A96D-C648F06C448C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A638FD86-81C6-4BC2-A96D-C648F06C448C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A638FD86-81C6-4BC2-A96D-C648F06C448C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A638FD86-81C6-4BC2-A96D-C648F06C448C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33845860-28BE-46FE-A329-EDC6ED1456DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33845860-28BE-46FE-A329-EDC6ED1456DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33845860-28BE-46FE-A329-EDC6ED1456DE}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{33845860-28BE-46FE-A329-EDC6ED1456DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33845860-28BE-46FE-A329-EDC6ED1456DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33845860-28BE-46FE-A329-EDC6ED1456DE}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
