@@ -78,9 +78,9 @@ cc=xx;
             // 
             // btnStartCapture
             // 
-            this.btnStartCapture.Location = new System.Drawing.Point(40, 392);
+            this.btnStartCapture.Location = new System.Drawing.Point(33, 364);
             this.btnStartCapture.Name = "btnStartCapture";
-            this.btnStartCapture.Size = new System.Drawing.Size(91, 23);
+            this.btnStartCapture.Size = new System.Drawing.Size(76, 21);
             this.btnStartCapture.TabIndex = 1;
             this.btnStartCapture.Text = "StartCapture";
             this.btnStartCapture.Click += new System.EventHandler(this.btnCapture_Click);
@@ -89,9 +89,9 @@ cc=xx;
             // 
             this.panel1.AutoScroll = true;
             this.panel1.Controls.Add(this.pictureBoxImage);
-            this.panel1.Location = new System.Drawing.Point(32, 24);
+            this.panel1.Location = new System.Drawing.Point(27, 22);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(344, 168);
+            this.panel1.Size = new System.Drawing.Size(286, 156);
             this.panel1.TabIndex = 2;
             // 
             // pictureBoxImage
@@ -99,15 +99,15 @@ cc=xx;
             this.pictureBoxImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBoxImage.Location = new System.Drawing.Point(0, 0);
             this.pictureBoxImage.Name = "pictureBoxImage";
-            this.pictureBoxImage.Size = new System.Drawing.Size(344, 168);
+            this.pictureBoxImage.Size = new System.Drawing.Size(286, 156);
             this.pictureBoxImage.TabIndex = 0;
             this.pictureBoxImage.TabStop = false;
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(548, 392);
+            this.btnSave.Location = new System.Drawing.Point(457, 364);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(102, 23);
+            this.btnSave.Size = new System.Drawing.Size(85, 21);
             this.btnSave.TabIndex = 4;
             this.btnSave.Text = "SaveToFile";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -115,15 +115,15 @@ cc=xx;
             // 
             // textFileName
             // 
-            this.textFileName.Location = new System.Drawing.Point(189, 394);
+            this.textFileName.Location = new System.Drawing.Point(157, 366);
             this.textFileName.Name = "textFileName";
-            this.textFileName.Size = new System.Drawing.Size(344, 21);
+            this.textFileName.Size = new System.Drawing.Size(287, 20);
             this.textFileName.TabIndex = 5;
             this.textFileName.Text = "Capture.bmp";
             // 
             // FormMain
             // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
+            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(725, 452);
             this.Controls.Add(this.textFileName);
             this.Controls.Add(this.btnSave);

@@ -80,6 +80,10 @@ namespace ANNTest
             this.button19 = new System.Windows.Forms.Button();
             this.button20 = new System.Windows.Forms.Button();
             this.button21 = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
+            this.textNoiseCount = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.textNoiseFactor = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
@@ -285,9 +289,9 @@ namespace ANNTest
             // 
             // btTraining
             // 
-            this.btTraining.Location = new System.Drawing.Point(650, 583);
+            this.btTraining.Location = new System.Drawing.Point(535, 583);
             this.btTraining.Name = "btTraining";
-            this.btTraining.Size = new System.Drawing.Size(131, 27);
+            this.btTraining.Size = new System.Drawing.Size(73, 27);
             this.btTraining.TabIndex = 24;
             this.btTraining.Text = "Train";
             this.btTraining.UseVisualStyleBackColor = true;
@@ -357,7 +361,7 @@ namespace ANNTest
             this.chkAutoSave.AutoSize = true;
             this.chkAutoSave.Checked = true;
             this.chkAutoSave.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkAutoSave.Location = new System.Drawing.Point(475, 585);
+            this.chkAutoSave.Location = new System.Drawing.Point(464, 560);
             this.chkAutoSave.Name = "chkAutoSave";
             this.chkAutoSave.Size = new System.Drawing.Size(100, 17);
             this.chkAutoSave.TabIndex = 32;
@@ -383,9 +387,9 @@ namespace ANNTest
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(789, 581);
+            this.btnStop.Location = new System.Drawing.Point(787, 582);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(61, 29);
+            this.btnStop.Size = new System.Drawing.Size(62, 29);
             this.btnStop.TabIndex = 35;
             this.btnStop.Text = "Test";
             this.btnStop.UseVisualStyleBackColor = true;
@@ -470,7 +474,7 @@ namespace ANNTest
             // 
             // button14
             // 
-            this.button14.Location = new System.Drawing.Point(579, 583);
+            this.button14.Location = new System.Drawing.Point(464, 583);
             this.button14.Name = "button14";
             this.button14.Size = new System.Drawing.Size(65, 27);
             this.button14.TabIndex = 44;
@@ -488,7 +492,7 @@ namespace ANNTest
             // 
             // button15
             // 
-            this.button15.Location = new System.Drawing.Point(716, 31);
+            this.button15.Location = new System.Drawing.Point(715, 28);
             this.button15.Name = "button15";
             this.button15.Size = new System.Drawing.Size(134, 23);
             this.button15.TabIndex = 46;
@@ -498,9 +502,9 @@ namespace ANNTest
             // 
             // button16
             // 
-            this.button16.Location = new System.Drawing.Point(715, 53);
+            this.button16.Location = new System.Drawing.Point(716, 50);
             this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(135, 20);
+            this.button16.Size = new System.Drawing.Size(134, 26);
             this.button16.TabIndex = 47;
             this.button16.Text = "RecognitionBlackText";
             this.button16.UseVisualStyleBackColor = true;
@@ -556,11 +560,49 @@ namespace ANNTest
             this.button21.UseVisualStyleBackColor = true;
             this.button21.Click += new System.EventHandler(this.button21_Click);
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(620, 564);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(98, 13);
+            this.label9.TabIndex = 53;
+            this.label9.Text = "Noise  Point Count:";
+            // 
+            // textNoiseCount
+            // 
+            this.textNoiseCount.Location = new System.Drawing.Point(716, 561);
+            this.textNoiseCount.Name = "textNoiseCount";
+            this.textNoiseCount.Size = new System.Drawing.Size(61, 20);
+            this.textNoiseCount.TabIndex = 54;
+            this.textNoiseCount.Text = "0";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(622, 588);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(70, 13);
+            this.label10.TabIndex = 55;
+            this.label10.Text = "Noise Factor:";
+            // 
+            // textNoiseFactor
+            // 
+            this.textNoiseFactor.Location = new System.Drawing.Point(717, 586);
+            this.textNoiseFactor.Name = "textNoiseFactor";
+            this.textNoiseFactor.Size = new System.Drawing.Size(59, 20);
+            this.textNoiseFactor.TabIndex = 56;
+            this.textNoiseFactor.Text = "1";
+            // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(862, 628);
+            this.Controls.Add(this.textNoiseFactor);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.textNoiseCount);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.button21);
             this.Controls.Add(this.button20);
             this.Controls.Add(this.button19);
@@ -615,6 +657,7 @@ namespace ANNTest
             this.Controls.Add(this.button1);
             this.Name = "formMain";
             this.Text = "ANNTest";
+            this.Load += new System.EventHandler(this.formMain_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -674,6 +717,10 @@ namespace ANNTest
         private System.Windows.Forms.Button button19;
         private System.Windows.Forms.Button button20;
         private System.Windows.Forms.Button button21;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox textNoiseCount;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox textNoiseFactor;
     }
 }
 
