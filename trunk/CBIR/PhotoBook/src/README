@@ -1,0 +1,21 @@
+This is the full source tree for the Photobook X/Motif interface. You
+must have libX11, libXt, and libXm to built it.  On Linux, you can use
+LessTif 0.88 or later.
+Change INSTALL_BIN_DIR in Makefile to where the binaries should go, then
+type "make".
+
+framer - database routines
+tpm - data structures and misc routines
+type - dynamic typing routines
+libphoto - I/O, object routines, metrics and views
+xtpm - X utilities
+ui - user interface
+
+other utilities:
+util - annotate utility, results utility
+matrix - matrix routines
+feature - feature extraction (uses matrix)
+(mr_sar.c requires LAPACK, a publicly available set of linear algebra routines)
+tree - hierarchical clustering (for power-assisted annotation)
+
+tpminka@media.mit.edu

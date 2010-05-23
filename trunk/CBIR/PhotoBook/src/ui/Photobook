@@ -1,0 +1,136 @@
+Photobook*fontList: 6x13
+! 105 is a big font for demos
+!Photobook*fontList: "-*-*-*-r-*-*-*-*-*-*-*-105-*-*"
+!Photobook*comText.fontList: "-*-lucida-medium-r-*-*-18-*-*-*-*-*-*-*"
+Photobook*textFont: 6x13
+!Photobook*textFont: "-*-*-*-r-*-*-*-*-*-*-*-105-*-*"
+Photobook.mainWindow.geometry: =870x750
+!Photobook.mainWindow.geometry: =1000x738
+
+Photobook*background: #7595A9
+Photobook*foreground: white
+Photobook*gamma: 1.5
+!Photobook*photoBgColor: black
+!Photobook*textColor: white
+!Photobook*pickedColor: red
+!Photobook*unpickedColor: black
+Photobook*catColors: white red aquamarine green yellow DodgerBlue DarkSlateGray sienna blue3 violet MediumVioletRed thistle ForestGreen Khaki LightCoral
+
+! Widget styles
+Photobook*XmSeparator.height: 50
+Photobook*XmToggleButton.indicatorOn: 0
+Photobook*XmToggleButton.shadowThickness: 2
+Photobook*XmRowColumn.entryAlignment: XmALIGNMENT_CENTER
+Photobook*XmText.blinkRate: 0
+Photobook*XmScale.orientation: XmHORIZONTAL
+Photobook*XmScale.showValue: TRUE
+Photobook*TextRowCol.orientation: XmHORIZONTAL
+!Photobook*TextRowCol.packing: XmPACK_COLUMN
+!Photobook*TextRowCol.numColumns: 2
+
+! MainPane
+Photobook*mainWindow.shadowThickness: 0
+Photobook*mainPane.shadowThickness: 0
+
+! PhotoPane
+Photobook*imTableDrawArea.borderWidth: 2
+Photobook*imTableScrollW.spacing: 0
+Photobook*imTableScrollW.shadowThickness: 0
+
+! Labeling
+Photobook*labelingShell.title: Label...
+Photobook*labelingShell.geometry: =200x350
+Photobook*labelingShell*labelMLList0.visibleItemCount: 10
+Photobook*labelingShell*posButton.labelString: Positive (excl)
+Photobook*labelingShell*addPosButton.labelString: Positive (non-excl)
+Photobook*labelingShell*negButton.labelString: Negative
+Photobook*labelingShell*negAllButton.labelString: Negative for all
+Photobook*labelingShell*enableButton.labelString: Enable Trees...
+Photobook*labelingShell*whichButton.labelString: Which Images?
+Photobook*labelingShell*coversButton.labelString: Num Covers
+Photobook*labelingShell*clearLabelButton.labelString: Clear Labels
+Photobook*labelingShell*revertButton.labelString: Revert Labels
+Photobook*labelingShell*saveButton.labelString: Save Labels
+
+! EnableTrees shell
+Photobook*enableTreePane.XmToggleButton.indicatorOn: 1
+Photobook*enableTreePane.XmToggleButton.shadowThickness: 0
+
+! Hooks shell
+Photobook*hooksShell.title: Hooks...
+Photobook*hooksPane.XmToggleButton.indicatorOn: 1
+Photobook*hooksPane.XmToggleButton.shadowThickness: 0
+Photobook*hooksPane.hook0Toggle.labelString: High-level
+
+! Global labels shell
+Photobook*glabelShell.title: G Label...
+Photobook*glabelShell.glabelPane.shadowThickness: 0
+Photobook*glabelShell.geometry: =200x200
+Photobook*glabelShell*glabelMLList0.visibleItemCount: 10
+Photobook*glabelShell*posButton.labelString: Positive
+Photobook*glabelShell*negButton.labelString: Negative
+
+! LeftPane widgets
+Photobook*leftPane.entryAlignment: XmALIGNMENT_BEGINNING
+Photobook*dbOpMenu.labelString: Database
+Photobook*viewOpMenu.labelString: Display mode
+Photobook*viewConfigButton.labelString: Configure display mode...
+Photobook*metricOpMenu.labelString: Search metric
+Photobook*metricConfigButton.labelString: Configure search metric...
+Photobook*helpLabel.labelString: Left button to select\nMiddle button to search\nRight button for info
+
+! RightPane widgets
+Photobook*initializeButton.labelString: Initialize
+Photobook*shuffleButton.labelString: Shuffle
+Photobook*loadButton.labelString: Load Query
+Photobook*saveButton.labelString: Save Query
+Photobook*probeButton.labelString: Probe
+Photobook*configText.labelString: Text...
+Photobook*quitButton.labelString: Quit Photobook
+
+Photobook*symbolButton.labelString: Symbols...
+Photobook*labelingButton.labelString: Label...
+Photobook*hooksButton.labelString: Hooks...
+Photobook*glabelButton.labelString: G Label...
+Photobook*resizeButton.labelString: Resize
+Photobook*refreshButton.labelString: Refresh Cache
+Photobook*arrowLabel.labelString: Page Up/Down
+Photobook*pageTextLabel.labelString: Jump to page
+Photobook*pageText.columns: 10
+Photobook*memberTextLabel.labelString: Jump to item
+Photobook*memberText.columns: 10
+
+! Symbol Shell
+Photobook*symbolShell.title: Symbols...
+Photobook*symbolShell.geometry: =200x200
+Photobook*symbolShell*symbolMLList0.visibleItemCount: 10
+Photobook*clearButton.labelString: Clear Filter
+Photobook*applyButton.labelString: Apply Filter
+
+! MetricConfig Shell
+Photobook*metricConfigShell.title: Configure search metric...
+
+! ViewConfig Shell
+Photobook*viewConfigShell.title: Configure display mode...
+
+! Pop Shell
+Photobook*popLabel.alignment: XmALIGNMENT_BEGINNING
+
+! Message Shells
+Photobook*XmMessageBox*fontList: "-*-*-*-r-*-*-*-*-*-*-*-105-*-*"
+
+! ConfigureText shell
+Photobook*configTextPane.XmToggleButton.indicatorOn: 1
+Photobook*configTextPane.XmToggleButton.shadowThickness: 0
+Photobook*configTextPane.nameToggle.labelString: Show name
+Photobook*configTextPane*annText.columns: 10
+Photobook*configTextPane*annText.resizeHeight: 1
+Photobook*configTextPane*annText.resizeWidth: 1
+Photobook*configTextPane*annLabel.labelString: Show annotations
+Photobook*configTextPane.labelToggle.labelString: Show label
+Photobook*configTextPane.treeToggle.labelString: Show model used for label
+Photobook*configTextPane.distToggle.labelString: Show distance
+
+! FileSelection shells
+Photobook*loadDialogBox.pattern: *.phq
+Photobook*saveDialogBox.pattern: *.phq

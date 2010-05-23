@@ -1,0 +1,16 @@
+The make_tree script will generate a tree for a specified database and
+search metric. It should be run in the photobook-5.0 directory, and
+"source sourceme" must be executed first, as usual. All output goes
+into the data/<database> directory.
+
+Programs used by make_tree:
+
+results - computes the results of Photobook queries. May be useful on its own.
+
+nnhierarchy - performs a Jarvis and Patrick nearest-neighbor
+              clustering, as described in our TR#302.
+
+simplify - eliminate tree nodes with a single child
+
+These programs are under the same copyright as the Photobook distribution.
+tpminka 1/13/94
