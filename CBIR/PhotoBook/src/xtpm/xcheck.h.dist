@@ -1,0 +1,4 @@
+#define XC_ABORT_ON_ERROR(flag)
+#define XC_ALLOC_NOTIFY(dpy, p)
+#define XC_FREE_NOTIFY(dpy, p)
+#define XC_BLOCKS()
