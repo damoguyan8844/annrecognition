@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Systems>
   <Alerts>
     <Alert order="0" name="NULL" time="50" source="NULL" />
@@ -26,8 +26,8 @@
   </Alerts>
   <System order="1" name="CCBS分行终端系统" sign="未签退营业机构">
     <AlertCondition>
-      <Condition order="1" type="string" label="系统通讯异常" value="未签退;夫铭退;夫竿退;未竿退" compare="not" enable="true" alerttype="1" rect="780;173;946;196" />
-      <Condition order="2" type="string" label="日终未签退机构" value="未签退;夫铭退;夫竿退;未竿退" compare="is" enable="true" alerttype="1" rect="780;173;946;196" />
+      <Condition order="1" type="string" label="系统通讯异常" value="未签退;夫铭退;夫竿退;未竿退;未;夫;铭;竿;退" compare="not" enable="true" alerttype="1" rect="780;173;946;196" />
+      <Condition order="2" type="string" label="日终未签退机构" value="未签退;夫铭退;夫竿退;未竿退;未;夫;铭;竿;退" compare="is" enable="true" alerttype="1" rect="780;173;946;196" />
     </AlertCondition>
     <CaptureParameter>
       <FreqParameter order="1" type="int" label="日间检查时间间隔(秒)" value="16" applayon="1" />
@@ -56,18 +56,20 @@
       <Condition order="4" type="int" label="来账业务接收总笔数无变化(秒)" value="600" compare="big" enable="true" alerttype="1" rect="169;496;352;520" />
       <Condition order="5" type="int" label="往账待处理" value="0" compare="big" enable="true" alerttype="1" rect="255;577;449;609" />
       <Condition order="6" type="int" label="来账待处理" value="0" compare="big" enable="true" alerttype="1" rect="724;574;902;605" />
-      <Condition order="7" type="int" label="往帐接收" value="-1" compare="small" enable="true" alerttype="1" rect="173;171;367;198" />
-      <Condition order="8" type="int" label="往帐被拒绝" value="-1" compare="small" enable="true" alerttype="1" rect="582;281;662;309" />
-      <Condition order="9" type="int" label="往帐发送失败" value="-1" compare="small" enable="true" alerttype="1" rect="173;390;367;415" />
-      <Condition order="10" type="int" label="排队" value="-1" compare="small" enable="true" alerttype="1" rect="376;390;440;415" />
-      <Condition order="11" type="int" label="来帐接收" value="-1" compare="small" enable="true" alerttype="1" rect="173;497;367;525" />
-      <Condition order="12" type="int" label="来帐被拒绝" value="-1" compare="small" enable="true" alerttype="1" rect="582;495;662;525" />
-      <Condition order="13" type="int" label="来帐未响应" value="-1" compare="small" enable="true" alerttype="1" rect="785;495;900;524" />
+	  <Condition order="7" type="int" label="往账未清算" value="0" compare="big" enable="true" alerttype="1" rect="173;280;367;307" />
+      <Condition order="8" type="int" label="来账未发送" value="0" compare="big" enable="true" alerttype="1" rect="376;495;525;525" />
+      <Condition order="9" type="int" label="往帐接收" value="-1" compare="small" enable="true" alerttype="1" rect="173;171;367;198" />
+      <Condition order="10" type="int" label="往帐被拒绝" value="-1" compare="small" enable="true" alerttype="1" rect="582;281;662;309" />
+      <Condition order="11" type="int" label="往帐发送失败" value="-1" compare="small" enable="true" alerttype="1" rect="173;390;367;415" />
+      <Condition order="12" type="int" label="排队" value="-1" compare="small" enable="true" alerttype="1" rect="376;390;440;415" />
+      <Condition order="13" type="int" label="来帐接收" value="-1" compare="small" enable="true" alerttype="1" rect="173;497;367;525" />
+      <Condition order="14" type="int" label="来帐被拒绝" value="-1" compare="small" enable="true" alerttype="1" rect="582;495;662;525" />
+      <Condition order="15" type="int" label="来帐未响应" value="-1" compare="small" enable="true" alerttype="1" rect="785;495;900;524" />
     </AlertCondition>
     <CaptureParameter>
-      <BeginTimeParameter order="1" type="time" label="检查开始时间(hh:mm)" value="08:30" applayon="1;2;3;4;5;6;7;8;9;10;11;12;13" />
-      <EndTimeParameter order="2" type="time" label="检查结束时间(hh:mm)" value="17:35" applayon="1;2;3;4;5;6;7;8;9;10;11;12;13" />
-      <FreqParameter order="3" type="int" label="检查时间间隔(秒)" value="30" applayon="1;2;3;4;5;6;7;8;9;10;11;12;13" />
+      <BeginTimeParameter order="1" type="time" label="检查开始时间(hh:mm)" value="08:30" applayon="1;2;3;4;5;6;7;8;9;10;11;12;13;14;15" />
+      <EndTimeParameter order="2" type="time" label="检查结束时间(hh:mm)" value="17:35" applayon="1;2;3;4;5;6;7;8;9;10;11;12;13;14;15" />
+      <FreqParameter order="3" type="int" label="检查时间间隔(秒)" value="8" applayon="1;2;3;4;5;6;7;8;9;10;11;12;13;14;15" />
     </CaptureParameter>
   </System>
   <System order="4" name="小额前置系统" sign="状态更新日">
@@ -91,17 +93,21 @@
       <Condition order="9" type="int" label="来帐业务已发总笔数无变化(秒)" value="1800" compare="big" enable="true" alerttype="1" rect="300;521;365;555" />
       <Condition order="10" type="int" label="来帐业务异常总笔数" value="0" compare="big" enable="true" alerttype="1" rect="375;521;440;555" />
       <Condition order="11" type="int" label="来帐信息异常总笔数" value="0" compare="big" enable="true" alerttype="1" rect="375;575;440;610" />
-      <Condition order="12" type="int" label="往帐接收" value="-1" compare="small" enable="true" alerttype="1" rect="74;247;145;280" />
-      <Condition order="13" type="int" label="往账异常" value="-1" compare="small" enable="true" alerttype="1" rect="305;247;370;280" />
-      <Condition order="14" type="int" label="已发包数" value="-1" compare="small" enable="true" alerttype="1" rect="510;247;575;280" />
-      <Condition order="15" type="int" label="来账接收" value="-1" compare="small" enable="true" alerttype="1" rect="74;520;145;550" />
-      <Condition order="16" type="int" label="来账异常" value="-1" compare="small" enable="true" alerttype="1" rect="375;521;440;555" />
-      <Condition order="17" type="int" label="来账已发" value="-1" compare="small" enable="true" alerttype="1" rect="300;521;365;555" />
+      <Condition order="12" type="int" label="往账业务已发总包数无变化(秒)" value="1200" compare="big" enable="true" alerttype="1" rect="515;250;580;280" />
+      <Condition order="13" type="int" label="往账业务已轧差包数无变化(秒)" value="1200" compare="big" enable="true" alerttype="1" rect="740;250;800;280" />
+      <Condition order="14" type="int" label="往帐接收" value="-1" compare="small" enable="true" alerttype="1" rect="74;247;145;280" />
+      <Condition order="15" type="int" label="往账异常" value="-1" compare="small" enable="true" alerttype="1" rect="305;247;370;280" />
+      <Condition order="16" type="int" label="已发包数" value="-1" compare="small" enable="true" alerttype="1" rect="510;247;575;280" />
+      <Condition order="17" type="int" label="来账接收" value="-1" compare="small" enable="true" alerttype="1" rect="74;520;145;550" />
+      <Condition order="18" type="int" label="来账异常" value="-1" compare="small" enable="true" alerttype="1" rect="375;521;440;555" />
+      <Condition order="19" type="int" label="来账已发" value="-1" compare="small" enable="true" alerttype="1" rect="300;521;365;555" />
+      <Condition order="20" type="int" label="往账业务已发总包数" value="-1" compare="small" enable="true" alerttype="1" rect="515;250;580;280" />
+      <Condition order="21" type="int" label="往账业务已轧差包数" value="-1" compare="small" enable="true" alerttype="1" rect="740;250;800;280" />
     </AlertCondition>
     <CaptureParameter>
-      <BeginTimeParameter order="1" type="time" label="检查开始时间(hh:mm)" value="08:00" applayon="1;2;3;4;5;6;7;9;10;11;12;13;14;15;16;17" />
-      <EndTimeParameter order="2" type="time" label="检查结束时间(hh:mm)" value="18:05" applayon="1;2;3;4;5;6;7;9;10;11;12;13;14;15;16;17" />
-      <FreqParameter order="3" type="int" label="检查时间间隔(秒)" value="30" applayon="1;2;3;4;5;6;7;9;10;11;12;13;14;15;16;17" />
+      <BeginTimeParameter order="1" type="time" label="检查开始时间(hh:mm)" value="08:00" applayon="1;2;3;4;5;6;7;9;10;11;12;13;14;15;16;17;18;19;20;21" />
+      <EndTimeParameter order="2" type="time" label="检查结束时间(hh:mm)" value="18:05" applayon="1;2;3;4;5;6;7;9;10;11;12;13;14;15;16;17;18;19;20;21" />
+      <FreqParameter order="3" type="int" label="检查时间间隔(秒)" value="16" applayon="1;2;3;4;5;6;7;9;10;11;12;13;14;15;16;17;18;19;20;21" />
     </CaptureParameter>
   </System>
   <System order="6" name="大额支付系统(事务信息)" sign="大额支付系统事务">
@@ -208,13 +214,13 @@
       <Condition order="2" type="int" label="异常节点个数" value="0" compare="big" enable="true" alerttype="1" rect="380;80;445;110" />
       <Condition order="3" type="int" label="中心状态" value="1" compare="not" enable="true" alerttype="1" rect="700;50;785;75" />
       <Condition order="4" type="int" label="交易全程状态" value="300" compare="big" enable="true" alerttype="1" rect="700;80;785;110" />
-      <Condition order="5" type="int" label="交易结果报警" value="0" compare="big" enable="true" alerttype="1" rect="700;80;785;110" />
+      <Condition order="5" type="int" label="交易结果报警" value="0" compare="big" enable="true" alerttype="1" rect="950;50;1000;75" />
     </AlertCondition>
     <CaptureParameter>
       <FreqParameter order="1" type="int" label="检查时间间隔(秒)" value="300" applayon="1;2;3;4;5" />
     </CaptureParameter>
   </System>
-  <System order="10" name="清算系统" sign="环境参数">
+  <System order="10" name="清算系统" sign="环境参数以下线">
     <AlertCondition>
       <Condition order="1" type="string" label="网间状态" value="正;常;清算;开始" compare="not" enable="true" alerttype="2" rect="750;160;895;210" />
       <Condition order="2" type="string" label="对账状态" value="正常" compare="not" enable="true" alerttype="2" rect="400;350;920;410" />
@@ -223,12 +229,12 @@
     <CaptureParameter>
       <FreqParameter order="1" type="int" label="网间状态检查时间间隔(秒)" value="300" applayon="1" />
       <FreqParameter order="2" type="int" label="对账状态检查时间间隔(秒)" value="30" applayon="2" />
-      <EndTimeParameter order="3" type="time" label="对账状态日间检查结束时间(hh:mm)" value="16:10" applayon="2" />
-      <BeginTimeParameter order="4" type="time" label="节点状态日终检查开始时间(hh:mm)" value="16:10" applayon="3" />
+      <BeginTimeParameter order="3" type="time" label="检查开始时间(hh:mm)" value="16:10" applayon="1;2;3" />
+      <EndTimeParameter order="4" type="time" label="检查结束时间(hh:mm)" value="20:10" applayon="1;2;3" />
       <FreqParameter order="5" type="int" label="节点状态日终检查时间间隔(秒)" value="16" applayon="3" />
     </CaptureParameter>
   </System>
-  <System order="11" name="清算直联系统" sign="清算直联">
+  <System order="11" name="清算直联系统" sign="清算直联以下线">
     <AlertCondition>
       <Condition order="1" type="int" label="(往帐汇划)未发笔数" value="50" compare="big" enable="true" alerttype="1" rect="188;277;311;307" />
       <!--<Condition order="2" type="int" label="(往帐汇划)失败笔数" value="5" compare="big" enable="true" alerttype="1" rect="188;307;311;337" />-->
@@ -241,6 +247,8 @@
     </AlertCondition>
     <CaptureParameter>
       <FreqParameter order="1" type="int" label="检查时间间隔(秒)" value="30" applayon="1;3;5;7" />
+      <BeginTimeParameter order="2" type="time" label="检查开始时间(hh:mm)" value="19:10" applayon="1;3;5;6;7;8" />
+      <EndTimeParameter order="3" type="time" label="检查结束时间(hh:mm)" value="20:10" applayon="1;3;5;6;7;8" />
       <!--<FreqParameter order="2" type="int" label="失败笔数检查间隔时间(毫秒)" value="60000" applayon="2;4;6;8" />-->
     </CaptureParameter>
   </System>
@@ -255,9 +263,9 @@
       <Condition order="7" type="int" label="国元证券 - 正常处理中笔数" value="5" compare="big" enable="true" alerttype="1" rect="295;145;405;175" />
       <Condition order="8" type="int" label="国元证券 - 失败结束笔数" value="-1" compare="small" enable="true" alerttype="1" rect="475;145;565;175" />
       <Condition order="9" type="int" label="国元证券 - 成功结束笔数" value="-1" compare="small" enable="true" alerttype="1" rect="625;145;715;175" />
-      <Condition order="10" type="int" label="安徽分行 - 失败结束笔数/成功结束笔数(%)" value="15" compare="big" enable="true" alerttype="1" rect="0;0;1;1" />
-      <Condition order="11" type="int" label="华安证券 - 失败结束笔数/成功结束笔数(%)" value="15" compare="big" enable="true" alerttype="1" rect="0;0;1;1" />
-      <Condition order="12" type="int" label="国元证券 - 失败结束笔数/成功结束笔数(%)" value="15" compare="big" enable="true" alerttype="1" rect="0;0;1;1" />
+      <Condition order="10" type="int" label="安徽分行 - 失败结束笔数/成功结束笔数(%)" value="20" compare="big" enable="true" alerttype="1" rect="0;0;1;1" />
+      <Condition order="11" type="int" label="华安证券 - 失败结束笔数/成功结束笔数(%)" value="20" compare="big" enable="true" alerttype="1" rect="0;0;1;1" />
+      <Condition order="12" type="int" label="国元证券 - 失败结束笔数/成功结束笔数(%)" value="20" compare="big" enable="true" alerttype="1" rect="0;0;1;1" />
     </AlertCondition>
     <CaptureParameter>
       <BeginTimeParameter order="2" type="time" label="检查开始时间(hh:mm)" value="09:00" applayon="1;2;3;4;5;6;7;8;9;10;11;12" />
