@@ -27,10 +27,10 @@
 #undef HAVE_PAM_H
 
 /* Define if you have the <pnm.h> header file.  */
-#undef HAVE_PNM_H
+#define HAVE_PNM_H
 
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
 
 /* Define if you have the <wchar.h> header file.  */
-#undef HAVE_WCHAR_H
+#define HAVE_WCHAR_H

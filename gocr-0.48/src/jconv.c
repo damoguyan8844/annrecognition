@@ -31,7 +31,7 @@ void help( void ) {
   exit(1);
 }
 
-int main(int argn, char *argv[])
+int jconv_main(int argn, char *argv[])
 {
   char *inam, *onam;
   pix bild;
@@ -165,4 +165,6 @@ int main(int argn, char *argv[])
   else
     printf("Error: unknown suffix");
   free( bild.p );
+
+  return 0;
 }
