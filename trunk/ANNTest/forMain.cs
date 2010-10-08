@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 
 using log4net;
 using JOYFULL.CMPW.Digit;
+using System.Drawing.Imaging;
 
 namespace ANNTest
 {
@@ -853,5 +854,143 @@ namespace ANNTest
         {
 
         }
+
+        private void button22_Click(object sender, EventArgs e)
+        {
+            DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\" + textBMPFolders.Text);
+            try
+            {
+                foreach (DirectoryInfo d in Dir.GetDirectories())
+                {
+                    if (d.ToString() == "BMP0")
+                        GossNoiseBMPs(d, 0);
+                    else if (d.ToString() == "BMP1")
+                        GossNoiseBMPs(d, 1);
+                    else if (d.ToString() == "BMP2")
+                        GossNoiseBMPs(d, 2);
+                    else if (d.ToString() == "BMP3")
+                        GossNoiseBMPs(d, 3);
+                    else if (d.ToString() == "BMP4")
+                        GossNoiseBMPs(d, 4);
+                    else if (d.ToString() == "BMP5")
+                        GossNoiseBMPs(d, 5);
+                    else if (d.ToString() == "BMP6")
+                        GossNoiseBMPs(d, 6);
+                    else if (d.ToString() == "BMP7")
+                        GossNoiseBMPs(d, 7);
+                    else if (d.ToString() == "BMP8")
+                        GossNoiseBMPs(d, 8);
+                    else if (d.ToString() == "BMP9")
+                        GossNoiseBMPs(d, 9);
+                }
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show(exp.Message);
+            }   
+
+        }
+        private void GossNoiseBMPs(DirectoryInfo Dir, int dest)
+        {
+            double dblGossU = double.Parse(textGossU.Text);
+            double dblGossA = double.Parse(textGossA.Text);
+
+            try
+            {
+                string gridFile = Dir.FullName + "\\Grid.text";
+
+                FileInfo fGrid = new FileInfo(gridFile);
+                fGrid.Delete(); fGrid = null;
+
+                foreach (FileInfo f in Dir.GetFiles("*.bmp"))
+                {
+                    if (f.FullName.Contains("goss_")) continue;
+                    Bitmap oldBMP = new Bitmap(f.FullName);
+                    Bitmap newBMP = goss_noise(oldBMP,dblGossU,dblGossA);
+                    IntPtr hBmp = newBMP.GetHbitmap();
+                    ANNWrapper.SaveBlockToBMP4(hBmp, 0, 0, newBMP.Width,newBMP.Height, Dir.FullName + "\\goss_" + f.Name, Int32.Parse(textInputInt.Text),false);
+                    DeleteObject(hBmp);
+
+                    oldBMP.Dispose();
+                    newBMP.Dispose();
+                }
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show(exp.Message);
+            }
+
+        }
+        /// <summary>
+        /// 高斯密度函数
+        /// </summary>
+        /// <param name="z">随机数</param>
+        /// <param name="u">数学期望</param>
+        /// <param name="a">方差</param>
+        /// <returns></returns>
+        private double gossp(double z, double u, double a)
+        {
+            double p;
+            p = ( 1 / (a * Math.Sqrt(2 * Math.PI)) *
+                Math.Pow( Math.E,  -( Math.Pow(z - u,2) / (2 * a * a))));
+            return p;
+
+        }
+
+        /// <summary>
+        /// 对一幅图形进行高斯噪音处理。
+        /// </summary>
+        /// <param name="img"></param>
+        /// <param name="u">数学期望</param>
+        /// <param name="a">方差</param>
+        /// <returns></returns>
+        private Bitmap goss_noise(Image img, double u, double a)
+        {
+
+            int width = img.Width;
+            int height = img.Height;
+            Bitmap bitmap2 = new Bitmap(img);
+            Rectangle rectangle1 = new Rectangle(0, 0, width, height);
+            PixelFormat format = bitmap2.PixelFormat;
+            BitmapData data = bitmap2.LockBits(rectangle1, ImageLockMode.ReadWrite, format);
+            IntPtr ptr = data.Scan0;
+            int numBytes = width * height * 4;
+            byte[] rgbValues = new byte[numBytes];
+            Marshal.Copy(ptr, rgbValues, 0, numBytes);
+            Random random1 = new Random();
+            for (int i = 0; i < numBytes; i += 4)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    double z;
+                    z = random1.NextDouble() - 0.5 + u;
+                    double pz = gossp(z, u, a);
+                    double r = random1.NextDouble();
+                    // Debug.WriteLineIf(pz < 0.1, string.Format("z={0}\tpz={1}\tr={2}", z,pz,r));
+                    if (r <= pz)
+                    {
+                        double p = rgbValues[i + j];
+                        p = p + z * 128;
+                        if (p > 255)
+                            p = 255;
+                        if (p < 0)
+                            p = 0;
+
+                        rgbValues[i + j] = (byte)p;
+                    }
+                }
+            }
+            
+            Marshal.Copy(rgbValues, 0, ptr, numBytes);
+            bitmap2.UnlockBits(data);
+            return bitmap2;
+        }
+
+        private void button23_Click(object sender, EventArgs e)
+        {
+            DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\" + textBMPFolders.Text);
+            GossNoiseBMPs(Dir, 10);
+        } 
+
     }
 }
