@@ -88,6 +88,7 @@ namespace ANNTest
             this.textGossU = new System.Windows.Forms.TextBox();
             this.textGossA = new System.Windows.Forms.TextBox();
             this.button23 = new System.Windows.Forms.Button();
+            this.ProcessEx = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -240,7 +241,7 @@ namespace ANNTest
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(395, 187);
+            this.button7.Location = new System.Drawing.Point(383, 188);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(67, 25);
             this.button7.TabIndex = 18;
@@ -458,7 +459,7 @@ namespace ANNTest
             // 
             // button12
             // 
-            this.button12.Location = new System.Drawing.Point(272, 187);
+            this.button12.Location = new System.Drawing.Point(267, 187);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(64, 24);
             this.button12.TabIndex = 42;
@@ -468,7 +469,7 @@ namespace ANNTest
             // 
             // button13
             // 
-            this.button13.Location = new System.Drawing.Point(343, 187);
+            this.button13.Location = new System.Drawing.Point(331, 188);
             this.button13.Name = "button13";
             this.button13.Size = new System.Drawing.Size(51, 24);
             this.button13.TabIndex = 43;
@@ -600,9 +601,9 @@ namespace ANNTest
             // 
             // button22
             // 
-            this.button22.Location = new System.Drawing.Point(464, 187);
+            this.button22.Location = new System.Drawing.Point(444, 188);
             this.button22.Name = "button22";
-            this.button22.Size = new System.Drawing.Size(88, 25);
+            this.button22.Size = new System.Drawing.Size(73, 25);
             this.button22.TabIndex = 57;
             this.button22.Text = "GossNoise";
             this.button22.UseVisualStyleBackColor = true;
@@ -634,11 +635,22 @@ namespace ANNTest
             this.button23.UseVisualStyleBackColor = true;
             this.button23.Click += new System.EventHandler(this.button23_Click);
             // 
+            // ProcessEx
+            // 
+            this.ProcessEx.Location = new System.Drawing.Point(516, 188);
+            this.ProcessEx.Name = "ProcessEx";
+            this.ProcessEx.Size = new System.Drawing.Size(48, 25);
+            this.ProcessEx.TabIndex = 61;
+            this.ProcessEx.Text = "ProcessEx";
+            this.ProcessEx.UseVisualStyleBackColor = true;
+            this.ProcessEx.Click += new System.EventHandler(this.ProcessEx_Click);
+            // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(862, 628);
+            this.Controls.Add(this.ProcessEx);
             this.Controls.Add(this.button23);
             this.Controls.Add(this.textGossA);
             this.Controls.Add(this.textGossU);
@@ -769,6 +781,7 @@ namespace ANNTest
         private System.Windows.Forms.TextBox textGossU;
         private System.Windows.Forms.TextBox textGossA;
         private System.Windows.Forms.Button button23;
+        private System.Windows.Forms.Button ProcessEx;
     }
 }
 
