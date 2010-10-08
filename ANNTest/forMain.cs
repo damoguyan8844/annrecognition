@@ -990,6 +990,33 @@ namespace ANNTest
         {
             DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\" + textBMPFolders.Text);
             GossNoiseBMPs(Dir, 10);
+        }
+
+        private void ProcessEx_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DirectoryInfo Dir = new DirectoryInfo(Application.StartupPath + "\\" + textBMPFolders.Text);
+
+                foreach (FileInfo f in Dir.GetFiles("*.png"))
+                {
+                    textSubsystemBMP = textBMPFolders.Text+"\\"+f.Name;
+                    textToPath.Text = textBMPFolders.Text+"\\"+"Sample_" + f.Name;
+
+                    //Same Block
+                    button5_Click(sender, e);
+
+                    textInputBMP.Text = textBMPFolders.Text+"\\"+"Sample_" + f.Name;
+                    //Revert Block
+                    button4_Click(sender, e);
+                }
+                //Splitter
+                button12_Click();
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show(textToPath.Text);
+            }
         } 
 
     }
