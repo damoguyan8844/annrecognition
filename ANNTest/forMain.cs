@@ -1000,18 +1000,18 @@ namespace ANNTest
 
                 foreach (FileInfo f in Dir.GetFiles("*.png"))
                 {
-                    textSubsystemBMP = textBMPFolders.Text+"\\"+f.Name;
-                    textToPath.Text = textBMPFolders.Text+"\\"+"Sample_" + f.Name;
+                    textSubsystemBMP.Text = textBMPFolders.Text+"\\"+f.Name;
+                    textToPath.Text = textBMPFolders.Text+"\\Sample_" + f.Name+".bmp";
 
                     //Same Block
                     button5_Click(sender, e);
 
-                    textInputBMP.Text = textBMPFolders.Text+"\\"+"Sample_" + f.Name;
-                    //Revert Block
-                    button4_Click(sender, e);
+                    textInputBMP.Text = textBMPFolders.Text + "\\Sample_" + f.Name + ".bmp";
+                    //Back White BMP
+                    button3_Click(sender, e);
                 }
                 //Splitter
-                button12_Click();
+                button12_Click(sender, e);
             }
             catch (Exception exp)
             {
