@@ -444,7 +444,7 @@ void COleDispatchDriver::InvokeHelperV(DISPID dwDispID, WORD wFlags,
 // 		THROW(pException);
 		//ANNRecognitionLog("OCR Create Document Error",LOG_ERROR);
 		G_OCRDocumentError=TRUE;
-		ASSERT(FALSE);  // not reached
+		//ASSERT(FALSE);  // not reached
 	}
 
 	if (vtRet != VT_EMPTY)

@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "../ANNRecognition.h"
-#include "../Lock.h"
+#include "ANNRecognition.h"
+#include "Lock.h"
 
 #include <algorithm>
 #include <windef.h>
