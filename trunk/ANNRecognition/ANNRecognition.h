@@ -6,7 +6,7 @@
 // ANNRECOGNITION_API functions as being imported from a DLL, wheras this DLL sees symbols
 // defined with this macro as being exported.
 
-#ifdef _cplusplus 
+#ifdef __cplusplus 
 #define EXTERN_C extern "C"
 #else
 #define EXTERN_C extern
