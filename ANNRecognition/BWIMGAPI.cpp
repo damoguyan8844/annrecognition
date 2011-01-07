@@ -81,22 +81,29 @@ ANNRECOGNITION_API void ClearAll(HDC pDC)
 ********************************************************/
 
 
-ANNRECOGNITION_API HDIB AutoAlign(HDIB hDIB,LONG charRectID)
+ANNRECOGNITION_API HDIB AutoAlign(HDIB hDIB,const LONG charRectID)
 {   
-	if(charRectID>=g_CharSegmentRet.size()) return 0;
 	if(hDIB==NULL) return 0;
 
 //	Lock lock(&_cs);
 	HDIB hNewDIB=0;
+	BYTE* lpDIB=0;
+	BYTE* lpNewDIB=0;
+
 	try
 	{
-		CRectLink & m_charRect=g_CharSegmentRet[charRectID];
-		if(m_charRect.empty()) return 0;
+		CRectLink m_charRect;
+		{	
+			Lock lock(&_csRect);
+			if(charRectID>=g_CharSegmentRet.size()) return 0;
+			m_charRect=g_CharSegmentRet[charRectID];
+			if(m_charRect.empty()) return 0;
+		}
 
 		int digicount = m_charRect.size();
 		
 	//指向图像的指针
- 		BYTE* lpDIB=(BYTE*)::GlobalLock ((HGLOBAL)hDIB);
+ 		lpDIB=(BYTE*)::GlobalLock ((HGLOBAL)hDIB);
 
 	//指向象素起始位置的指针
 		BYTE* lpDIBBits=(BYTE*)::FindDIBBits ((char*)lpDIB);
@@ -120,7 +127,7 @@ ANNRECOGNITION_API HDIB AutoAlign(HDIB hDIB,LONG charRectID)
 		hNewDIB=::NewDIB (digicount*w,h,8);
 
 	//指向新的图像的指针
-		BYTE* lpNewDIB=(BYTE*) ::GlobalLock((HGLOBAL)hNewDIB);
+		lpNewDIB=(BYTE*) ::GlobalLock((HGLOBAL)hNewDIB);
 		
 	//指向象素起始位置的指针
 		BYTE* lpNewDIBBits=(BYTE*)::FindDIBBits((char*)lpNewDIB);
@@ -203,7 +210,11 @@ ANNRECOGNITION_API HDIB AutoAlign(HDIB hDIB,LONG charRectID)
 
 	//将获得的新的链表复制到原链表中，以方便下一次的调用
 		m_charRect=m_charRectCopy;
-
+		{
+			Lock lock(&_csRect);
+			if(charRectID>=g_CharSegmentRet.size()) return 0;
+			g_CharSegmentRet[charRectID]=m_charRect;
+		}
 	//解除锁定
 		::GlobalUnlock (hDIB);
 
@@ -213,11 +224,13 @@ ANNRECOGNITION_API HDIB AutoAlign(HDIB hDIB,LONG charRectID)
 	catch(...)
 	{
 	//解除锁定
-		::GlobalUnlock (hDIB);
+		if(lpDIB!=0)
+			::GlobalUnlock (hDIB);
 		
 		if(hNewDIB!=0)
 		{
-			::GlobalUnlock (hNewDIB);
+			if(lpNewDIB!=0)
+				::GlobalUnlock (hNewDIB);
 			ReleaseDIBFile(hNewDIB);
 		}
 
@@ -907,15 +920,18 @@ ANNRECOGNITION_API LONG CharSegment(HDIB hDIB)
 	//解除锁定
 		::GlobalUnlock(hDIB);
 		
-		if(g_CharSegmentRet.size()>200)
-			g_CharSegmentRet.clear();
-		
-		if(!charRect1.empty())
 		{
-			g_CharSegmentRet.push_back(charRect1);
-	//将链表1返回
-			LONG lngRet=g_CharSegmentRet.size()-1;
-			return lngRet;
+			Lock lock(&_csRect);
+			if(g_CharSegmentRet.size()>200)
+				g_CharSegmentRet.clear();
+				
+			if(!charRect1.empty())
+			{
+				g_CharSegmentRet.push_back(charRect1);
+		//将链表1返回
+				LONG lngRet=g_CharSegmentRet.size()-1;
+				return lngRet;
+			}
 		}
 	}
 	catch(...)
@@ -1184,7 +1200,7 @@ ANNRECOGNITION_API BOOL ConvertGrayToWhiteBlack(HDIB hDIB)
 ******************************************************************/     
 
 
-ANNRECOGNITION_API bool DeleteScaterJudge(LPSTR lpDIBBits, WORD lLineBytes, LPBYTE lplab, int lWidth, int lHeight, int x, int y, POINT lab[], int lianXuShu,int & m_lianXuShu)
+ANNRECOGNITION_API bool DeleteScaterJudge(LPSTR lpDIBBits, const WORD lLineBytes, LPBYTE lplab, const int lWidth, const int lHeight, int x, int y, POINT lab[], const int lianXuShu,int & m_lianXuShu)
 {
 	try
 	{
@@ -1220,154 +1236,125 @@ ANNRECOGNITION_API bool DeleteScaterJudge(LPSTR lpDIBBits, WORD lLineBytes, LPBY
 		//如果是黑色点，则调用函数自身进行递归
 
 		//考察下面点
-		
-			lpSrc=(char*)lpDIBBits + lLineBytes * (y-1) + x;
+			if(y-1 >=0 && x>=0)
+			{
+				lpSrc=(char*)lpDIBBits + lLineBytes * (y-1) + x;
+			//传递灰度值
+				gray=*lpSrc;
 
-		//传递灰度值
-			gray=*lpSrc;
-
-		//如果点在图像内、颜色为黑色并且没有被访问过
-			if(y-1 >=0 && gray == 0 && lplab[(y-1)*lWidth+x] == false)
-
-		//进行递归处理		
-			DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x,y-1,lab,lianXuShu,m_lianXuShu);
-
-		//判断长度
-		//如果连续长度满足要求，说明不是离散点，返回
-			if(m_lianXuShu>=lianXuShu)
-			return TRUE;
+			//如果点在图像内、颜色为黑色并且没有被访问过
+				if(y-1 >=0 && gray == 0 && lplab[(y-1)*lWidth+x] == false)
+					DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x,y-1,lab,lianXuShu,m_lianXuShu);
+				if(m_lianXuShu>=lianXuShu)
+				return TRUE;
+			}	
 			
 		//左下点
-			
-			lpSrc=(char*)lpDIBBits + lLineBytes * (y-1) + x-1;
+			if(y-1 >=0 && x-1 >=0 )
+			{
+				lpSrc=(char*)lpDIBBits + lLineBytes * (y-1) + x-1;
 
-        //传递灰度值
-			gray=*lpSrc;
+			//传递灰度值
+				gray=*lpSrc;
 
-        //如果点在图像内、颜色为黑色并且没有被访问过
-			if(y-1 >=0 &&  x-1 >=0 && gray== 0 && lplab[(y-1)*lWidth+x-1] == false)
+			//如果点在图像内、颜色为黑色并且没有被访问过
+				if(y-1 >=0 &&  x-1 >=0 && gray== 0 && lplab[(y-1)*lWidth+x-1] == false)
+					DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x-1,y-1,lab,lianXuShu,m_lianXuShu);
+				if(m_lianXuShu>=lianXuShu)
+					return TRUE;
+			}
 
-      	//进行递归处理		
-			DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x-1,y-1,lab,lianXuShu,m_lianXuShu);
-
-        //判断长度
-		//如果连续长度满足要求，说明不是离散点，返回
-			if(m_lianXuShu>=lianXuShu)
-			return TRUE;
-			
 		//左边
-			
-			lpSrc=(char*)lpDIBBits + lLineBytes * y + x-1;
+			if( y>=0 && x-1>=0 )
+			{
+				lpSrc=(char*)lpDIBBits + lLineBytes * y + x-1;
 
-		//传递灰度值
-			gray=*lpSrc;
+			//传递灰度值
+				gray=*lpSrc;
 
-        //如果点在图像内、颜色为黑色并且没有被访问过
-			if(x-1 >=0 &&  gray== 0 && lplab[y*lWidth+x-1] == false)
-
-        //进行递归处理		
-			DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x-1,y,lab,lianXuShu,m_lianXuShu);
-
-        //判断长度
-		//如果连续长度满足要求，说明不是离散点，返回
-			if(m_lianXuShu>=lianXuShu)
-				return TRUE;
+			//如果点在图像内、颜色为黑色并且没有被访问过
+				if(x-1 >=0 &&  gray== 0 && lplab[y*lWidth+x-1] == false)
+					DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x-1,y,lab,lianXuShu,m_lianXuShu);
+				if(m_lianXuShu>=lianXuShu)
+					return TRUE;
+			}
 			
 		//左上
-			
-			lpSrc=(char*)lpDIBBits + lLineBytes * (y+1) + x-1;
+			if( y+1<lHeight && x-1>=0)
+			{
+				lpSrc=(char*)lpDIBBits + lLineBytes * (y+1) + x-1;
 
-		//传递灰度值
-			gray=*lpSrc;
-
-        //如果点在图像内、颜色为黑色并且没有被访问过
-			if(y+1 <lHeight && x-1 >= 0 && gray == 0 && lplab[(y+1)*lWidth+x-1] == false)
-
-		//进行递归处理
-			
-			DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x-1,y+1,lab,lianXuShu,m_lianXuShu);
-
-        //判断长度
-		//如果连续长度满足要求，说明不是离散点，返回
-			if(m_lianXuShu>=lianXuShu)
-				return TRUE;
+			//传递灰度值
+				gray=*lpSrc;
+				
+				if(y+1 <lHeight && x-1 >= 0 && gray == 0 && lplab[(y+1)*lWidth+x-1] == false)
+					DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x-1,y+1,lab,lianXuShu,m_lianXuShu);
+				if(m_lianXuShu>=lianXuShu)
+					return TRUE;
+			}
 			
 		//上面
-			
-			lpSrc=(char*)lpDIBBits + lLineBytes * (y+1) + x;
+			if( y+1<lHeight && x>=0)
+			{
 
-        //传递灰度值
-			gray=*lpSrc;
+				lpSrc=(char*)lpDIBBits + lLineBytes * (y+1) + x;
 
-        //如果点在图像内、颜色为黑色并且没有被访问过
-			if(y+1 < lHeight && gray == 0 && lplab[(y+1)*lWidth+x] == false)
+			//传递灰度值
+				gray=*lpSrc;
 
-        //进行递归处理
-			
-			DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x,y+1,lab,lianXuShu,m_lianXuShu);
-
-        //判断长度
-		//如果连续长度满足要求，说明不是离散点，返回
-			if(m_lianXuShu>=lianXuShu)
-				return TRUE;
+			//如果点在图像内、颜色为黑色并且没有被访问过
+				if(y+1 < lHeight && gray == 0 && lplab[(y+1)*lWidth+x] == false)		
+					DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x,y+1,lab,lianXuShu,m_lianXuShu);
+				if(m_lianXuShu>=lianXuShu)
+					return TRUE;
+			}	
 			
 		//右上
-			
-			lpSrc=(char*)lpDIBBits + lLineBytes * (y+1) + x+1;
+			if( y+1<lHeight && x+1<lWidth)
+			{
+				lpSrc=(char*)lpDIBBits + lLineBytes * (y+1) + x+1;
         
-		//传递灰度值
-			gray=*lpSrc;
+			//传递灰度值
+				gray=*lpSrc;
 
-        //如果点在图像内、颜色为黑色并且没有被访问过
-			if(y+1 <lHeight && x+1 <lWidth &&  gray == 0 && lplab[(y+1)*lWidth+x+1] == false)
-
-        //进行递归处理
-			DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x+1,y+1,lab,lianXuShu,m_lianXuShu);
-
-        //判断长度
-		//如果连续长度满足要求，说明不是离散点，返回
-			if(m_lianXuShu>=lianXuShu)
-				return TRUE;
+			//如果点在图像内、颜色为黑色并且没有被访问过
+				if(y+1 <lHeight && x+1 <lWidth &&  gray == 0 && lplab[(y+1)*lWidth+x+1] == false)
+					DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x+1,y+1,lab,lianXuShu,m_lianXuShu);
+				if(m_lianXuShu>=lianXuShu)
+					return TRUE;
+			}	
 			
 		//右边
-		
-			lpSrc=(char*)lpDIBBits + lLineBytes * y + x+1;
+			if( y>=0 && x+1<lWidth)
+			{
 
-        //传递灰度值
-			gray=*lpSrc;
+				lpSrc=(char*)lpDIBBits + lLineBytes * y + x+1;
 
-		//如果点在图像内、颜色为黑色并且没有被访问过
-			if(x+1 <lWidth && gray==0 && lplab[y*lWidth+x+1] == false)
+			//传递灰度值
+				gray=*lpSrc;
 
-        //进行递归处理		
-			DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x+1,y,lab,lianXuShu,m_lianXuShu);
-
-        //判断长度
-
-		//如果连续长度满足要求，说明不是离散点，返回
-			if(m_lianXuShu>=lianXuShu)
-				return TRUE;
+			//如果点在图像内、颜色为黑色并且没有被访问过
+				if(x+1 <lWidth && gray==0 && lplab[y*lWidth+x+1] == false)
+					DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x+1,y,lab,lianXuShu,m_lianXuShu);
+				if(m_lianXuShu>=lianXuShu)
+					return TRUE;
+			}
 			
 		//右下
-			
-			lpSrc=(char*)lpDIBBits + lLineBytes * (y-1) + x+1;
+			if( y-1>=0 && x+1<lWidth)
+			{
+				lpSrc=(char*)lpDIBBits + lLineBytes * (y-1) + x+1;
 
-        //传递灰度值
-			gray=*lpSrc;
+			//传递灰度值
+				gray=*lpSrc;
 
-        //如果点在图像内、颜色为黑色并且没有被访问过
-			if(y-1 >=0 && x+1 <lWidth && gray == 0 && lplab[(y-1)*lWidth+x+1] == false)
-
-       //进行递归处理		
-		   DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x+1,y-1,lab,lianXuShu,m_lianXuShu);
-
-        //判断长度
-		//如果连续长度满足要求，说明不是离散点，返回
-			if(m_lianXuShu>=lianXuShu)
-				return TRUE;
+			//如果点在图像内、颜色为黑色并且没有被访问过
+				if(y-1 >=0 && x+1 <lWidth && gray == 0 && lplab[(y-1)*lWidth+x+1] == false)
+				   DeleteScaterJudge(lpDIBBits,lLineBytes,lplab,lWidth,lHeight,x+1,y-1,lab,lianXuShu,m_lianXuShu);
+				if(m_lianXuShu>=lianXuShu)
+					return TRUE;
+			}
 		}
-		
-
 	//如果递归结束，返回false，说明是离散点
 		return FALSE;
 	}
@@ -1383,9 +1370,13 @@ ANNRECOGNITION_API bool DeleteScaterJudge(LPSTR lpDIBBits, WORD lLineBytes, LPBY
 /*****************绘制数字字符外面的矩形框*******************/
 ANNRECOGNITION_API void DrawFrame(HDC pDC,HDIB hDIB, LONG charRectID,unsigned int linewidth,COLORREF color)
 {	
-	if(charRectID>=g_CharSegmentRet.size()) return ;
+	CRectLink charRect;
+	{
+		Lock lock(&_csRect);
+		if(charRectID>=g_CharSegmentRet.size()) return ;
 
-	CRectLink charRect= g_CharSegmentRet[charRectID];
+		charRect= g_CharSegmentRet[charRectID];
+	}
 
 	CPen pen;
 	pen.CreatePen (PS_SOLID,linewidth,color);
@@ -1578,7 +1569,7 @@ ANNRECOGNITION_API BOOL RemoveScatterNoise(HDIB hDIB)
 
 	//设置判定噪声的长度阈值为15
 	//即如果与考察点相连接的黑点的数目小于15则认为考察点是噪声点
-		int length=15;
+		const int length=15;
 			
 
 	// 循环变量
@@ -1901,10 +1892,14 @@ ANNRECOGNITION_API void SlopeAdjust(HDIB hDIB)
 *     函数中用到了，每个字符的位置信息，所以必须在执行完分割操作之后才能执行标准化操作
 *
 ******************************************************************/
-ANNRECOGNITION_API void StdDIBbyRect(HDIB hDIB,LONG charRectID,int tarWidth, int tarHeight)
+ANNRECOGNITION_API void StdDIBbyRect(HDIB hDIB,const LONG charRectID,int tarWidth, int tarHeight)
 {	
-	if(charRectID>=g_CharSegmentRet.size()) return ;
-	CRectLink & m_charRect=g_CharSegmentRet[charRectID];
+	CRectLink m_charRect;
+	{
+		Lock lock(&_csRect);
+		if(charRectID>=g_CharSegmentRet.size()) return ;
+		m_charRect=g_CharSegmentRet[charRectID];
+	}
 
 	//指向图像的指针
 	BYTE* lpDIB=(BYTE*)::GlobalLock ((HGLOBAL)hDIB);
@@ -2012,7 +2007,11 @@ ANNRECOGNITION_API void StdDIBbyRect(HDIB hDIB,LONG charRectID,int tarWidth, int
 
 	//存储标准化后新的rect区域
     m_charRect=m_charRectCopy;
-
+	{
+		Lock lock(&_csRect);
+		if(charRectID>=g_CharSegmentRet.size()) return ;
+		g_CharSegmentRet[charRectID]=m_charRect;
+	}
 	//将缓存区的内容拷贝到图像的数据区内
 	memcpy(lpDIBBits,lpNewDIBBits,lLineBytes*lHeight);
 
@@ -2562,7 +2561,7 @@ ANNRECOGNITION_API void Equalize(HDIB hDIB)
 
 ANNRECOGNITION_API LONG	GetSegmentCount(LONG charRectID)
 {
-//	Lock lock(&_cs);
+	Lock lock(&_csRect);
 	if(charRectID>=g_CharSegmentRet.size()) return 0;
 	return g_CharSegmentRet[charRectID].size();
 }
@@ -2570,9 +2569,13 @@ ANNRECOGNITION_API LONG	GetSegmentCount(LONG charRectID)
 ANNRECOGNITION_API void	SaveSegment(HDIB hInputDIB,LONG charRectID,LPSTR destFolder)
 {
 	try{
-		if(charRectID>=g_CharSegmentRet.size()) return ;
-		
-		CRectLink m_charRect = g_CharSegmentRet[charRectID];
+		CRectLink m_charRect;
+		{
+			Lock lock(&_csRect);
+			if(charRectID>=g_CharSegmentRet.size()) return ;
+			m_charRect = g_CharSegmentRet[charRectID];
+		}
+
 		CRectLink m_charRectCopy=m_charRect;
 		
 		int digicount=GetSegmentCount(charRectID);
