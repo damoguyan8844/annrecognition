@@ -16,6 +16,7 @@
 
 #include <windows.h>
 
+//#import "C:\Program Files\Common Files\System\ado\msado15.dll" no_namespace  rename("EOF","rsEOF")
 // TODO: reference additional headers your program requires here
 
 //{{AFX_INSERT_LOCATION}}
